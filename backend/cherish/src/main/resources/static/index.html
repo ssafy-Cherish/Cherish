@@ -1,0 +1,34 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebRTC 테스트</title>
+    <!--Bootstrap only for styling-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <!--Bootstrap only for styling-->
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>WebRTC 테스트</h1>
+
+        <!--WebRTC related code-->
+        <button type="button" class="btn btn-primary" onclick='createOffer()'>Offer 생성</button>
+        <input id="messageInput" type="text" class="form-control" placeholder="message">
+        <button type="button" class="btn btn-primary" onclick='sendMessage()'>보내기</button>
+        <!--WebRTC related code-->
+        <br>
+        <br>
+        <h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
+        <!-- 내 웹캠 화면을 보여주는 video html -->
+        <video id="camera" autoplay playsinline controls></video>
+        <video id="peer" autoplay playsinline controls></video>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+
+</html>
