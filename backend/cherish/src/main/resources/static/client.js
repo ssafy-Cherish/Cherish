@@ -22,7 +22,7 @@ window.onload = function () {
 }
 
 //connecting to our signaling server 
-var conn = new WebSocket('ws://192.168.100.56:8080/socket');
+var conn = new WebSocket('ws://localhost:8080/socket');
 
 conn.onopen = function() {
     console.log("Connected to the signaling server");
