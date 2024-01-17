@@ -31,8 +31,8 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
 	// MyBatis
-	implementation group: 'com.oracle.database.jdbc', name: 'ojdbc11', version: '21.8.0.0'
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.0'
+//	implementation group: 'com.oracle.database.jdbc', name: 'ojdbc11', version: '21.8.0.0'
+//	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.0'
 }
 
 tasks.named('test') {
