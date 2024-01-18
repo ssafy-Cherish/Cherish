@@ -30,6 +30,10 @@ dependencies {
 
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+	// Kakao login
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'com.google.code.gson:gson:2.8.5'
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	// MyBatis
 //	implementation group: 'com.oracle.database.jdbc', name: 'ojdbc11', version: '21.8.0.0'
 //	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.0'
