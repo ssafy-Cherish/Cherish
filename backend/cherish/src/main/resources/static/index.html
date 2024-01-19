@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -26,9 +27,20 @@
         <!-- 내 웹캠 화면을 보여주는 video html -->
         <video id="camera" autoplay playsinline controls></video>
         <video id="peer" autoplay playsinline controls></video>
-        <button type="button" class="btn btn-primary" onclick='record()'>녹화</button>
-        <button type="button" class="btn btn-primary" onclick='recordStop()'>중지</button>
-        <video id="record" autoplay playsinline controls width="100px" height="100px"></video>
+
+<!--        카카오 로그인 테스트-->
+        <h1>Kakao Login Test</h1>
+        <span th:if="${userId==null}">
+		<a href="https://kauth.kakao.com/oauth/authorize?client_id=21f6f4f1f1f7333717bc3f2c5748e012&redirect_uri=http://localhost:8080/login&response_type=code">
+			<img src = "image/kakao_login_medium_narrow.png">
+		</a>
+	</span>
+        <span th:if="${userId!=null}">
+		<form name="logout" action="http://localhost:8080/logout">
+			<input type="submit" value="로그아웃">
+		</form>
+	</span>
+
     </div>
 
     <script src="client.js"></script>
