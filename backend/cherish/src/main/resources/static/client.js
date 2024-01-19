@@ -1,6 +1,9 @@
 var camera = document.getElementById("camera");
 var peer = document.getElementById("peer");
 
+var mediaRecorder;
+var recordedChunks = [];
+
 window.onload = function () {
     // 사용자 카메라 연결
     const constraints = {
@@ -12,17 +15,51 @@ window.onload = function () {
             width : 72,
             height : 72,
             facingMode : "user"
+        },
+        audio: {
+            echoCancellation: true,  // 에코 캔슬레이션 활성화
+            noiseSuppression: true,  // 잡음 억제 활성화
+            sampleRate: 44100        // 샘플레이트 설정 (예: 44100Hz)
         }
     };
     navigator.mediaDevices.getUserMedia(constraints).
-        then(function (stream) { 
+        then(function (stream) {
             camera.srcObject = stream;
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = function (event) {
+                if (event.data.size > 0) {
+                    console.log("mediaRecorder.ondataavailable");
+                    console.log(mediaRecorder.ondataavailable);
+                    recordedChunks.push(event.data);
+                }
+            };
+            mediaRecorder.onstop = function(event) {
+                console.log(recordedChunks);
+                recordedChunks.pop();
+                recordedChunks.pop();
+                recordedChunks.pop();
+                recordedChunks.pop();
+                recordedChunks.pop();
+                console.log(recordedChunks);
+                let blob = new Blob(recordedChunks, {
+                  type: "video/webm"
+                });
+                let url = URL.createObjectURL(blob);
+              
+                // 예를 들어, 비디오를 <video> 엘리먼트에 로드할 수 있습니다.
+                let video = document.getElementById("record");
+                video.src = url;
+                video.play();
+              };
         })
         .catch(function (err) { /* handle the error */ });
 }
 
-//connecting to our signaling server 
-var conn = new WebSocket('ws://localhost:8080/socket');
+//connecting to our signaling server
+// 서버 주소로 변경해야 됨
+var conn = new WebSocket('ws://192.168.100.56:8080/socket');
 
 conn.onopen = function() {
     console.log("Connected to the signaling server");
@@ -142,3 +179,16 @@ function sendMessage() {
     dataChannel.send(input.value);
     input.value = "";
 }
+
+function record() {
+    console.log("녹화 시작");
+    // 녹화 시작
+    mediaRecorder.start(1000);
+}
+
+function recordStop() {
+    console.log("녹화 중지");
+    mediaRecorder.stop();
+}
+
+//test
