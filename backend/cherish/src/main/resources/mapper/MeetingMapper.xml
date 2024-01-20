@@ -9,4 +9,9 @@
     <select id="getLastMeeting" resultType="int">
         SELECT LAST_INSERT_ID() AS meetingId;
     </select>
+    <update id="setMeetingLength" parameterType="int">
+        update meeting
+        set length = TIMEDIFF(now(), created_at)
+        where id = #{meetingId};
+    </update>
 </mapper>
