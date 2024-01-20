@@ -7,5 +7,8 @@ import java.sql.SQLException;
 @Mapper
 public interface MeetingMapper {
     int createMeeting(int coupleId) throws SQLException;
+
     int getLastMeeting() throws SQLException;
+
+    int setMeetingLength(int meetingId) throws SQLException;
 }

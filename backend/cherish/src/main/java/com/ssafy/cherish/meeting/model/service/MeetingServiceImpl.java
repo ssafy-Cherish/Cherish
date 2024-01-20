@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MeetingServiceImpl implements MeetingService{
+public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private MeetingMapper meetingMapper;
 
@@ -17,12 +17,16 @@ public class MeetingServiceImpl implements MeetingService{
     @Override
     @Transactional
     public int createMeeting(int coupleId) throws Exception {
-        if(meetingMapper.createMeeting(coupleId)==1)
-        {
+        if (meetingMapper.createMeeting(coupleId) == 1) {
             return meetingMapper.getLastMeeting();
-        }
-        else {
+        } else {
             throw new Exception("An error occurred during meeting creation");
         }
+
+    }
+
+    @Override
+    public int setMeetingLength(int meetingId) throws Exception {
+        return meetingMapper.setMeetingLength(meetingId);
     }
 }
