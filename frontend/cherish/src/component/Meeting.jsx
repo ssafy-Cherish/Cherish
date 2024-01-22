@@ -1,22 +1,22 @@
 import { useRef, useState, useEffect } from 'react';
-var camera = document.getElementById('camera');
-var peer = document.getElementById('peer');
 
 var localStream;
+var remoteStream;
 
 var mediaRecorder;
 var recordedChunks = [];
+var camstate;
 
 window.onload = function () {
 	// 사용자 카메라 연결
 	const constraints = {
 		video: {
 			frameRate: {
-				ideal: 5,
-				max: 10,
+				ideal: 60,
+				max: 80,
 			},
-			width: 72,
-			height: 72,
+			width: 300,
+			height: 300,
 			facingMode: 'user',
 		},
 		audio: {
@@ -29,7 +29,6 @@ window.onload = function () {
 		.getUserMedia(constraints)
 		.then(function (stream) {
 			localStream = stream;
-			document.getElementById('camera').srcObject = stream;
 
 			mediaRecorder = new MediaRecorder(stream);
 
@@ -83,6 +82,26 @@ conn.onmessage = function (msg) {
 		case 'candidate':
 			handleCandidate(data);
 			break;
+		case 'stopCamera':
+			handleStopCamera();
+			break;
+		case 'startCamera':
+			handleStartCamera();
+			break;
+		case 'requestCameraState':
+			send({
+				event: 'responseCameraState',
+				data: camstate,
+			})
+			break;
+		case 'responseCameraState':
+			if(data){
+				document.getElementById('peer').srcObject = remoteStream;
+			}
+			else{
+				document.getElementById('peer').srcObject = null;
+			}
+			break;
 		default:
 			break;
 	}
@@ -134,8 +153,9 @@ function initialize() {
 	};
 
 	peerConnection.onaddstream = function (event) {
-		console.log(event);
-		document.getElementById('peer').srcObject = event.stream;
+		remoteStream = event.stream;
+		document.getElementById('peer').srcObject = remoteStream;
+		requestCameraState();
 	};
 }
 
@@ -170,6 +190,7 @@ function handleOffer(offer) {
 			alert('Error creating an answer');
 		}
 	);
+	peerConnection.addStream(localStream);
 }
 
 function handleCandidate(candidate) {
@@ -179,8 +200,8 @@ function handleCandidate(candidate) {
 function handleAnswer(answer) {
 	peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 	console.log('connection established successfully!!');
-	console.log(document.getElementById('camera').srcObject.getTracks());
-	peerConnection.addStream(document.getElementById('camera').srcObject);
+	peerConnection.addStream(localStream);
+	
 }
 
 function sendMessage() {
@@ -199,11 +220,51 @@ function recordStop() {
 	mediaRecorder.stop();
 }
 
+
+
+function stopCamera(){
+	document.getElementById('camera').srcObject = null;
+	send({
+		event: 'stopCamera',
+		data: '',
+	})
+}
+
+function handleStopCamera(){
+	console.log("handleStopCamera");
+	document.getElementById('peer').srcObject = null;
+}
+
+function startCamera(){
+	document.getElementById('camera').srcObject = localStream;
+	send({
+		event: 'startCamera',
+		data: '',
+	})
+}
+
+function handleStartCamera(){
+	console.log("handleStartCamera");
+	document.getElementById('peer').srcObject = remoteStream;
+}
+
+function requestCameraState(){
+	send({
+		event: 'requestCameraState',
+		data: ''
+	})
+}
+
+
+
 //test
 
 ////////
 
 function Meeting() {
+
+	const [cameraState, setCameraState] = useState(false);
+	camstate = cameraState;
 	useEffect(() => {
 		document.getElementById('offerbutton').onclick = () => {
 			createOffer();
@@ -214,7 +275,24 @@ function Meeting() {
 		document.getElementById('recordstopbutton').onclick = () => {
 			recordStop();
 		};
+		
+		document.getElementById('camerabutton').onclick = () =>{
+			setCameraState((prev)=>{
+				if(prev){
+					stopCamera();
+				}else{
+					startCamera();
+				}
+				camstate = !prev;
+				return !prev;
+			});
+		}
+
+
 	}, []);
+
+	
+
 
 	return (
 		<div className="container">
@@ -222,9 +300,12 @@ function Meeting() {
 			<button id="offerbutton" type="button" className="btn btn-primary">
 				Offer 생성
 			</button>
+			<button id="camerabutton" type='button'>
+				{cameraState ? "stop camera" : "start camera"}
+			</button>
 			<h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
-			<video id="camera" autoPlay playsInline controls></video>
-			<video id="peer" autoPlay playsInline controls></video>
+			<video id="camera" width="300px" height="300px" muted autoPlay playsInline controls></video>
+			<video id="peer" width="300px" height="300px" muted autoPlay playsInline controls></video>
 			<button type="button" id="recordbutton" className="btn btn-primary">
 				녹화
 			</button>
