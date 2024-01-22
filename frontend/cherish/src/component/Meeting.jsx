@@ -7,6 +7,9 @@ var mediaRecorder;
 var recordedChunks = [];
 var camstate;
 
+var changeChatting;
+
+
 window.onload = function () {
 	// 사용자 카메라 연결
 	const constraints = {
@@ -142,6 +145,7 @@ function initialize() {
 	// when we receive a message from the other peer, printing it on the console
 	dataChannel.onmessage = function (event) {
 		console.log('message:', event.data);
+		changeChatting((prev)=>{return [event.data, ...prev]});
 	};
 
 	dataChannel.onclose = function () {
@@ -204,9 +208,9 @@ function handleAnswer(answer) {
 	
 }
 
-function sendMessage() {
-	dataChannel.send(input.value);
-	input.value = '';
+function sendMessage(msg) {
+	dataChannel.send(msg);
+
 }
 
 function record() {
@@ -265,6 +269,12 @@ function Meeting() {
 
 	const [cameraState, setCameraState] = useState(false);
 	camstate = cameraState;
+
+	const [chatting, setChatting] = useState([]);
+	changeChatting = setChatting;
+	const [message, setMessage] = useState("");
+	
+
 	useEffect(() => {
 		document.getElementById('offerbutton').onclick = () => {
 			createOffer();
@@ -313,6 +323,27 @@ function Meeting() {
 				중지
 			</button>
 			<video id="record" autoPlay playsInline controls width="100px" height="100px"></video>
+			<div>
+				<div>
+					<p>{message}</p>
+				<input id="message" value={message} onChange={(event)=>{
+					setMessage(event.target.value);
+				}}/>
+				<button htmlFor="message" onClick={()=>{
+					sendMessage(message)
+					setChatting((prev)=>{return [message,...prev]})
+					setMessage("");
+				}} >send</button>
+				</div>
+				<div>
+					{
+						chatting.map((para)=>{ 
+							return (<p key={para}>{para}</p>)
+						})
+					}
+				</div>
+			</div>
+		
 		</div>
 	);
 }
