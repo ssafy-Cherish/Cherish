@@ -14,10 +14,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private MeetingMapper meetingMapper;
 
-    public MeetingServiceImpl(MeetingMapper meetingMapper) {
-        this.meetingMapper = meetingMapper;
-    }
-
     @Override
     @Transactional
     public int createMeeting(int coupleId) throws Exception {
@@ -36,7 +32,16 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public List<MeetingDto> getMeetingsByMonth(Map<String, Object> map) throws Exception {
-        List<MeetingDto> list = meetingMapper.getMeetingsByMonth(map);
+        return meetingMapper.getMeetingsByMonth(map);
+    }
+
+    @Override
+    public List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws Exception {
+        List<MeetingDto> list = meetingMapper.getMeetingsByDate(map);
+        for (MeetingDto meeting : list) {
+            meeting.setChats(meetingMapper.getChatsByMeeting(meeting.getId()));
+            meeting.setClips(meetingMapper.getClipsByMeeting(meeting.getId()));
+        }
         return list;
     }
 }

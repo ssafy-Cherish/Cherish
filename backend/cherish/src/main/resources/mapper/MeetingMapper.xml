@@ -19,4 +19,17 @@
         WHERE COUPLE_ID=#{coupleId}
         AND DATE_FORMAT(CREATED_AT,'%Y-%m')=#{yearMonth};
     </select>
+    <select id="getMeetingsByDate" parameterType="map" resultType="meetingDto">
+        SELECT * FROM MEETING
+        WHERE COUPLE_ID=#{coupleId}
+        AND DATE(CREATED_AT)= #{date};
+    </select>
+    <select id="getChatsByMeeting" parameterType="int" resultType="chatDto">
+        SELECT * FROM CHAT
+        WHERE MEETING_ID = #{meetingId}
+    </select>
+    <select id="getClipsByMeeting" parameterType="int" resultType="clipDto">
+        SELECT * FROM CLIP
+        WHERE MEETING_ID = #{meetingId}
+    </select>
 </mapper>

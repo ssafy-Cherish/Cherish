@@ -1,6 +1,5 @@
 package com.ssafy.cherish.meeting.model.dto;
 
-import com.ssafy.cherish.chat.model.dto.ChatDto;
 import com.ssafy.cherish.clip.model.dto.ClipDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -21,7 +20,7 @@ public class MeetingDto {
     private String deletedAt;
     //이 meeting과 관련된 chat 객체 리스트
     private List<ChatDto> chats;
-    ////이 meeting과 관련된 clip 객체 리스트
+    //이 meeting과 관련된 clip 객체 리스트
     private List<ClipDto> clips;
 
 }
