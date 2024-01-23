@@ -23,7 +23,7 @@ public class MeetingController {
     private MeetingService meetingService;
 
     @PostMapping("/{coupleId}")
-    @Operation(summary = "미팅 생성", description = "영상통화를 시작하여 미팅 데이터 생성 및 시작 시간 입력")
+    @Operation(summary = "미팅 생성", description = "체리콜을 시작하여 미팅 데이터 생성 및 시작 시간 입력")
     public ResponseEntity<Map<String, Object>> createMeeting(
             @PathVariable("coupleId")
             @Parameter(description = "영상통화를 시작한 커플의 아이디")
@@ -61,17 +61,34 @@ public class MeetingController {
     }
 
     @GetMapping("/month")
-    @Operation(summary = "월별 체리톡 기록 조회", description = "연월을 기준으로 커플의 영상통화 기록들을 조회")
+    @Operation(summary = "월별 체리콜 기록 조회", description = "연월을 기준으로 커플의 영상통화 기록들을 조회")
     public ResponseEntity<List<MeetingDto>> getMeetingsByMonth(
             @RequestParam
-            @Parameter(description = "조회할 연월과 커플 아이디")
+            @Parameter(description = "조회할 연월과 커플 아이디 e.g. 'coupleId': 1,'yearMonth':'2024-01'")
             Map<String, Object> map) {
-        log.debug("체리톡 기록 조회, coupleId : {}, yearMonth : {}", map.get("coupleId"), map.get("yearMonth"));
+        log.debug("체리콜 기록 월별 조회, coupleId : {}, yearMonth : {}", map.get("coupleId"), map.get("yearMonth"));
         try {
             List<MeetingDto> list = meetingService.getMeetingsByMonth(map);
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (Exception e) {
             log.debug("월별 미팅 조회 중 에러 발생 : {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/day")
+    @Operation(summary = "일별 체리콜 기록 조회", description = "연월일을 기준으로 커플의 영상통화 기록들을 조회")
+    public ResponseEntity<List<MeetingDto>> getMeetingsByDate(
+            @RequestParam
+            @Parameter(description = "커플 아이디와 생성 연월일 e.g. 'coupleId': 1, 'date':'2024-01-23'")
+            Map<String, Object> map
+    ) {
+        log.debug("체리콜 기록 일별 조회, coupleId : {}, date : {}", map.get("coupleId"), map.get("date"));
+        try {
+            List<MeetingDto> list = meetingService.getMeetingsByDate(map);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            log.debug("일별 미팅 조회 중 에러 발생 : {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
