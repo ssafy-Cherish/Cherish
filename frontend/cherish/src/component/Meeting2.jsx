@@ -1,7 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 
-var localStream;
-var remoteStream;
+var localStream = new MediaStream();
+
+var remoteStream = new MediaStream();
+
+var mediaStream = new MediaStream();
+
+var remoteMediaStream = new MediaStream();
 
 var mediaRecorder;
 var recordedChunks = [];
@@ -9,8 +14,26 @@ var camstate;
 
 var changeChatting;
 
-window.onload = function () {
-  // 사용자 카메라 연결
+const updateCam = function () {
+  document.getElementById("camera").srcObject =
+    localStream?.getTracks().length !== 0 ? localStream : null;
+};
+
+const initLocalStreamTracks = function () {
+  localStream.getTracks().forEach((track) => {
+    localStream.removeTrack(track);
+  });
+  updateCam();
+};
+
+const addLocalStreamTracks = function () {
+  mediaStream.getTracks().forEach((track) => {
+    localStream.addTrack(track);
+  });
+  updateCam();
+};
+
+const getMediaStream = function () {
   const constraints = {
     video: {
       frameRate: {
@@ -27,37 +50,38 @@ window.onload = function () {
       sampleRate: 44100, // 샘플레이트 설정 (예: 44100Hz)
     },
   };
-  navigator.mediaDevices
-    .getUserMedia(constraints)
-    .then(function (stream) {
-      localStream = stream;
-      console.log("got stream");
-      mediaRecorder = new MediaRecorder(stream);
-
-      mediaRecorder.ondataavailable = function (event) {
-        if (event.data.size > 0) {
-          console.log("mediaRecorder.ondataavailable");
-          console.log(mediaRecorder.ondataavailable);
-          recordedChunks.push(event.data);
-        }
-      };
-      mediaRecorder.onstop = function (event) {
-        console.log(recordedChunks);
-        let blob = new Blob(recordedChunks, {
-          type: "video/webm",
-        });
-        let url = URL.createObjectURL(blob);
-
-        // 예를 들어, 비디오를 <video> 엘리먼트에 로드할 수 있습니다.
-        let video = document.getElementById("record");
-        video.src = url;
-        video.play();
-      };
-    })
-    .catch(function (err) {
-      console.log(err);
+  navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+    stream.getTracks().forEach((track) => {
+      mediaStream.addTrack(track);
     });
+    console.log("get Media");
+    console.log(mediaStream.getTracks());
+    setMediaRecorder();
+  });
 };
+
+const setMediaRecorder = function () {
+  mediaRecorder = new MediaRecorder(localStream);
+  mediaRecorder.ondataavailable = function (event) {
+    if (event.data.size > 0) {
+      console.log("mediaRecorder.ondataavailable");
+      console.log(mediaRecorder.ondataavailable);
+      recordedChunks.push(event.data);
+    }
+  };
+  mediaRecorder.onstop = function () {
+    console.log(recordedChunks);
+    let blob = new Blob(recordedChunks, {
+      type: "video/webm",
+    });
+    let url = URL.createObjectURL(blob);
+    let video = document.getElementById("record");
+    video.src = url;
+    video.play();
+  };
+};
+
+/////
 
 //connecting to our signaling server
 // 서버 주소로 변경해야 됨
@@ -114,7 +138,6 @@ function send(message) {
 
 var peerConnection;
 var dataChannel;
-var input = document.getElementById("messageInput");
 
 function initialize() {
   var configuration = null;
@@ -142,10 +165,24 @@ function initialize() {
 
   // when we receive a message from the other peer, printing it on the console
   dataChannel.onmessage = function (event) {
-    console.log("message:", event.data);
-    changeChatting((prev) => {
-      return [event.data, ...prev];
-    });
+    const msg = JSON.parse(event.data);
+    console.log(msg);
+    switch(msg.cmd){
+        case "request peer cam state":
+            sendMessage(JSON.stringify({
+                cmd: "responce peer cam state",
+                state: camstate
+            }))
+            break;
+        
+        case "responce peer cam state":
+            remoteStream = msg.state ? remoteMediaStream : null;
+            document.getElementById('peer').srcObject = remoteStream;
+            break;
+        
+        default:
+            break;
+    }
   };
 
   dataChannel.onclose = function () {
@@ -156,26 +193,33 @@ function initialize() {
     dataChannel = event.channel;
   };
 
-  peerConnection.onaddstream = function (event) {
-    remoteStream = event.stream;
-    document.getElementById("peer").srcObject = remoteStream;
-    requestCameraState();
+  peerConnection.ontrack = function (event) {
+    remoteMediaStream.addTrack(event.track);
+    sendMessage(JSON.stringify({
+        cmd: "request peer cam state",
+    }))
   };
 }
 
 function createOffer() {
   peerConnection.createOffer(
     function (offer) {
+      peerConnection.setLocalDescription(offer);
+
       send({
         event: "offer",
         data: offer,
       });
-      peerConnection.setLocalDescription(offer);
     },
-    function (error) {
+    function () {
       alert("Error creating an offer");
     }
   );
+  if (peerConnection.getSenders().length === 0) {
+    mediaStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track);
+    });
+  }
 }
 
 function handleOffer(offer) {
@@ -190,11 +234,16 @@ function handleOffer(offer) {
         data: answer,
       });
     },
-    function (error) {
+    function () {
       alert("Error creating an answer");
     }
   );
-  peerConnection.addStream(localStream);
+  if (peerConnection.getSenders().length === 0) {
+    mediaStream.getTracks().forEach((track) => {
+      peerConnection.addTrack(track);
+    });
+  }
+  //   peerConnection.addStream(mediaStream);
 }
 
 function handleCandidate(candidate) {
@@ -204,7 +253,7 @@ function handleCandidate(candidate) {
 function handleAnswer(answer) {
   peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
   console.log("connection established successfully!!");
-  peerConnection.addStream(localStream);
+  //   peerConnection.addTrack(localStream);
 }
 
 function sendMessage(msg) {
@@ -223,43 +272,27 @@ function recordStop() {
 }
 
 function stopCamera() {
-  document.getElementById("camera").srcObject = null;
-  send({
-    event: "stopCamera",
-    data: "",
-  });
-}
-
-function handleStopCamera() {
-  console.log("handleStopCamera");
-  document.getElementById("peer").srcObject = null;
+  initLocalStreamTracks();
+  giveCameraState()
 }
 
 function startCamera() {
-  document.getElementById("camera").srcObject = localStream;
-  send({
-    event: "startCamera",
-    data: "",
-  });
+  addLocalStreamTracks();
+  giveCameraState()
 }
 
-function handleStartCamera() {
-  console.log("handleStartCamera");
-  document.getElementById("peer").srcObject = remoteStream;
-}
-
-function requestCameraState() {
-  send({
-    event: "requestCameraState",
-    data: "",
-  });
+function giveCameraState() {
+    sendMessage(JSON.stringify({
+        cmd: "responce peer cam state",
+        state: camstate
+    }))
 }
 
 //test
 
 ////////
 
-function Meeting() {
+function Meeting2() {
   const [cameraState, setCameraState] = useState(false);
   camstate = cameraState;
 
@@ -268,6 +301,7 @@ function Meeting() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    getMediaStream();
     document.getElementById("offerbutton").onclick = () => {
       createOffer();
     };
@@ -280,12 +314,13 @@ function Meeting() {
 
     document.getElementById("camerabutton").onclick = () => {
       setCameraState((prev) => {
+        camstate = !prev;
         if (prev) {
           stopCamera();
         } else {
           startCamera();
         }
-        camstate = !prev;
+        
         return !prev;
       });
     };
@@ -300,6 +335,7 @@ function Meeting() {
       <button id="camerabutton" type="button">
         {cameraState ? "stop camera" : "start camera"}
       </button>
+
       <h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
       <video
         id="camera"
@@ -368,4 +404,4 @@ function Meeting() {
   );
 }
 
-export default Meeting;
+export default Meeting2;

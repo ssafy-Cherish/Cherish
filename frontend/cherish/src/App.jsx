@@ -1,10 +1,10 @@
-import Meeting from "./component/meeting"
+import Meeting2 from "./component/meeting2"
 
 function App() {
 
   return (
     <>
-      <Meeting/>
+      <Meeting2/>
     </>
   )
 }
