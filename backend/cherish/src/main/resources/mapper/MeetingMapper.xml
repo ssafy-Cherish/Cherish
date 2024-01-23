@@ -3,15 +3,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.cherish.meeting.model.mapper.MeetingMapper">
     <insert id="createMeeting" parameterType="int">
-        insert into meeting (couple_id)
-        values (#{coupleId});
+        INSERT INTO MEETING (COUPLE_ID)
+        VALUES (#{coupleId});
     </insert>
     <select id="getLastMeeting" resultType="int">
         SELECT LAST_INSERT_ID() AS meetingId;
     </select>
     <update id="setMeetingLength" parameterType="int">
-        update meeting
-        set length = TIMEDIFF(now(), created_at)
-        where id = #{meetingId};
+        UPDATE MEETING
+        SET LENGTH = TIMEDIFF(NOW(), CREATED_AT)
+        WHERE ID = #{meetingId};
     </update>
+    <select id="getMeetingsByMonth" parameterType="map" resultType="meetingDto">
+        SELECT * FROM MEETING
+        WHERE COUPLE_ID=#{coupleId}
+        AND DATE_FORMAT(CREATED_AT,'%Y-%m')=#{yearMonth};
+    </select>
 </mapper>
