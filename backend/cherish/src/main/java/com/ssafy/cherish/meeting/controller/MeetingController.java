@@ -1,5 +1,6 @@
 package com.ssafy.cherish.meeting.controller;
 
+import com.ssafy.cherish.meeting.model.dto.MeetingDto;
 import com.ssafy.cherish.meeting.model.service.MeetingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -55,6 +57,22 @@ public class MeetingController {
         } catch (Exception e) {
             log.debug("미팅 시간 업데이트 중 에러 발생 : {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "미팅 길이 설정 중 에러 발생");
+        }
+    }
+
+    @GetMapping("/month")
+    @Operation(summary = "월별 체리톡 기록 조회", description = "연월을 기준으로 커플의 영상통화 기록들을 조회")
+    public ResponseEntity<List<MeetingDto>> getMeetingsByMonth(
+            @RequestParam
+            @Parameter(description = "조회할 연월과 커플 아이디")
+            Map<String, Object> map) {
+        log.debug("체리톡 기록 조회, coupleId : {}, yearMonth : {}", map.get("coupleId"), map.get("yearMonth"));
+        try {
+            List<MeetingDto> list = meetingService.getMeetingsByMonth(map);
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            log.debug("월별 미팅 조회 중 에러 발생 : {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
