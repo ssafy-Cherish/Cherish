@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { useSpeechRecognition } from "react-speech-kit";
+
+var changePeerConnectionConnected;
 
 var localStream = new MediaStream();
 
@@ -16,6 +19,8 @@ var dataChannel;
 
 var camstate;
 var changeChatting;
+
+var canCheck = true;
 
 ////
 /* 로컬 측 비디오를 업데이트, 로컬 측 미디어스트림트랙 초기화, 로컬 측 미디어스트림트랙을 미디어스트림 트랙과 동기화*/
@@ -40,7 +45,7 @@ const addLocalStreamTracks = function () {
 ////
 
 ////
-/* 미디어 권한설정, 미디어 스트림을 받고, 녹화 설정*/ 
+/* 미디어 권한설정, 미디어 스트림을 받고, 녹화 설정*/
 const getMediaStream = function () {
   const constraints = {
     video: {
@@ -69,7 +74,7 @@ const getMediaStream = function () {
 };
 
 const setMediaRecorder = function () {
-  mediaRecorder = new MediaRecorder(localStream);
+  mediaRecorder = new MediaRecorder(mediaStream);
   mediaRecorder.ondataavailable = function (event) {
     if (event.data.size > 0) {
       console.log("mediaRecorder.ondataavailable");
@@ -94,7 +99,7 @@ const setMediaRecorder = function () {
 /* 시그널링 서버와 연결하고, 관련된 세팅 및 관련 함수들 */
 //connecting to our signaling server
 // 서버 주소로 변경해야 됨
-var conn = new WebSocket("ws://localhost:8080/socket");
+var conn = new WebSocket("ws://192.168.100.58:8080/socket");
 
 conn.onopen = function () {
   console.log("Connected to the signaling server");
@@ -180,14 +185,23 @@ function initialize() {
   };
 
   dataChannel.onclose = function () {
+    peerConnection.close();
+    changePeerConnectionConnected(false);
+    initialize();
     console.log("data channel is closed");
   };
 
   peerConnection.ondatachannel = function (event) {
     dataChannel = event.channel;
+    // changePeerConnectionConnected(peerConnection.connectionState === 'connected');
   };
 
   peerConnection.ontrack = function (event) {
+    console.log("ontrack");
+
+    remoteMediaStream.getTracks().forEach((track) => {
+      remoteMediaStream.removeTrack(track);
+    });
     remoteMediaStream.addTrack(event.track);
     sendMessage(
       JSON.stringify({
@@ -249,7 +263,7 @@ function handleCandidate(candidate) {
 function handleAnswer(answer) {
   peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
   console.log("connection established successfully!!");
-  //   peerConnection.addTrack(localStream);
+  changePeerConnectionConnected(true);
 }
 ////
 
@@ -291,15 +305,23 @@ function giveCameraState() {
   );
 }
 
-window.onbeforeunload = ()=>{
+window.onbeforeunload = () => {
+  peerConnection.getSenders().forEach((sender) => {
+    peerConnection.removeTrack(sender);
+  });
   peerConnection.close();
-}
+};
 
 //test
 
 ////////
 
 function Meeting2() {
+  const [captureList, setCaptureList] = useState([]);
+
+  const [peerConnectionConnected, setPeerConnectionConnected] = useState(false);
+  changePeerConnectionConnected = setPeerConnectionConnected;
+
   const [cameraState, setCameraState] = useState(false);
   camstate = cameraState;
 
@@ -307,11 +329,33 @@ function Meeting2() {
   changeChatting = setChatting;
   const [message, setMessage] = useState("");
 
+  const [recogString, setRecogString] = useState("");
+
+  const { listen, listening, stop } = useSpeechRecognition({
+    onResult: (result) => {
+      console.log(result);
+      if (recogString != result) {
+        const arr = result.split(" ");
+        if (canCheck && arr[arr.length - 1] === "안녕") {
+          const today = new Date();
+          setCaptureList((prev) => {
+            return [today.toLocaleString(), ...prev];
+          });
+          canCheck = false
+          setTimeout(() => {
+            canCheck = true
+          }, 1500);
+        }
+      }
+      setRecogString(result);
+    },
+  });
+
   useEffect(() => {
     getMediaStream();
-    document.getElementById("offerbutton").onclick = () => {
-      createOffer();
-    };
+    // document.getElementById("offerbutton").onclick = () => {
+    //   createOffer();
+    // };
     document.getElementById("recordbutton").onclick = () => {
       record();
     };
@@ -336,12 +380,29 @@ function Meeting2() {
   return (
     <div className="container">
       <h1>WebRTC 테스트</h1>
-      <button id="offerbutton" type="button" className="btn btn-primary">
-        Offer 생성
-      </button>
+      {peerConnectionConnected !== true && (
+        <button
+          id="offerbutton"
+          type="button"
+          className="btn btn-primary"
+          onClick={createOffer}
+        >
+          Offer 생성
+        </button>
+      )}
       <button id="camerabutton" type="button">
         {cameraState ? "stop camera" : "start camera"}
       </button>
+      <p>{recogString}</p>
+      {listening && <div>음성인식 활성화 중</div>}
+      <button onMouseDown={listen} onMouseUp={stop}>
+        🎤
+      </button>
+      <div>
+        {captureList.map((elem, i) => {
+          return <p key={i}>{elem}</p>;
+        })}
+      </div>
 
       <h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
       <video
@@ -353,6 +414,7 @@ function Meeting2() {
         playsInline
         controls
       ></video>
+      <div></div>
       <video
         id="peer"
         width="300px"
@@ -373,8 +435,8 @@ function Meeting2() {
         autoPlay
         playsInline
         controls
-        width="100px"
-        height="100px"
+        width="300px"
+        height="300px"
       ></video>
       <div>
         <div>
@@ -393,7 +455,7 @@ function Meeting2() {
                   return [message, ...prev];
                 });
               }
-                setMessage("");
+              setMessage("");
             }}
           >
             <input
