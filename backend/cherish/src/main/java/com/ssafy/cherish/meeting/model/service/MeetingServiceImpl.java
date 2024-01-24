@@ -15,14 +15,13 @@ public class MeetingServiceImpl implements MeetingService {
     private MeetingMapper meetingMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class})
     public int createMeeting(int coupleId) throws Exception {
         if (meetingMapper.createMeeting(coupleId) == 1) {
             return meetingMapper.getLastMeeting();
         } else {
             throw new Exception("An error occurred during meeting creation");
         }
-
     }
 
     @Override
