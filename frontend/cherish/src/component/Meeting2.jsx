@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 var localStream = new MediaStream();
 
@@ -10,10 +10,15 @@ var remoteMediaStream = new MediaStream();
 
 var mediaRecorder;
 var recordedChunks = [];
-var camstate;
 
+var peerConnection;
+var dataChannel;
+
+var camstate;
 var changeChatting;
 
+////
+/* 로컬 측 비디오를 업데이트, 로컬 측 미디어스트림트랙 초기화, 로컬 측 미디어스트림트랙을 미디어스트림 트랙과 동기화*/
 const updateCam = function () {
   document.getElementById("camera").srcObject =
     localStream?.getTracks().length !== 0 ? localStream : null;
@@ -32,7 +37,10 @@ const addLocalStreamTracks = function () {
   });
   updateCam();
 };
+////
 
+////
+/* 미디어 권한설정, 미디어 스트림을 받고, 녹화 설정*/ 
 const getMediaStream = function () {
   const constraints = {
     video: {
@@ -80,9 +88,10 @@ const setMediaRecorder = function () {
     video.play();
   };
 };
+////
 
-/////
-
+////
+/* 시그널링 서버와 연결하고, 관련된 세팅 및 관련 함수들 */
 //connecting to our signaling server
 // 서버 주소로 변경해야 됨
 var conn = new WebSocket("ws://localhost:8080/socket");
@@ -108,25 +117,6 @@ conn.onmessage = function (msg) {
     case "candidate":
       handleCandidate(data);
       break;
-    case "stopCamera":
-      handleStopCamera();
-      break;
-    case "startCamera":
-      handleStartCamera();
-      break;
-    case "requestCameraState":
-      send({
-        event: "responseCameraState",
-        data: camstate,
-      });
-      break;
-    case "responseCameraState":
-      if (data) {
-        document.getElementById("peer").srcObject = remoteStream;
-      } else {
-        document.getElementById("peer").srcObject = null;
-      }
-      break;
     default:
       break;
   }
@@ -135,9 +125,6 @@ conn.onmessage = function (msg) {
 function send(message) {
   conn.send(JSON.stringify(message));
 }
-
-var peerConnection;
-var dataChannel;
 
 function initialize() {
   var configuration = null;
@@ -167,21 +154,28 @@ function initialize() {
   dataChannel.onmessage = function (event) {
     const msg = JSON.parse(event.data);
     console.log(msg);
-    switch(msg.cmd){
-        case "request peer cam state":
-            sendMessage(JSON.stringify({
-                cmd: "responce peer cam state",
-                state: camstate
-            }))
-            break;
-        
-        case "responce peer cam state":
-            remoteStream = msg.state ? remoteMediaStream : null;
-            document.getElementById('peer').srcObject = remoteStream;
-            break;
-        
-        default:
-            break;
+    switch (msg.cmd) {
+      case "request peer cam state":
+        sendMessage(
+          JSON.stringify({
+            cmd: "responce peer cam state",
+            data: camstate,
+          })
+        );
+        break;
+
+      case "responce peer cam state":
+        remoteStream = msg.data ? remoteMediaStream : null;
+        document.getElementById("peer").srcObject = remoteStream;
+        break;
+
+      case "send chatting massage":
+        changeChatting((prev) => {
+          return [msg.data, ...prev];
+        });
+        break;
+      default:
+        break;
     }
   };
 
@@ -195,9 +189,11 @@ function initialize() {
 
   peerConnection.ontrack = function (event) {
     remoteMediaStream.addTrack(event.track);
-    sendMessage(JSON.stringify({
+    sendMessage(
+      JSON.stringify({
         cmd: "request peer cam state",
-    }))
+      })
+    );
   };
 }
 
@@ -255,6 +251,7 @@ function handleAnswer(answer) {
   console.log("connection established successfully!!");
   //   peerConnection.addTrack(localStream);
 }
+////
 
 function sendMessage(msg) {
   dataChannel.send(msg);
@@ -273,19 +270,29 @@ function recordStop() {
 
 function stopCamera() {
   initLocalStreamTracks();
-  giveCameraState()
+  if (dataChannel.readyState === "open") {
+    giveCameraState();
+  }
 }
 
 function startCamera() {
   addLocalStreamTracks();
-  giveCameraState()
+  if (dataChannel.readyState === "open") {
+    giveCameraState();
+  }
 }
 
 function giveCameraState() {
-    sendMessage(JSON.stringify({
-        cmd: "responce peer cam state",
-        state: camstate
-    }))
+  sendMessage(
+    JSON.stringify({
+      cmd: "responce peer cam state",
+      data: camstate,
+    })
+  );
+}
+
+window.onbeforeunload = ()=>{
+  peerConnection.close();
 }
 
 //test
@@ -320,7 +327,7 @@ function Meeting2() {
         } else {
           startCamera();
         }
-        
+
         return !prev;
       });
     };
@@ -375,11 +382,18 @@ function Meeting2() {
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              sendMessage(message);
-              setChatting((prev) => {
-                return [message, ...prev];
-              });
-              setMessage("");
+              if (dataChannel.readyState === "open") {
+                sendMessage(
+                  JSON.stringify({
+                    cmd: "send chatting massage",
+                    data: message,
+                  })
+                );
+                setChatting((prev) => {
+                  return [message, ...prev];
+                });
+              }
+                setMessage("");
             }}
           >
             <input
