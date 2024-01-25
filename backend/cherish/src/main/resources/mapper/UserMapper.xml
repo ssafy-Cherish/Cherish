@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.user.model.mapper.UserMapper">
+
+    <resultMap id="user" type="userDto">
+        <result column="id" property="id" />
+        <result column="id_str" property="idStr" />
+        <result column="kakao_id" property="kakaoId" />
+        <result column="couple_id" property="coupleId" />
+        <result column="nickname" property="nickname" />
+        <result column="email" property="email" />
+        <result column="birthday" property="birthday" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+        <result column="deleted_at" property="deletedASt" />
+        <result column="access_token" property="accessToken" />
+        <result column="refresh_token" property="refreshToken" />
+    </resultMap>
+
+    <resultMap id="couple" type="coupleDto">
+        <result column="id" property="id" />
+        <result column="user1" property="user1" />
+        <result column="user2" property="user2" />
+        <result column="name" property="name" />
+        <result column="code" property="code" />
+        <result column="coupled" property="coupled" />
+        <result column="anniversary" property="anniversary" />
+        <result column="created_at" property="createdAt" />
+        <result column="deleted_at" property="deletedAt" />
+        <result column="exp" property="exp" />
+    </resultMap>
+
+
+    <insert id="firstJoin" parameterType = "userDto">
+        INSERT INTO user
+        (nickname, email, birthday)
+        VALUES
+        (#{nickname}, #{email}, #{birthday})
+    </insert>
+
+    <insert id="secondJoin" parameterType = "userDto">
+        INSERT INTO user
+        (nickname, email, birthday)
+        VALUES
+        (#{nickname}, #{email}, #{birthday})
+    </insert>
+
+    <insert id="coupleFirstJoin" parameterType="coupleDto">
+        INSERT INTO couple
+        (name, code, anniversary)
+        VALUES
+        (#{name}, #{code}, #{anniversary})
+    </insert>
+
+    <update id="coupleSecondJoin" parameterType="coupleDto">
+        UPDATE couple
+        SET user2 = #{id}, coupled = true
+        WHERE code = #{code}
+    </update>
+
+</mapper>
