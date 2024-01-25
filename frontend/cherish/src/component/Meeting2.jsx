@@ -11,8 +11,14 @@ var mediaStream = new MediaStream();
 
 var remoteMediaStream = new MediaStream();
 
-var mediaRecorder;
-var recordedChunks = [];
+var mediaRecorder = [
+  [null, null],
+  [null, null],
+];
+var recordedChunks = [
+  [[], []],
+  [[], []],
+];
 
 var peerConnection;
 var dataChannel;
@@ -69,28 +75,31 @@ const getMediaStream = function () {
     });
     console.log("get Media");
     console.log(mediaStream.getTracks());
-    setMediaRecorder();
   });
 };
 
-const setMediaRecorder = function () {
-  mediaRecorder = new MediaRecorder(mediaStream);
-  mediaRecorder.ondataavailable = function (event) {
+const setMediaRecorder = function (idx1, idx2, stream) {
+  mediaRecorder[idx1][idx2] = new MediaRecorder(stream);
+  mediaRecorder[idx1][idx2].ondataavailable = function (event) {
     if (event.data.size > 0) {
-      console.log("mediaRecorder.ondataavailable");
-      console.log(mediaRecorder.ondataavailable);
-      recordedChunks.push(event.data);
+      recordedChunks[idx1][idx2].push(event.data);
     }
   };
-  mediaRecorder.onstop = function () {
-    console.log(recordedChunks);
-    let blob = new Blob(recordedChunks, {
+  mediaRecorder[idx1][idx2].onstart = function () {
+    setTimeout(() => {
+      mediaRecorder[idx1][idx2].stop();
+    }, 30000);
+  };
+
+  mediaRecorder[idx1][idx2].onstop = function () {
+    console.log(recordedChunks[idx1][idx2]);
+    let blob = new Blob(recordedChunks[idx1][idx2], {
       type: "video/webm",
     });
+    recordedChunks[idx1][idx2] = [];
+    mediaRecorder[idx1][idx2].start();
     let url = URL.createObjectURL(blob);
-    let video = document.getElementById("record");
-    video.src = url;
-    video.play();
+    console.log(idx1, idx2, url);
   };
 };
 ////
@@ -193,21 +202,31 @@ function initialize() {
 
   peerConnection.ondatachannel = function (event) {
     dataChannel = event.channel;
+
     // changePeerConnectionConnected(peerConnection.connectionState === 'connected');
   };
 
   peerConnection.ontrack = function (event) {
     console.log("ontrack");
-
     remoteMediaStream.getTracks().forEach((track) => {
       remoteMediaStream.removeTrack(track);
     });
     remoteMediaStream.addTrack(event.track);
+
     sendMessage(
       JSON.stringify({
         cmd: "request peer cam state",
       })
     );
+  };
+
+  peerConnection.onaddstream = function (event) {
+    setMediaRecorder(0, 0, mediaStream);
+    setMediaRecorder(0, 1, mediaStream);
+    setMediaRecorder(1, 0, remoteMediaStream);
+    setMediaRecorder(1, 1, remoteMediaStream);
+
+    recordStart();
   };
 }
 
@@ -263,7 +282,6 @@ function handleCandidate(candidate) {
 function handleAnswer(answer) {
   peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
   console.log("connection established successfully!!");
-  changePeerConnectionConnected(true);
 }
 ////
 
@@ -280,6 +298,15 @@ function record() {
 function recordStop() {
   console.log("녹화 중지");
   mediaRecorder.stop();
+}
+
+function recordStart() {
+  mediaRecorder[0][0].start();
+  mediaRecorder[1][0].start();
+  setTimeout(() => {
+    mediaRecorder[0][1].start();
+    mediaRecorder[1][1].start();
+  });
 }
 
 function stopCamera() {
@@ -341,9 +368,9 @@ function Meeting2() {
           setCaptureList((prev) => {
             return [today.toLocaleString(), ...prev];
           });
-          canCheck = false
+          canCheck = false;
           setTimeout(() => {
-            canCheck = true
+            canCheck = true;
           }, 1500);
         }
       }
