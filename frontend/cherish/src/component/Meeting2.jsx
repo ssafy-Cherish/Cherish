@@ -20,6 +20,13 @@ var recordedChunks = [
   [[], []],
 ];
 
+var recordFlag = [
+  [false, false],
+  [false, false],
+];
+
+var nowIdx = 0;
+
 var peerConnection;
 var dataChannel;
 
@@ -27,6 +34,12 @@ var camstate;
 var changeChatting;
 
 var canCheck = true;
+
+const option = {
+  mimeType: "video/webm; codecs=vp9",
+  audioBitsPerSecond: 128000,
+  videoBitsPerSecond: 2500000,
+};
 
 ////
 /* 로컬 측 비디오를 업데이트, 로컬 측 미디어스트림트랙 초기화, 로컬 측 미디어스트림트랙을 미디어스트림 트랙과 동기화*/
@@ -78,29 +91,59 @@ const getMediaStream = function () {
   });
 };
 
-const setMediaRecorder = function (idx1, idx2, stream) {
-  mediaRecorder[idx1][idx2] = new MediaRecorder(stream);
-  mediaRecorder[idx1][idx2].ondataavailable = function (event) {
+const setMediaRecorder = function (idx, local, remote) {
+  mediaRecorder[idx][0] = new MediaRecorder(local, option);
+  mediaRecorder[idx][1] = new MediaRecorder(remote, option);
+  mediaRecorder[idx][0].ondataavailable = function (event) {
     if (event.data.size > 0) {
-      recordedChunks[idx1][idx2].push(event.data);
+      recordedChunks[idx][0].push(event.data);
     }
   };
-  mediaRecorder[idx1][idx2].onstart = function () {
+  mediaRecorder[idx][1].ondataavailable = function (event) {
+    if (event.data.size > 0) {
+      recordedChunks[idx][1].push(event.data);
+    }
+  };
+  mediaRecorder[idx][0].onstart = function () {
     setTimeout(() => {
-      mediaRecorder[idx1][idx2].stop();
-    }, 30000);
-  };
+      nowIdx = idx;
+    }, 1000);
 
-  mediaRecorder[idx1][idx2].onstop = function () {
-    console.log(recordedChunks[idx1][idx2]);
-    let blob = new Blob(recordedChunks[idx1][idx2], {
-      type: "video/webm",
-    });
-    recordedChunks[idx1][idx2] = [];
-    mediaRecorder[idx1][idx2].start();
-    let url = URL.createObjectURL(blob);
-    console.log(idx1, idx2, url);
+    setTimeout(() => {
+      mediaRecorder[idx][0].stop();
+      mediaRecorder[idx][1].stop();
+    }, 10000);
   };
+  mediaRecorder[idx][1].onstart = function () {};
+
+  mediaRecorder[idx][0].onstop = function () {
+    if (recordFlag[idx][0] === true) {
+      recordFlag[idx][0] = false;
+      let blob = new Blob(recordedChunks[idx][0], {
+        mimeType: "video/webm; codecs=vp9",
+      });
+      let blob2 = new Blob(recordedChunks[idx][1], {
+        mimeType: "video/webm; codecs=vp9",
+      });
+
+      recordedChunks[idx][0] = new Array(0);
+      recordedChunks[idx][1] = new Array(0);
+      mediaRecorder[idx][0].start(1000);
+      mediaRecorder[idx][1].start(1000);
+      let url = URL.createObjectURL(blob);
+      let url2 = URL.createObjectURL(blob2);
+      console.log(idx, url, url2);
+
+      document.getElementById("record").src = url;
+      document.getElementById("recordpeer").src = url2;
+    } else {
+      recordedChunks[idx][0] = new Array(0);
+      recordedChunks[idx][1] = new Array(0);
+      mediaRecorder[idx][0].start(1000);
+      mediaRecorder[idx][1].start(1000);
+    }
+  };
+  mediaRecorder[idx][1].onstop = function () {};
 };
 ////
 
@@ -208,25 +251,19 @@ function initialize() {
 
   peerConnection.ontrack = function (event) {
     console.log("ontrack");
-    remoteMediaStream.getTracks().forEach((track) => {
-      remoteMediaStream.removeTrack(track);
-    });
     remoteMediaStream.addTrack(event.track);
 
+    if (remoteMediaStream.getTracks().length === 2) {
+      setMediaRecorder(0, mediaStream, remoteMediaStream);
+      setMediaRecorder(1, mediaStream, remoteMediaStream);
+
+      recordStart();
+    }
     sendMessage(
       JSON.stringify({
         cmd: "request peer cam state",
       })
     );
-  };
-
-  peerConnection.onaddstream = function (event) {
-    setMediaRecorder(0, 0, mediaStream);
-    setMediaRecorder(0, 1, mediaStream);
-    setMediaRecorder(1, 0, remoteMediaStream);
-    setMediaRecorder(1, 1, remoteMediaStream);
-
-    recordStart();
   };
 }
 
@@ -301,12 +338,12 @@ function recordStop() {
 }
 
 function recordStart() {
-  mediaRecorder[0][0].start();
-  mediaRecorder[1][0].start();
+  mediaRecorder[0][0].start(1000);
+  mediaRecorder[0][1].start(1000);
   setTimeout(() => {
-    mediaRecorder[0][1].start();
-    mediaRecorder[1][1].start();
-  });
+    mediaRecorder[1][0].start(1000);
+    mediaRecorder[1][1].start(1000);
+  }, 5000);
 }
 
 function stopCamera() {
@@ -372,6 +409,8 @@ function Meeting2() {
           setTimeout(() => {
             canCheck = true;
           }, 1500);
+
+          recordFlag[nowIdx][0] = true;
         }
       }
       setRecogString(result);
@@ -459,6 +498,14 @@ function Meeting2() {
       </button>
       <video
         id="record"
+        autoPlay
+        playsInline
+        controls
+        width="300px"
+        height="300px"
+      ></video>
+      <video
+        id="recordpeer"
         autoPlay
         playsInline
         controls
