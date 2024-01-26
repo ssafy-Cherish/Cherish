@@ -105,16 +105,23 @@ const setMediaRecorder = function (idx, local, remote) {
     }
   };
   mediaRecorder[idx][0].onstart = function () {
+    recordedChunks[idx][0] = [];
+
     setTimeout(() => {
       nowIdx = idx;
     }, 1000);
 
     setTimeout(() => {
       mediaRecorder[idx][0].stop();
+    }, 10000);
+  };
+  mediaRecorder[idx][1].onstart = function () {
+    recordedChunks[idx][1] = [];
+
+    setTimeout(() => {
       mediaRecorder[idx][1].stop();
     }, 10000);
   };
-  mediaRecorder[idx][1].onstart = function () {};
 
   mediaRecorder[idx][0].onstop = function () {
     if (recordFlag[idx][0] === true) {
@@ -122,28 +129,42 @@ const setMediaRecorder = function (idx, local, remote) {
       let blob = new Blob(recordedChunks[idx][0], {
         mimeType: "video/webm; codecs=vp9",
       });
-      let blob2 = new Blob(recordedChunks[idx][1], {
+      mediaRecorder[idx][0].start(1000);
+      let url = URL.createObjectURL(blob);
+      console.log(url);
+
+      const localv = document.getElementById("record");
+      localv.src = url;
+      localv.load();
+      localv.oncanplaythrough = function () {
+        // 로드 완료되면 실행
+        localv.play();
+      };
+    } else {
+      mediaRecorder[idx][0].start(1000);
+    }
+  };
+  mediaRecorder[idx][1].onstop = function () {
+    if (recordFlag[idx][1] === true) {
+      recordFlag[idx][1] = false;
+      let blob = new Blob(recordedChunks[idx][1], {
         mimeType: "video/webm; codecs=vp9",
       });
-
-      recordedChunks[idx][0] = new Array(0);
-      recordedChunks[idx][1] = new Array(0);
-      mediaRecorder[idx][0].start(1000);
       mediaRecorder[idx][1].start(1000);
       let url = URL.createObjectURL(blob);
-      let url2 = URL.createObjectURL(blob2);
-      console.log(idx, url, url2);
+      console.log(url);
 
-      document.getElementById("record").src = url;
-      document.getElementById("recordpeer").src = url2;
+      const remotev = document.getElementById("recordpeer");
+      remotev.src = url;
+      remotev.load();
+      remotev.oncanplaythrough = function () {
+        // 로드 완료되면 실행
+        remotev.play();
+      };
     } else {
-      recordedChunks[idx][0] = new Array(0);
-      recordedChunks[idx][1] = new Array(0);
-      mediaRecorder[idx][0].start(1000);
       mediaRecorder[idx][1].start(1000);
     }
   };
-  mediaRecorder[idx][1].onstop = function () {};
 };
 ////
 
@@ -411,6 +432,7 @@ function Meeting2() {
           }, 1500);
 
           recordFlag[nowIdx][0] = true;
+          recordFlag[nowIdx][1] = true;
         }
       }
       setRecogString(result);
@@ -498,7 +520,7 @@ function Meeting2() {
       </button>
       <video
         id="record"
-        autoPlay
+        preload="metadata"
         playsInline
         controls
         width="300px"
@@ -506,7 +528,7 @@ function Meeting2() {
       ></video>
       <video
         id="recordpeer"
-        autoPlay
+        preload="metadata"
         playsInline
         controls
         width="300px"
