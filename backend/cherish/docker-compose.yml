@@ -1,6 +1,7 @@
 version: '3'
 services:
   cherish-backend:
+    container_name: cherish-backend
     build: .
     image: cherish:0.0
     ports:
