@@ -1,5 +1,3 @@
-FROM node:20 AS builder
-WORKDIR /frontend
-COPY . .
-RUN npm install --legacy-peer-deps
-RUN npm run dev -- --host
+FROM nginx:alpine
+COPY dist/ /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
