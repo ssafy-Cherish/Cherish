@@ -14,7 +14,7 @@ services:
     build: ./frontend/cherish
     image: cherish_front_image:0.0
     ports:
-      - "5173:5173"
+      - "3000:3000"
     networks:
       - backend_frontend
 
