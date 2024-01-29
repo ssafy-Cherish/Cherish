@@ -35,5 +35,10 @@ public class UserServiceImpl implements UserService {
         userMapper.coupleSecondJoin(coupleDto);
     }
 
+    @Override
+    public UserDto userInfo(int kakaoId) throws Exception {
+        return userMapper.userInfo(kakaoId);
+    }
+
 
 }
