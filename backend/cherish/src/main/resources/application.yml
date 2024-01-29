@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    include:
+      - secrets
+  datasource:
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/cherish?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+      username: ${db.username}
+      password: ${db.password}
+      pool-name: Hikari Connection Pool
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    mode: HTML5
+    cache: false
+    order: 0
+
+logging:
+  level:
+    root:
+      zaxxer:
+        hikari: DEBUG
+    com:
+      ssafy:
+        cherish: DEBUG
