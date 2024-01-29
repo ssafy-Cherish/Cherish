@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.clip.model.mapper.ClipMapper">
+    <insert id="createClip" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
+        INSERT INTO CLIP (meeting_id,keyword)
+        VALUES (#{meetingId},#{keyword});
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <update id="updateClipPath" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
+        UPDATE CLIP
+        SET FILEPATH1=#{filepath1},
+            FILEPATH2=#{filepath2}
+        WHERE ID = #{id};
+    </update>
+</mapper>
