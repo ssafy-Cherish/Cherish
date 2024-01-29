@@ -1,10 +1,10 @@
-import Meeting2 from "../../components/CherryCall/Meeting2"
+import Meeting from "../../components/CherryCall/Meeting"
 
 function CherryCallMainPage() {
 
   return (
     <>
-      <Meeting2/>
+      <Meeting/>
     </>
   )
 }
