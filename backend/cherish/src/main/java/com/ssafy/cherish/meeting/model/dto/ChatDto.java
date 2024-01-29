@@ -11,9 +11,9 @@ import lombok.*;
 @Schema(name = "채팅", description = "미팅으로 생성된 채팅 기록 클래스")
 public class ChatDto {
     private int id;
-    private int userId;
+    private long kakaoId;
+    private String nickname;
     private int meetingId;
     private String content;
     private String createdAt;
-    private String deletedAt;
 }

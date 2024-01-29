@@ -16,6 +16,6 @@ public class ClipDto {
     private String filepath1;
     private String filepath2;
     private boolean isSelected;
-    private String createdAt;
-    private String deletedAt;
+    private boolean isPinned;
+    private String createdAt;;
 }
