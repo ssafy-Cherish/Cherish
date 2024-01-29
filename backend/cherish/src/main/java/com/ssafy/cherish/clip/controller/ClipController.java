@@ -34,11 +34,10 @@ public class ClipController {
     ) {
         log.debug("클립 입력 : {}", map.toString());
         try {
-            int res=clipService.saveClip(clip1, clip2, map);
-            if(res==1) {
+            int res = clipService.saveClip(clip1, clip2, map);
+            if (res == 1) {
                 return new ResponseEntity(HttpStatus.CREATED);
-            }
-            else {
+            } else {
                 return new ResponseEntity(HttpStatus.OK);
             }
         } catch (Exception e) {

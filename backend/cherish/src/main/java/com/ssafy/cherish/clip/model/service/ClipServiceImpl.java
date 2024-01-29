@@ -49,7 +49,7 @@ public class ClipServiceImpl implements ClipService {
                 Files.createDirectories(uploadPath); // 디렉토리 생성
             }
 
-            //TODO: file의 파일형식, (파일명==user_id)인지 확인 필요
+            //TODO: user1,user2가 같은 커플인지 확인, 저장할 파일형식,파일명 확인 필요
 
             // 파일별 경로 설정
             Path filePath1 = uploadPath.resolve(clip1.getOriginalFilename());
