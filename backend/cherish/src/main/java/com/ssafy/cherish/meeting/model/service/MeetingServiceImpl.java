@@ -2,10 +2,12 @@ package com.ssafy.cherish.meeting.model.service;
 
 import com.ssafy.cherish.meeting.model.dto.MeetingDto;
 import com.ssafy.cherish.meeting.model.mapper.MeetingMapper;
+import com.ssafy.cherish.memo.model.mapper.MemoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +15,8 @@ import java.util.Map;
 public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private MeetingMapper meetingMapper;
+    @Autowired
+    private MemoMapper memoMapper;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
@@ -35,12 +39,20 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws Exception {
+    @Transactional
+    public Map<String, Object> getMeetingsByDate(Map<String, Object> map) throws Exception {
+        Map<String, Object> res = new HashMap<>();
+
         List<MeetingDto> list = meetingMapper.getMeetingsByDate(map);
         for (MeetingDto meeting : list) {
             meeting.setChats(meetingMapper.getChatsByMeeting(meeting.getId()));
             meeting.setClips(meetingMapper.getClipsByMeeting(meeting.getId()));
         }
-        return list;
+
+        res.put("meeting", list);
+
+        res.put("memo", memoMapper.getMemoByDate(map));
+
+        return res;
     }
 }
