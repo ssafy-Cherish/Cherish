@@ -8,7 +8,7 @@ export default function RootLayout() {
     return (
         <div className="grid grid-cols-12 gap-5">
             <NavBar />
-            <div className="col-span-9">
+            <div className="col-span-10">
                 <Outlet />
             </div>
         </div>
