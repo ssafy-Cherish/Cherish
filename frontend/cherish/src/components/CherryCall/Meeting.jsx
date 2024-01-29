@@ -1,4 +1,6 @@
 import { useRef, useState, useEffect } from "react";
+import classes from './Meeting.module.css'
+
 
 var localStream;
 var remoteStream;
@@ -268,100 +270,39 @@ function Meeting() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    document.getElementById("offerbutton").onclick = () => {
-      createOffer();
-    };
-    document.getElementById("recordbutton").onclick = () => {
-      record();
-    };
-    document.getElementById("recordstopbutton").onclick = () => {
-      recordStop();
-    };
+    // document.getElementById("offerbutton").onclick = () => {
+    //   createOffer();
+    // };
+    // document.getElementById("recordbutton").onclick = () => {
+    //   record();
+    // };
+    // document.getElementById("recordstopbutton").onclick = () => {
+    //   recordStop();
+    // };
 
-    document.getElementById("camerabutton").onclick = () => {
-      setCameraState((prev) => {
-        if (prev) {
-          stopCamera();
-        } else {
-          startCamera();
-        }
-        camstate = !prev;
-        return !prev;
-      });
-    };
+    // document.getElementById("camerabutton").onclick = () => {
+    //   setCameraState((prev) => {
+    //     if (prev) {
+    //       stopCamera();
+    //     } else {
+    //       startCamera();
+    //     }
+    //     camstate = !prev;
+    //     return !prev;
+    //   });
+    // };
   }, []);
 
   return (
-    <div className="container">
-      <h1>WebRTC 테스트</h1>
-      <button id="offerbutton" type="button" className="btn btn-primary">
-        Offer 생성
-      </button>
-      <button id="camerabutton" type="button">
-        {cameraState ? "stop camera" : "start camera"}
-      </button>
-      <h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
-      <video
-        id="camera"
-        width="300px"
-        height="300px"
-        muted
-        autoPlay
-        playsInline
-        controls
-      ></video>
-      <video
-        id="peer"
-        width="300px"
-        height="300px"
-        muted
-        autoPlay
-        playsInline
-        controls
-      ></video>
-      <button type="button" id="recordbutton" className="btn btn-primary">
-        녹화
-      </button>
-      <button type="button" id="recordstopbutton" className="btn btn-primary">
-        중지
-      </button>
-      <video
-        id="record"
-        autoPlay
-        playsInline
-        controls
-        width="100px"
-        height="100px"
-      ></video>
-      <div>
-        <div>
-          <p>{message}</p>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              sendMessage(message);
-              setChatting((prev) => {
-                return [message, ...prev];
-              });
-              setMessage("");
-            }}
-          >
-            <input
-              id="message"
-              value={message}
-              onChange={(event) => {
-                setMessage(event.target.value);
-              }}
-            />
-            <button type="submit" htmlFor="message">
-              send
-            </button>
-          </form>
+    <div className='grid grid-cols-12 gap-5 h-screen justify-center'>
+      <div className="grid grid-rows-12 col-span-8" >
+        <div className="row-start-2 row-end-12 border-2">
+          영상화면
         </div>
-        <div>
-          {chatting.map((para) => {
-            return <p key={para}>{para}</p>;
-          })}
+      </div>
+      <div className="grid grid-rows-12 col-span-3">
+        <div className="row-start-2 row-end-12 border-2">
+          채팅화면
         </div>
       </div>
     </div>
