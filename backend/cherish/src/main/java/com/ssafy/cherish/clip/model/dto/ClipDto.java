@@ -11,10 +11,10 @@ import lombok.*;
 @Schema(name = "동영상 클립", description = "미팅을 통해 생성된 동영상 클립 클래스")
 public class ClipDto {
     private int id;
-    private int userId;
     private int meetingId;
     private String keyword;
-    private String filepath;
+    private String filepath1;
+    private String filepath2;
     private boolean isSelected;
     private String createdAt;
     private String deletedAt;
