@@ -17,8 +17,8 @@ public interface MeetingService {
     int setMeetingLength(int meetingId) throws Exception;
 
     // 입력 : coupleId, yearMonth
-    // 출력 : ChatDto List와 ClipDto List가 빈 상태의 MeetingDto List
-    List<MeetingDto> getMeetingsByMonth(Map<String, Object> map) throws Exception;
+    // 출력 : 영상통화한 날짜 String List
+    List<String> getMeetingsByMonth(Map<String, Object> map) throws Exception;
 
     // 입력 : coupleId, date
     // 출력 : 연결된 ChatDto List와 ClipDto List가 저장된 상태의 MeetingDto List

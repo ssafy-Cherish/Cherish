@@ -14,8 +14,8 @@
         SET LENGTH = TIMEDIFF(NOW(), CREATED_AT)
         WHERE ID = #{meetingId};
     </update>
-    <select id="getMeetingsByMonth" parameterType="map" resultType="meetingDto">
-        SELECT * FROM MEETING
+    <select id="getMeetingsByMonth" parameterType="map" resultType="String">
+        SELECT DISTINCT(DATE_FORMAT(CREATED_AT,'%Y-%m-%d')) FROM MEETING
         WHERE COUPLE_ID=#{coupleId}
         AND DATE_FORMAT(CREATED_AT,'%Y-%m')=#{yearMonth};
     </select>
