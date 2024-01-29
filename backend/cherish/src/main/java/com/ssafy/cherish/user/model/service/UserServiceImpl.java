@@ -16,6 +16,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void join(UserDto userDto) throws Exception {
+        userMapper.join(userDto);
+    }
+
+    @Override
     public void firstJoin (UserDto userDto) throws Exception {
         userMapper.firstJoin(userDto);
     }

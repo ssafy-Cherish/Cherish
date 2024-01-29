@@ -55,7 +55,7 @@ public class KakaoAPI {
 
             br.close();
             bw.close();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return accessToken;
@@ -119,7 +119,7 @@ public class KakaoAPI {
             String line = "";
 
             while((line = br.readLine()) != null) {
-                result+=line;
+                result += line;
             }
             System.out.println(result);
         } catch (Exception e) {
