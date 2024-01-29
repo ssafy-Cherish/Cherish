@@ -30,7 +30,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<MeetingDto> getMeetingsByMonth(Map<String, Object> map) throws Exception {
+    public List<String> getMeetingsByMonth(Map<String, Object> map) throws Exception {
         return meetingMapper.getMeetingsByMonth(map);
     }
 
