@@ -15,7 +15,7 @@ import org.springframework.context.annotation.PropertySource;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("classpath:/application.properties")
+@PropertySource("classpath:/application.yml")
 @MapperScan(basePackages = {"com.ssafy.cherish.*.model.mapper"})
 public class MyBatisConfig {
     final ApplicationContext applicationContext;
