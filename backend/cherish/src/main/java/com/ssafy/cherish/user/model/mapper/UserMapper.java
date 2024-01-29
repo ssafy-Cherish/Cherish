@@ -10,6 +10,9 @@ import java.sql.SQLException;
 @Mapper
 public interface UserMapper {
 
+    // 그냥 회원가입으로 변경
+    void join (UserDto userDto) throws SQLException;
+
     // 첫 번째 유저 회원가입
     void firstJoin (UserDto userDto) throws SQLException;
 

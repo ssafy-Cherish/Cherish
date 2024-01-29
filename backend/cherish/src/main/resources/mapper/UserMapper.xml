@@ -32,19 +32,17 @@
     </resultMap>
 
 
-    <insert id="firstJoin" parameterType = "userDto">
-        INSERT INTO user
-        (nickname, email, birthday)
-        VALUES
-        (#{nickname}, #{email}, #{birthday})
-    </insert>
+    <update id="firstJoin" parameterType = "userDto">
+        UPDATE user
+        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
+        WHERE kakao_id = #{kakaoId}
+    </update>
 
-    <insert id="secondJoin" parameterType = "userDto">
-        INSERT INTO user
-        (nickname, email, birthday)
-        VALUES
-        (#{nickname}, #{email}, #{birthday})
-    </insert>
+    <update id="secondJoin" parameterType = "userDto">
+        UPDATE user
+        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
+        WHERE kakao_id = #{kakaoId}
+    </update>
 
     <insert id="coupleFirstJoin" parameterType="coupleDto">
         INSERT INTO couple
@@ -58,5 +56,11 @@
         SET user2 = #{id}, coupled = true
         WHERE code = #{code}
     </update>
+
+    <select id="userInfo" parameterType="String" resultMap="user">
+        SELECT *
+        FROM user
+        WHERE id = #{id}
+    </select>
 
 </mapper>

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 public interface UserService {
 
+    void join (UserDto userDto) throws Exception;
     void firstJoin (UserDto userDto) throws Exception;
     void secondJoin (UserDto userDto) throws Exception;
     void coupleFirstJoin (CoupleDto coupleDto) throws Exception;
