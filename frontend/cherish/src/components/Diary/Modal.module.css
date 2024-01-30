@@ -1,19 +1,19 @@
 .modal {
-  margin: 5% auto;
-  border-radius: 6px;
-  padding: 1.5rem;
-  width: 30rem;
-  max-width: 90%;
-  z-index: 10;
-  background-color: rgba(0, 0, 0, 0);
+	margin: 5% auto;
+	border-radius: 6px;
+	padding: 1.5rem;
+	width: 30rem;
+	max-width: 90%;
+	z-index: 10;
+	background-color: #fef8ec;
 }
 
 .backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.25);
-  z-index: 9;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.25);
+	z-index: 9;
 }
