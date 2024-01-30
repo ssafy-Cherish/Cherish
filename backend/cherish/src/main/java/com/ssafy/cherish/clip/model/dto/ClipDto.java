@@ -17,5 +17,5 @@ public class ClipDto {
     private String filepath2;
     private boolean isSelected;
     private boolean isPinned;
-    private String createdAt;;
+    private String createdAt;
 }
