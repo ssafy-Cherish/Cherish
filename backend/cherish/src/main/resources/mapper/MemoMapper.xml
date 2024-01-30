@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.memo.model.mapper.MemoMapper">
+    <select id="getMemoByDate" parameterType="map" resultType="memoDto">
+        SELECT * FROM MEMO
+        WHERE COUPLE_ID=#{coupleId}
+        AND DATE(CREATED_AT)=
+        <choose>
+            <when test="date!=null">
+                #{date}
+            </when>
+            <otherwise>
+                CURDATE()
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

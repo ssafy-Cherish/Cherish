@@ -61,14 +61,14 @@ public class MeetingController {
     }
 
     @GetMapping("/month")
-    @Operation(summary = "월별 체리콜 기록 조회", description = "연월을 기준으로 커플의 영상통화 기록들을 조회")
-    public ResponseEntity<List<MeetingDto>> getMeetingsByMonth(
+    @Operation(summary = "월별 체리콜 기록 조회", description = "연월을 기준으로 커플의 영상통화 기록있는 날짜를 조회")
+    public ResponseEntity<List<String>> getMeetingsByMonth(
             @RequestParam
             @Parameter(description = "조회할 연월과 커플 아이디 e.g. 'coupleId': 1,'yearMonth':'2024-01'")
             Map<String, Object> map) {
         log.debug("체리콜 기록 월별 조회, coupleId : {}, yearMonth : {}", map.get("coupleId"), map.get("yearMonth"));
         try {
-            List<MeetingDto> list = meetingService.getMeetingsByMonth(map);
+            List<String> list = meetingService.getMeetingsByMonth(map);
             return new ResponseEntity<>(list, HttpStatus.OK);
         } catch (Exception e) {
             log.debug("월별 미팅 조회 중 에러 발생 : {}", e.getMessage());
@@ -77,16 +77,16 @@ public class MeetingController {
     }
 
     @GetMapping("/day")
-    @Operation(summary = "일별 체리콜 기록 조회", description = "연월일을 기준으로 커플의 영상통화 기록들을 조회")
-    public ResponseEntity<List<MeetingDto>> getMeetingsByDate(
+    @Operation(summary = "일별 체리콜 기록 조회", description = "연월일을 기준으로 커플의 영상통화 기록,메모를 조회")
+    public ResponseEntity<Map<String, Object>> getMeetingsByDate(
             @RequestParam
             @Parameter(description = "커플 아이디와 생성 연월일 e.g. 'coupleId': 1, 'date':'2024-01-23'")
             Map<String, Object> map
     ) {
         log.debug("체리콜 기록 일별 조회, coupleId : {}, date : {}", map.get("coupleId"), map.get("date"));
         try {
-            List<MeetingDto> list = meetingService.getMeetingsByDate(map);
-            return new ResponseEntity<>(list, HttpStatus.OK);
+            Map<String, Object> res = meetingService.getMeetingsByDate(map);
+            return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             log.debug("일별 미팅 조회 중 에러 발생 : {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
