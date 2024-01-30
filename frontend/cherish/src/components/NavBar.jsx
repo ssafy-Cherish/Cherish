@@ -7,6 +7,7 @@ import QuestionIcon from "../assets/QuestionIcon.svg"
 import DropdownIcon from "../assets/DropdownIcon.svg"
 import ProfileIcon from "../assets/ProfileIcon.svg"
 
+
 export default function NavBar() {
     return (
         <div className="col-span-2 h-screen bg-beige">
