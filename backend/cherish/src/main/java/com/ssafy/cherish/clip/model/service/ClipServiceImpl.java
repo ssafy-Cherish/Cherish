@@ -34,9 +34,6 @@ public class ClipServiceImpl implements ClipService {
         log.debug("saveClip 중 생성된 filepath 빈 객체 : {}", clipDto.toString());
         try {
             // 서버 로컬 경로
-            //window 기준
-            //String local = System.getProperty("user.home")+"/Documents/cherish_video
-            //mac 기준
             String local = System.getProperty("user.home") + "/Documents/cherish_video";
 
             // 클립 저장 경로 설정
