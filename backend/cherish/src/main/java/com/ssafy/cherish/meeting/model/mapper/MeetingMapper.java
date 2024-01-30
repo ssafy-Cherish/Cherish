@@ -20,8 +20,8 @@ public interface MeetingMapper {
     // 미팅이 종료되었을 때 현재시간과 createdAt의 차로 체리콜 길이 저장하고 update된 행 수 반환
     int setMeetingLength(int meetingId) throws SQLException;
 
-    // coupleId와 yearMonth(e.g.'2024-01')로 해당 월의 MeetingDto 리스트 반환
-    List<MeetingDto> getMeetingsByMonth(Map<String, Object> map) throws SQLException;
+    // coupleId와 yearMonth(e.g.'2024-01')로 해당 월의 통화한 날짜(e.g.'2023-11-03') 리스트 반환
+    List<String> getMeetingsByMonth(Map<String, Object> map) throws SQLException;
 
     //coupleId와 date(e.g.'2024-01-23')로 해당 일의 MeetingDto 리스트 반환
     List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws SQLException;

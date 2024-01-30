@@ -17,7 +17,6 @@ public class MeetingDto {
     private int coupleId;
     private String length;
     private String createdAt;
-    private String deletedAt;
     //이 meeting과 관련된 chat 객체 리스트
     private List<ChatDto> chats;
     //이 meeting과 관련된 clip 객체 리스트
