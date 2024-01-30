@@ -172,33 +172,7 @@ const setMediaRecorder = function (idx, local, remote) {
 /* 시그널링 서버와 연결하고, 관련된 세팅 및 관련 함수들 */
 //connecting to our signaling server
 // 서버 주소로 변경해야 됨
-var conn = new WebSocket("ws://192.168.100.58:8080/socket");
-
-conn.onopen = function () {
-  console.log("Connected to the signaling server");
-  initialize();
-};
-
-conn.onmessage = function (msg) {
-  console.log("Got message", msg.data);
-  var content = JSON.parse(msg.data);
-  var data = content.data;
-  switch (content.event) {
-    // when somebody wants to call us
-    case "offer":
-      handleOffer(data);
-      break;
-    case "answer":
-      handleAnswer(data);
-      break;
-    // when a remote peer sends an ice candidate to us
-    case "candidate":
-      handleCandidate(data);
-      break;
-    default:
-      break;
-  }
-};
+var conn;
 
 function send(message) {
   conn.send(JSON.stringify(message));
@@ -289,6 +263,34 @@ function initialize() {
 }
 
 function createOffer() {
+  conn = new WebSocket("ws://192.168.100.58:8080/socket");
+
+  conn.onopen = function () {
+    console.log("Connected to the signaling server");
+    initialize();
+  };
+
+  conn.onmessage = function (msg) {
+    console.log("Got message", msg.data);
+    var content = JSON.parse(msg.data);
+    var data = content.data;
+    switch (content.event) {
+      // when somebody wants to call us
+      case "offer":
+        handleOffer(data);
+        break;
+      case "answer":
+        handleAnswer(data);
+        break;
+      // when a remote peer sends an ice candidate to us
+      case "candidate":
+        handleCandidate(data);
+        break;
+      default:
+        break;
+    }
+  };
+
   peerConnection.createOffer(
     function (offer) {
       peerConnection.setLocalDescription(offer);
