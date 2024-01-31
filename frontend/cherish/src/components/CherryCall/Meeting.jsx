@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from "react";
-
+import sendImg from "../../assets/SendIcon.svg";
+import localChattingContext from "../../assets/localChattingContext.svg";
+import remoteChattingContext from "../../assets/remoteChattingContext.svg";
 ////////
 
 function Meeting() {
@@ -44,7 +46,7 @@ function Meeting() {
         videoBitsPerSecond: 2500000,
       },
 
-      nowIdx: 0
+      nowIdx: 0,
     },
 
     connect: {
@@ -52,13 +54,20 @@ function Meeting() {
       peerConnection: null,
       dataChannel: null,
     },
+
+    chattingHistory: [],
+
+    clipHistory: [],
+
+    rightWindowIsChatting: true,
   });
 
-  const [message, setMessage] = useState("");
   //////
 
-
   const readyCam = useRef();
+
+  const chattingWindow = useRef();
+
   //////
   const getLocalMediaStream = function () {
     const constraints = {
@@ -102,6 +111,12 @@ function Meeting() {
     conn.onopen = function () {
       console.log("Connected to the signaling server");
       initialize();
+      send({
+        event: "access",
+        data: {
+          coupleId: 0,
+        },
+      });
     };
 
     conn.onmessage = function (msg) {
@@ -124,6 +139,16 @@ function Meeting() {
           break;
       }
     };
+
+    conn.onclose = function () {
+      send({
+        event: "exit",
+        data: {
+          coupleId: 0,
+        },
+      });
+    };
+
     const nextMeetingInfo = { ...meetingInfo };
     nextMeetingInfo.connect.conn = conn;
     setMeetingInfo(nextMeetingInfo);
@@ -199,8 +224,16 @@ function Meeting() {
       meetingInfo.stream.remoteMediaStream.addTrack(event.track);
 
       if (meetingInfo.stream.remoteMediaStream.getTracks().length === 2) {
-        setMediaRecorder(0, meetingInfo.stream.localMediaStream, meetingInfo.stream.remoteMediaStream);
-        setMediaRecorder(1, meetingInfo.stream.localMediaStream, meetingInfo.stream.remoteMediaStream);
+        setMediaRecorder(
+          0,
+          meetingInfo.stream.localMediaStream,
+          meetingInfo.stream.remoteMediaStream
+        );
+        setMediaRecorder(
+          1,
+          meetingInfo.stream.localMediaStream,
+          meetingInfo.stream.remoteMediaStream
+        );
 
         recordStart();
       }
@@ -286,37 +319,47 @@ function Meeting() {
   };
 
   const setMediaRecorder = function (idx, local, remote) {
-    meetingInfo.record.mediaRecorder[idx][0] = new MediaRecorder(local, meetingInfo.record.option);
-    meetingInfo.record.mediaRecorder[idx][1] = new MediaRecorder(remote, meetingInfo.record.option);
-    meetingInfo.record.mediaRecorder[idx][0].ondataavailable = function (event) {
+    meetingInfo.record.mediaRecorder[idx][0] = new MediaRecorder(
+      local,
+      meetingInfo.record.option
+    );
+    meetingInfo.record.mediaRecorder[idx][1] = new MediaRecorder(
+      remote,
+      meetingInfo.record.option
+    );
+    meetingInfo.record.mediaRecorder[idx][0].ondataavailable = function (
+      event
+    ) {
       if (event.data.size > 0) {
         meetingInfo.record.recordedChunks[idx][0].push(event.data);
       }
     };
-    meetingInfo.record.mediaRecorder[idx][1].ondataavailable = function (event) {
+    meetingInfo.record.mediaRecorder[idx][1].ondataavailable = function (
+      event
+    ) {
       if (event.data.size > 0) {
         meetingInfo.record.recordedChunks[idx][1].push(event.data);
       }
     };
     meetingInfo.record.mediaRecorder[idx][0].onstart = function () {
       meetingInfo.record.recordedChunks[idx][0] = [];
-  
+
       setTimeout(() => {
         meetingInfo.record.nowIdx = idx;
       }, 1000);
-  
+
       setTimeout(() => {
         meetingInfo.record.mediaRecorder[idx][0].stop();
       }, 10000);
     };
     meetingInfo.record.mediaRecorder[idx][1].onstart = function () {
       meetingInfo.record.recordedChunks[idx][1] = [];
-  
+
       setTimeout(() => {
         meetingInfo.record.mediaRecorder[idx][1].stop();
       }, 10000);
     };
-  
+
     meetingInfo.record.mediaRecorder[idx][0].onstop = function () {
       if (meetingInfo.record.recordFlag[idx][0] === true) {
         meetingInfo.record.recordFlag[idx][0] = false;
@@ -326,7 +369,7 @@ function Meeting() {
         meetingInfo.record.mediaRecorder[idx][0].start(1000);
         let url = URL.createObjectURL(blob);
         console.log(url);
-  
+
         const localv = document.getElementById("record");
         localv.src = url;
         localv.load();
@@ -347,7 +390,7 @@ function Meeting() {
         meetingInfo.record.mediaRecorder[idx][1].start(1000);
         let url = URL.createObjectURL(blob);
         console.log(url);
-  
+
         const remotev = document.getElementById("recordpeer");
         remotev.src = url;
         remotev.load();
@@ -377,6 +420,16 @@ function Meeting() {
   useEffect(() => {
     getLocalMediaStream();
   }, []);
+
+  useEffect(()=>{
+    if(meetingInfo.chattingHistory.length){
+      chattingWindow.current.childNodes[meetingInfo.chattingHistory.length-1].scrollIntoView({
+        
+        block: "end"
+      })
+    }
+    console.log('scroll')
+  },[meetingInfo.chattingHistory.length])
 
   return (
     <div className="h-full w-full flex flex-row contents-center">
@@ -469,33 +522,126 @@ function Meeting() {
         </div>
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">
-        <div className="bg-pink h-3/4 m-2 rounded-2xl flex flex-col">
-          <div className="bg-white mx-4 mt-4 mb-2 rounded-t-2xl h-16">
-            <button className="w-[50%] h-full font-extrabold text-xl">
+        <div className="bg-pink h-[75%] m-2 rounded-2xl flex flex-col justify-evenly">
+          <div className="bg-white mx-4 rounded-t-2xl h-[10%]">
+            <button
+              className="w-[50%] h-full font-extrabold text-xl"
+              disabled={meetingInfo.rightWindowIsChatting}
+              onClick={() => {
+                const nextMeetingInfo = { ...meetingInfo };
+                nextMeetingInfo.rightWindowIsChatting =
+                  !nextMeetingInfo.rightWindowIsChatting;
+                setMeetingInfo(nextMeetingInfo);
+              }}
+            >
               체리톡
             </button>
-            <button className="w-[50%] h-full font-extrabold text-xl">
+            <button
+              className="w-[50%] h-full font-extrabold text-xl"
+              disabled={!meetingInfo.rightWindowIsChatting}
+              onClick={() => {
+                const nextMeetingInfo = { ...meetingInfo };
+                nextMeetingInfo.rightWindowIsChatting =
+                  !nextMeetingInfo.rightWindowIsChatting;
+                setMeetingInfo(nextMeetingInfo);
+              }}
+            >
               클립
             </button>
           </div>
-          <div className="bg-white mx-4 mb-4 rounded-b-2xl h-full"></div>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              console.log(message);
-              setMessage("");
-            }}
-            className="mx-4 mb-4 rounded-2xl h-12 flex flex-row"
-          >
-            <input
-              onChange={(event) => {
-                setMessage(event.target.value);
-              }}
-              value={message}
-              className="bg-white w-full rounded-2xl"
-            ></input>
-            <button className=" border-2 ml-4 w-12"></button>
-          </form>
+          {meetingInfo.rightWindowIsChatting ? (
+            <div className="h-[80%] flex flex-col justify-between relative">
+              <div className="bg-white mx-4 rounded-b-2xl h-[85%] overflow-y-scroll absolute w-[90%]"  ref={chattingWindow}>
+                {meetingInfo.chattingHistory.map((elem, idx) => {
+                  if (elem.isLocal) {
+                    return (
+                      <div
+                        key={idx}
+                        className="flex flex-row justify-end pl-8 pr-4 pt-4 "
+                      >
+                        <div
+                          style={{
+                            backgroundColor: "#FEF8EC",
+                            whiteSpace: "pre-line",
+                          }}
+                          className="py-2 pl-4 pr-4 rounded-tl-xl rounded-b-xl drop-shadow"
+                        >
+                          {elem.message}
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        key={idx}
+                        className="flex flex-row justify-start pl-4 pr-8 pt-4"
+                      >
+                        <div
+                          style={{
+                            backgroundColor: "#E0F4FF",
+                            whiteSpace: "pre-line",
+                          }}
+                          className="py-2 pl-4 pr-4 rounded-tr-xl rounded-b-xl drop-shadow"
+                        >
+                          {elem.message}
+                        </div>
+                      </div>
+                    );
+                  }
+                })
+              }
+              </div>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  console.log(event.target.childNodes[0].value);
+                  const newChattingHistory = [
+                    ...meetingInfo.chattingHistory,
+                    {
+                      isLocal: true,
+                      message: event.target.childNodes[0].value,
+                    },
+                  ];
+                  const newMeetingInfo = { ...meetingInfo };
+                  newMeetingInfo.chattingHistory = newChattingHistory;
+                  setMeetingInfo(newMeetingInfo);
+                  event.target.childNodes[0].value = "";
+                }}
+                className="mx-4 rounded-2xl h-[10%] flex flex-row"
+              >
+                <textarea
+                  className="bg-white w-full rounded-2xl"
+                  onKeyUp={(event) => {
+                    if (event.key === "Enter") {
+                      if (!event.shiftKey) {
+                        event.preventDefault();
+                        console.log(event.target.value);
+                        const newChattingHistory = [
+                          ...meetingInfo.chattingHistory,
+                          {
+                            isLocal: true,
+                            message: event.target.value,
+                          },
+                        ];
+                        const newMeetingInfo = { ...meetingInfo };
+                        newMeetingInfo.chattingHistory = newChattingHistory;
+                        setMeetingInfo(newMeetingInfo);
+                        event.target.value = "";
+                      }
+                    }
+                  }}
+                ></textarea>
+                <button className="ml-4 w-12 rounded-2xl flex flex-col justify-center items-center">
+                  <img src={sendImg} className="w-5/6 h-5/6 rounded-2xl" />
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="h-[80%] flex flex-col justify-between">
+              <div className="bg-white mx-4 rounded-b-2xl h-[100%] overflow-y-scroll">
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
