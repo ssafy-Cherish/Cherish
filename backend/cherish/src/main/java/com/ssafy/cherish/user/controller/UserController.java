@@ -133,5 +133,23 @@ public class UserController {
     }
 
 
+    @PutMapping("/modifyUser")
+    @Operation(summary = "유저 정보 수정", description="user 테이블의 정보를 수정함")
+    public ResponseEntity<String> modifyUser (@RequestBody UserDto userDto) throws Exception {
+        log.info("modifyUser 호출 : " + userDto);
+        userService.modifyUser(userDto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/modifyCouple")
+    @Operation(summary = "커플 정보 수정", description="couple 테이블의 정보를 수정함")
+    public ResponseEntity<String> modifyCouple (@RequestBody CoupleDto coupleDto) throws Exception {
+        log.info("modifyCouple 호출 : " + coupleDto);
+        userService.modifyCouple(coupleDto);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
 
