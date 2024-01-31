@@ -17,66 +17,69 @@ import Month11 from "../../assets/Month/Month11.svg";
 import Month12 from "../../assets/Month/Month12.svg";
 
 const MonthArr = [
-	Month1,
-	Month2,
-	Month3,
-	Month4,
-	Month5,
-	Month6,
-	Month7,
-	Month8,
-	Month9,
-	Month10,
-	Month11,
-	Month12,
+  Month1,
+  Month2,
+  Month3,
+  Month4,
+  Month5,
+  Month6,
+  Month7,
+  Month8,
+  Month9,
+  Month10,
+  Month11,
+  Month12,
 ];
 
 const DiaryYearlyPage = () => {
-	const navigate = useNavigate();
-	const [searchParams, setSearchParams] = useSearchParams();
-	const [scope, animate] = useAnimate();
-	let year = searchParams.get("year");
-	if (!year) year = new Date().getFullYear();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [scope, animate] = useAnimate();
+  let year = searchParams.get("year");
+  if (!year) year = new Date().getFullYear();
 
-	function moveYear(move) {
-		animate("#year", { y: [0, -5, 5, 0] }, { duration: 0.2 });
-		animate("#month", { opacity: [1, 0, 1] });
-		year = +year + move;
-		searchParams.set("year", year);
-		setSearchParams(searchParams);
-	}
+  function moveYear(move) {
+    animate("#year", { y: [0, -5, 5, 0] }, { duration: 0.2 });
+    animate("#month", { opacity: [1, 0, 1] });
+    year = +year + move;
+    searchParams.set("year", year);
+    setSearchParams(searchParams);
+  }
 
-	function moveToMonth(month) {
-		navigate({ pathname: "/diary/month", search: `?year=${year}&month=${month}` });
-	}
+  function moveToMonth(month) {
+    navigate({ pathname: "/diary/month", search: `?year=${year}&month=${month}` });
+  }
 
-	return (
-		<Modal z={1} height="90vh" width="70vw">
-			<img src={yearlyImg} alt="" className="h-[90vh] w-[70vw] my-auto absolute -z-10" />
-			<div className="h-full w-full grid grid-rows-12 px-[10%] py-10" ref={scope}>
-				<div className="text-[2vw] text-red-400 text-center row-span-1">
-					<button onClick={() => moveYear(-1)}>&lt;</button>
-					<div id="year" className="inline-block text-[2vw]">
-						&nbsp;{year}&nbsp;
-					</div>
-					<button onClick={() => moveYear(1)}>&gt;</button>
-				</div>
-				<div className="grid grid-cols-3 gap-x-6 gap-y-6 row-span-11 px-[10%]">
-					{MonthArr.map((src, i) => (
-						<motion.img
-							key={src}
-							id="month"
-							src={src}
-							alt={src}
-							whileHover={{ scale: 1.2 }}
-							className="mx-auto"
-							onClick={() => moveToMonth(i + 1)}
-						/>
-					))}
-				</div>
-			</div>
-		</Modal>
-	);
+  return (
+    <Modal z={1} height="90vh" width="70vw">
+      <div className="h-[90vh] w-[70vw] my-auto absolute -z-10">
+        <img src={yearlyImg} alt="" />
+      </div>
+      <div className="h-full w-full grid grid-rows-12 grid-cols-12 px-[10%] py-10" ref={scope}>
+        <div className="text-[2vw] text-red-400 text-center row-span-1 col-span-12">
+          <button onClick={() => moveYear(-1)}>&lt;</button>
+          <div id="year" className="inline-block text-[2vw]">
+            &nbsp;{year}&nbsp;
+          </div>
+          <button onClick={() => moveYear(1)}>&gt;</button>
+        </div>
+        <div className="grid grid-cols-3 gap-x-[1vw] gap-y-[1vw] row-span-11 col-span-8 col-start-3 px-[10%]">
+          {MonthArr.map((src, i) => (
+            <div key={src}>
+              <motion.img
+                id="month"
+                src={src}
+                alt={src}
+                whileHover={{ scale: 1.2 }}
+                className="mx-auto"
+                onClick={() => moveToMonth(i + 1)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </Modal>
+  );
 };
 
 export default DiaryYearlyPage;
