@@ -15,4 +15,30 @@
             </otherwise>
         </choose>
     </select>
+
+    <insert id="writeMemo" parameterType="memoDto">
+        INSERT INTO memo
+        (couple_id, content, date)
+        VALUES
+        (#{couple_id}, #{content}, #{date})
+    </insert>
+
+    <select id="getMemo" parameterType="String" resultType="memoDto">
+        SELECT *
+        FROM memo
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </select>
+
+    <update id="modifyMemo" parameterType="memoDto">
+        UPDATE memo
+        SET content = #{content}
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </update>
+
+    <delete id="deleteMemo" parameterType="String">
+        DELETE
+        FROM memo
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </delete>
+
 </mapper>
