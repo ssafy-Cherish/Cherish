@@ -65,7 +65,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
                     // 클라이언트가 처음 서버와 연결된 뒤 정보를 저장하기 위해 커플 아이디를 전송
                 case "access":
-                    // 데이터 맵으로 변환
+                    // 데이터를 맵으로 변환
                     Map<String, String> map2 = mapper.readValue(map.get("data"), Map.class);
                     String coupleId = map2.get("coupleId");
                     
@@ -77,15 +77,17 @@ public class SocketHandler extends TextWebSocketHandler {
                             connections.containsKey(coupleId) ?
                                     connections.get(coupleId) : new ArrayList<>();
 
-                    list.add(cherishSession);
+                    // 상대방이거나 처음일 경우만 추가, 자기자신일 경우 그냥 리턴
+                    if (list.isEmpty() || !list.get(0).getSession().getId().equals(session.getId()))
+                        list.add(cherishSession);
+                    else
+                        return;
                     connections.put(coupleId, list);
 
-                    // 둘 다 연결 되어 있다면 둘에게 알림
+                    // 둘 다 연결 되었다면 둘에게 알림
                     if (list.size() > 1)
                         for (CherishSocketSession cs : list)
-                            if (cs.getSession().isOpen() &&
-                                    !cs.getSession().getId().equals(session.getId()))
-                                cs.getSession().sendMessage(message);
+                            cs.getSession().sendMessage(message);
 
                     break;
 
