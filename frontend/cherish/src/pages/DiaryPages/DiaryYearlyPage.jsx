@@ -52,7 +52,10 @@ const DiaryYearlyPage = () => {
 
   return (
     <Modal z={1} height="90vh" width="70vw">
-      <div className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center">
+      <div
+        className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center"
+        ref={scope}
+      >
         <div className="text-[2vw] text-red-400 mb-[2vw] ">
           <button onClick={() => moveYear(-1)}>&lt;</button>
           <div id="year" className="inline-block text-[2vw]">
@@ -75,7 +78,7 @@ const DiaryYearlyPage = () => {
           ))}
         </div>
       </div>
-      <div ref={scope}>
+      <div>
         <img className="w-full" src={yearlyImg} alt="" />
       </div>
     </Modal>
