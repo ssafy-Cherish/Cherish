@@ -6,6 +6,8 @@ import com.ssafy.cherish.user.model.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -21,16 +23,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void firstJoin (UserDto userDto) throws Exception {
-        userMapper.firstJoin(userDto);
-    }
-
-    @Override
-    public void secondJoin (UserDto userDto) throws Exception {
-        userMapper.secondJoin(userDto);
-    }
-
-    @Override
     public void coupleFirstJoin(CoupleDto coupleDto) throws Exception {
         userMapper.coupleFirstJoin(coupleDto);
     }
@@ -41,8 +33,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void insertKakaoId(long kakaoId) throws SQLException {
+        userMapper.insertKakaoId(kakaoId);
+    }
+
+    @Override
     public UserDto userInfo(int kakaoId) throws Exception {
         return userMapper.userInfo(kakaoId);
+    }
+
+    @Override
+    public CoupleDto coupleInfo(int id) throws Exception {
+        return userMapper.coupleInfo(id);
+    }
+
+    @Override
+    public UserDto findByKakaoId(long kakaoId) throws Exception {
+        return userMapper.findByKakaoId(kakaoId);
     }
 
 

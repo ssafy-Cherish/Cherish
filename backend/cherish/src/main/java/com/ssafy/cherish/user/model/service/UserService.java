@@ -8,9 +8,11 @@ import java.sql.SQLException;
 public interface UserService {
 
     void join (UserDto userDto) throws Exception;
-    void firstJoin (UserDto userDto) throws Exception;
-    void secondJoin (UserDto userDto) throws Exception;
     void coupleFirstJoin (CoupleDto coupleDto) throws Exception;
     void coupleSecondJoin (CoupleDto coupleDto) throws Exception;
-    UserDto userInfo(int kakaoId) throws Exception;
+    void insertKakaoId (long kakaoId) throws SQLException;
+    UserDto userInfo(int id) throws Exception;
+    CoupleDto coupleInfo (int id) throws Exception;
+    UserDto findByKakaoId (long kakaoId) throws Exception;
+
 }
