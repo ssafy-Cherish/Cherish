@@ -10,5 +10,18 @@ import java.util.Map;
 @Mapper
 public interface MemoMapper {
     // 일자별로 메모 내용 불러오기 (하루에 메모 여러개이면 에러 발생)
-    MemoDto getMemoByDate(Map<String, Object> map) throws SQLException;
+    MemoDto getMemoByDate (Map<String, Object> map) throws SQLException;
+
+    // 메모 생성하기
+    void writeMemo (MemoDto memoDto) throws SQLException;
+
+    // 메모 보여주기
+    MemoDto getMemo (String date, String coupleId) throws SQLException;
+
+    // 메모 수정하기
+    void modifyMemo (MemoDto memoDto) throws SQLException;
+
+    // 메모 삭제하기
+    void deleteMemo (String date, String coupleId) throws SQLException;
+
 }
