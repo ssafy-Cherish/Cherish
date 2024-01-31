@@ -1,6 +1,7 @@
 import Modal from "../../components/Diary/Modal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, useAnimate } from "framer-motion";
+import yearlyImg from "../../assets/DiaryYearlyPage.svg";
 
 import Month1 from "../../assets/Month/Month1.svg";
 import Month2 from "../../assets/Month/Month2.svg";
@@ -51,7 +52,7 @@ const DiaryYearlyPage = () => {
 
 	return (
 		<Modal z={1} height="90vh" width="70vw">
-			{/* <img src={yearlyImg} alt="" className="h-full w-full absolute -z-10" /> */}
+			<img src={yearlyImg} alt="" className="h-[90vh] w-[70vw] my-auto absolute -z-10" />
 			<div className="h-full w-full grid grid-rows-12 px-[10%] py-10" ref={scope}>
 				<div className="text-[2vw] text-red-400 text-center row-span-1">
 					<button onClick={() => moveYear(-1)}>&lt;</button>
