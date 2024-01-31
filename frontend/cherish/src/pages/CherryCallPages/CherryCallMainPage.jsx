@@ -4,7 +4,7 @@ function CherryCallMainPage() {
 
   return (
     <>
-      <Meeting/>
+      <Meeting />
     </>
   )
 }
