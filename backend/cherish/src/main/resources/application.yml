@@ -1,0 +1,37 @@
+spring:
+  profiles:
+    include:
+      - secrets
+  datasource:
+    #hikari Datasource 설정
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/cherish?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+      username: ${db.username}
+      password: ${db.password}
+      pool-name: Hikari Connection Pool
+  # 타임리프 설정
+  thymeleaf:
+    prefix: classpath:templates/
+    check-template-location: true
+    suffix: .html
+    mode: HTML5
+    cache: false
+    order: 0
+  # 동영상 blob 파일 저장 용량 설정
+  servlet:
+    multipart:
+      maxFileSize: 100MB # 파일 하나당 용량
+      maxRequestSize: 200MB # 요청 하나당 용량
+
+# log 수준 debug로 설정
+logging:
+  level:
+    root:
+      zaxxer:
+        hikari: DEBUG
+    com:
+      ssafy:
+        cherish: DEBUG
+
+

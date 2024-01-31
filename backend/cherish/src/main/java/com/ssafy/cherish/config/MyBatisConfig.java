@@ -15,8 +15,8 @@ import org.springframework.context.annotation.PropertySource;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("classpath:/application.properties")
-@MapperScan(basePackages = { "com.ssafy.cherish.*.model.mapper" })
+@PropertySource("classpath:/application.yml")
+@MapperScan(basePackages = {"com.ssafy.cherish.*.model.mapper"})
 public class MyBatisConfig {
     final ApplicationContext applicationContext;
 
@@ -42,6 +42,12 @@ public class MyBatisConfig {
         session.setMapperLocations(applicationContext.getResources("classpath:mapper/**/*.xml"));
         session.setTypeAliasesPackage("com.ssafy.cherish.*.model");
 //		session.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/mybatis-config.xml"));
+
+        //mapper의 sql문 결과를 underscore에서 camel형식으로 바꿔줌
+        org.apache.ibatis.session.Configuration config = new org.apache.ibatis.session.Configuration();
+        config.setMapUnderscoreToCamelCase(true);
+        session.setConfiguration(config);
+
         return session.getObject();
     }
 
