@@ -52,31 +52,31 @@ const DiaryYearlyPage = () => {
 
   return (
     <Modal z={1} height="90vh" width="70vw">
-      <div className="h-[90vh] w-[70vw] my-auto absolute -z-10">
-        <img src={yearlyImg} alt="" />
-      </div>
-      <div className="h-full w-full grid grid-rows-12 grid-cols-12 px-[10%] py-10" ref={scope}>
-        <div className="text-[2vw] text-red-400 text-center row-span-1 col-span-12">
+      <div className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center">
+        <div className="text-[2vw] text-red-400 mb-[2vw] ">
           <button onClick={() => moveYear(-1)}>&lt;</button>
           <div id="year" className="inline-block text-[2vw]">
             &nbsp;{year}&nbsp;
           </div>
           <button onClick={() => moveYear(1)}>&gt;</button>
         </div>
-        <div className="grid grid-cols-3 gap-x-[1vw] gap-y-[1vw] row-span-11 col-span-8 col-start-3 px-[10%]">
+        <div className="grid grid-rows-4 grid-cols-3 w-[35vw] h-[40vw]">
           {MonthArr.map((src, i) => (
-            <div key={src}>
+            <div key={src} className="col-span-1 row-span-1 w-[8vw]">
               <motion.img
                 id="month"
                 src={src}
                 alt={src}
                 whileHover={{ scale: 1.2 }}
-                className="mx-auto"
+                className="ml-[2vw] w-full h-full"
                 onClick={() => moveToMonth(i + 1)}
               />
             </div>
           ))}
         </div>
+      </div>
+      <div ref={scope}>
+        <img className="w-full" src={yearlyImg} alt="" />
       </div>
     </Modal>
   );
