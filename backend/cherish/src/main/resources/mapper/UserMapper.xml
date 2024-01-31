@@ -32,13 +32,7 @@
     </resultMap>
 
 
-    <update id="firstJoin" parameterType = "userDto">
-        UPDATE user
-        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
-        WHERE kakao_id = #{kakaoId}
-    </update>
-
-    <update id="secondJoin" parameterType = "userDto">
+    <update id="join" parameterType = "userDto">
         UPDATE user
         SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
         WHERE kakao_id = #{kakaoId}
@@ -46,9 +40,9 @@
 
     <insert id="coupleFirstJoin" parameterType="coupleDto">
         INSERT INTO couple
-        (name, code, anniversary)
+        (name, user1, code, anniversary)
         VALUES
-        (#{name}, #{code}, #{anniversary})
+        (#{name}, #{id}, #{code}, #{anniversary})
     </insert>
 
     <update id="coupleSecondJoin" parameterType="coupleDto">
@@ -57,10 +51,29 @@
         WHERE code = #{code}
     </update>
 
-    <select id="userInfo" parameterType="String" resultMap="user">
+    <insert id="insertKakaoId" parameterType="long">
+        INSERT INTO user
+        (kakao_id)
+        VALUES
+        (#{kakaoId})
+    </insert>
+
+    <select id="userInfo" parameterType="int" resultMap="user">
         SELECT *
         FROM user
         WHERE id = #{id}
+    </select>
+
+    <select id="coupleInfo" parameterType="int" resultMap="couple">
+        SELECT *
+        FROM couple
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByKakaoId" parameterType="int" resultMap="user">
+        SELECT *
+        FROM user
+        WHERE kakao_id = #{kakaoId}
     </select>
 
 </mapper>
