@@ -1,7 +1,5 @@
 import { useRef, useState, useEffect } from "react";
 import sendImg from "../../assets/SendIcon.svg";
-import localChattingContext from "../../assets/localChattingContext.svg";
-import remoteChattingContext from "../../assets/remoteChattingContext.svg";
 ////////
 
 function Meeting() {
@@ -421,15 +419,15 @@ function Meeting() {
     getLocalMediaStream();
   }, []);
 
-  useEffect(()=>{
-    if(meetingInfo.chattingHistory.length){
-      chattingWindow.current.childNodes[meetingInfo.chattingHistory.length-1].scrollIntoView({
-        
-        block: "end"
-      })
+  useEffect(() => {
+    if (meetingInfo.chattingHistory.length) {
+      chattingWindow.current.childNodes[
+        meetingInfo.chattingHistory.length - 1
+      ].scrollIntoView({
+        block: "end",
+      });
     }
-    console.log('scroll')
-  },[meetingInfo.chattingHistory.length])
+  }, [meetingInfo.chattingHistory.length]);
 
   return (
     <div className="h-full w-full flex flex-row contents-center">
@@ -550,61 +548,67 @@ function Meeting() {
             </button>
           </div>
           {meetingInfo.rightWindowIsChatting ? (
-            <div className="h-[80%] flex flex-col justify-between relative">
-              <div className="bg-white mx-4 rounded-b-2xl h-[85%] overflow-y-scroll absolute w-[90%]"  ref={chattingWindow}>
-                {meetingInfo.chattingHistory.map((elem, idx) => {
-                  if (elem.isLocal) {
-                    return (
-                      <div
-                        key={idx}
-                        className="flex flex-row justify-end pl-8 pr-4 pt-4 "
-                      >
+            <div className="h-[80%] flex flex-col justify-between px-4">
+              <div className="relative rounded-b-2xl h-[85%]">
+                <div
+                  className="bg-white rounded-b-2xl h-full overflow-y-scroll absolute w-full"
+                  ref={chattingWindow}
+                >
+                  {meetingInfo.chattingHistory.map((elem, idx) => {
+                    if (elem.isLocal) {
+                      return (
                         <div
-                          style={{
-                            backgroundColor: "#FEF8EC",
-                            whiteSpace: "pre-line",
-                          }}
-                          className="py-2 pl-4 pr-4 rounded-tl-xl rounded-b-xl drop-shadow"
+                          key={idx}
+                          className="flex flex-row justify-end pl-8 pr-4 pt-4 "
                         >
-                          {elem.message}
+                          <div
+                            style={{
+                              backgroundColor: "#FEF8EC",
+                              whiteSpace: "pre-line",
+                            }}
+                            className="py-2 pl-4 pr-4 rounded-tl-xl rounded-b-xl drop-shadow"
+                          >
+                            {elem.message}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div
-                        key={idx}
-                        className="flex flex-row justify-start pl-4 pr-8 pt-4"
-                      >
+                      );
+                    } else {
+                      return (
                         <div
-                          style={{
-                            backgroundColor: "#E0F4FF",
-                            whiteSpace: "pre-line",
-                          }}
-                          className="py-2 pl-4 pr-4 rounded-tr-xl rounded-b-xl drop-shadow"
+                          key={idx}
+                          className="flex flex-row justify-start pl-4 pr-8 pt-4"
                         >
-                          {elem.message}
+                          <div
+                            style={{
+                              backgroundColor: "#E0F4FF",
+                              whiteSpace: "pre-line",
+                            }}
+                            className="py-2 pl-4 pr-4 rounded-tr-xl rounded-b-xl drop-shadow"
+                          >
+                            {elem.message}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  }
-                })
-              }
+                      );
+                    }
+                  })}
+                </div>
               </div>
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
-                  console.log(event.target.childNodes[0].value);
-                  const newChattingHistory = [
-                    ...meetingInfo.chattingHistory,
-                    {
-                      isLocal: true,
-                      message: event.target.childNodes[0].value,
-                    },
-                  ];
-                  const newMeetingInfo = { ...meetingInfo };
-                  newMeetingInfo.chattingHistory = newChattingHistory;
-                  setMeetingInfo(newMeetingInfo);
+                  if (event.target.childNodes[0].value.trim().length !== 0) {
+                    console.log(event.target.childNodes[0].value);
+                    const newChattingHistory = [
+                      ...meetingInfo.chattingHistory,
+                      {
+                        isLocal: true,
+                        message: event.target.childNodes[0].value,
+                      },
+                    ];
+                    const newMeetingInfo = { ...meetingInfo };
+                    newMeetingInfo.chattingHistory = newChattingHistory;
+                    setMeetingInfo(newMeetingInfo);
+                  }
                   event.target.childNodes[0].value = "";
                 }}
                 className="mx-4 rounded-2xl h-[10%] flex flex-row"
@@ -614,18 +618,20 @@ function Meeting() {
                   onKeyUp={(event) => {
                     if (event.key === "Enter") {
                       if (!event.shiftKey) {
-                        event.preventDefault();
-                        console.log(event.target.value);
-                        const newChattingHistory = [
-                          ...meetingInfo.chattingHistory,
-                          {
-                            isLocal: true,
-                            message: event.target.value,
-                          },
-                        ];
-                        const newMeetingInfo = { ...meetingInfo };
-                        newMeetingInfo.chattingHistory = newChattingHistory;
-                        setMeetingInfo(newMeetingInfo);
+                        if (event.target.value.trim().length !== 0) {
+                          event.preventDefault();
+                          console.log(event.target.value);
+                          const newChattingHistory = [
+                            ...meetingInfo.chattingHistory,
+                            {
+                              isLocal: true,
+                              message: event.target.value,
+                            },
+                          ];
+                          const newMeetingInfo = { ...meetingInfo };
+                          newMeetingInfo.chattingHistory = newChattingHistory;
+                          setMeetingInfo(newMeetingInfo);
+                        }
                         event.target.value = "";
                       }
                     }
@@ -638,8 +644,7 @@ function Meeting() {
             </div>
           ) : (
             <div className="h-[80%] flex flex-col justify-between">
-              <div className="bg-white mx-4 rounded-b-2xl h-[100%] overflow-y-scroll">
-              </div>
+              <div className="bg-white mx-4 rounded-b-2xl h-[100%] overflow-y-scroll"></div>
             </div>
           )}
         </div>
