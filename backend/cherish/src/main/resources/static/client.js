@@ -58,7 +58,7 @@ window.onload = function () {
 
 //connecting to our signaling server
 // 서버 주소로 변경해야 됨
-var conn = new WebSocket('ws://192.168.100.56:8080/socket');
+var conn = new WebSocket('ws://localhost:8080/socket');
 
 conn.onopen = function() {
     console.log("WebSocket Open");
@@ -95,9 +95,9 @@ var input2 = document.getElementById("messageInput2");
 function sendMessageToServer() {
     var str = JSON.stringify({
         event : "access",
-        data : {
+        data : JSON.stringify({
             coupleId : "3"
-        }
+        })
     });
     console.log(str);
     conn.send(str);
