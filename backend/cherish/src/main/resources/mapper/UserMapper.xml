@@ -76,4 +76,16 @@
         WHERE kakao_id = #{kakaoId}
     </select>
 
+    <update id="modifyUser" parameterType="userDto">
+        UPDATE user
+        SET nickname = #{nickname}
+        WHERE id = #{id}
+    </update>
+
+    <update id="modifyCouple" parameterType="coupleDto">
+        UPDATE couple
+        SET nickname = #{nickname}
+        WHERE id = #{id}
+    </update>
+
 </mapper>

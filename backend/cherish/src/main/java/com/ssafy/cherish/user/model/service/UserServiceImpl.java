@@ -52,5 +52,15 @@ public class UserServiceImpl implements UserService {
         return userMapper.findByKakaoId(kakaoId);
     }
 
+    @Override
+    public void modifyUser(UserDto userDto) throws Exception {
+        userMapper.modifyUser(userDto);
+    }
+
+    @Override
+    public void modifyCouple(CoupleDto coupleDto) throws Exception {
+        userMapper.modifyCouple(coupleDto);
+    }
+
 
 }
