@@ -19,7 +19,7 @@ export default function Carousel() {
   };
 
   return (
-    <div className="border-2 rounded-[20px] px-[15px]">
+    <div className="border-2 rounded-[20px] px-[1.2vw] shadow-md">
       <Slider {...settings}>
         <div>
         <img src={test} alt="" />
