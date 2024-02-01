@@ -1,0 +1,36 @@
+
+DiaryYearly 연별 이미지 나타내기
+// 만든거
+// <div key={num} className="relative">
+// 	<img
+// 		src={MonthSample}
+// 		alt={`${num}Month`}
+// 		className={`absolute h-full w-full drop-shadow-xl ${
+// 			numColor[parseInt((num % 12) / 3)]
+// 		}`}
+// 	/>
+// 	<div className={`absolute text-[2vw] top-3 left-16`}>{num}</div>
+// </div>
+
+// 피그마 css
+// <Link
+// 	key={num}
+// 	to={{ pathname: `/diary/month`, search: `?year=${year}&month=${num}` }}
+// >
+// 	<motion.button whileHover={{ scale: 1.2 }}>
+// 		<div className="w-1/4 h-1/1 left-0 top-0 relative ">
+// 			<div
+// 				className={`w-[186px] h-44 left-0 top-0 absolute bg-white rounded-[30px] border border-neutral-400 shadow-md ${
+// 					numColor[parseInt((Number(num) % 12) / 3)]
+// 				}`}
+// 			/>
+// 			<div className="left-[32px] top-[25px] absolute text-center text-black text-[48px] font-light font-['Gluten']">
+// 				{num}
+// 			</div>
+// 			<div className="w-[49px] h-[0px] left-[93px] top-[66px] absolute border border-neutral-400"></div>
+// 			<div className="w-[99.02px] h-[0px] left-[43px] top-[94px] absolute border border-neutral-400"></div>
+// 			<div className="w-[75px] h-[0px] left-[43px] top-[139px] absolute border border-neutral-400"></div>
+// 			<div className="w-[99.02px] h-[0px] left-[43px] top-[118px] absolute border border-neutral-400"></div>
+// 		</div>
+// 	</motion.button>
+// </Link>
