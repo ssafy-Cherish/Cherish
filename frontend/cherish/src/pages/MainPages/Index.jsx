@@ -1,12 +1,14 @@
 import MainBookmarkIcon from "../../assets/MainBookmarkIcon.svg";
 import Carousel from "../../components/Main/Carousel";
 import PotLv1 from "../../assets/PotLv1.svg";
-import "./PotExp.css";
+import "./Pot.css";
 import HeartIcon from "../../assets/HeartIcon.svg";
 import DiaryImg from "../../assets/DiaryImg.svg";
 import CoupleImg1 from "../../assets/CoupleImg1.svg";
 import MemoImg from "../../assets/MemoImg.svg";
 import { Outlet, Link } from "react-router-dom";
+
+
 
 export default function Index() {
   return (
