@@ -73,7 +73,7 @@ const DiaryMonthlyPage = () => {
 
   function setImage(src, className, style, date) {
     return (
-      <div key={date + src}>
+      <div key={`${date}${src}`}>
         <img
           src={src}
           className={className}
@@ -176,16 +176,20 @@ const DiaryMonthlyPage = () => {
             }
 
             return (
-              <motion.div
-                variants={{
-                  init: { opacity: 0 },
-                  visible: { opacity: 1 },
-                }}
-                initial="init"
-                animate="visible"
-              >
-                {html}
-              </motion.div>
+              <>
+                {html.length > 0 && (
+                  <motion.div
+                    variants={{
+                      init: { opacity: 0 },
+                      visible: { opacity: 1 },
+                    }}
+                    initial="init"
+                    animate="visible"
+                  >
+                    {html}
+                  </motion.div>
+                )}
+              </>
             );
           }}
         ></Calendar>
