@@ -17,13 +17,11 @@
     </select>
 
     <insert id="writeMemo" parameterType="memoDto">
-        INSERT INTO memo
-        (couple_id, content, date)
-        VALUES
-        (#{couple_id}, #{content}, #{date})
+        INSERT INTO memo (couple_id, content, date)
+        VALUES (#{coupleId}, #{content}, #{date})
     </insert>
 
-    <select id="getMemo" parameterType="String" resultType="memoDto">
+    <select id="getMemo" parameterType="map" resultType="memoDto">
         SELECT *
         FROM memo
         WHERE couple_id = #{coupleId} AND date = #{date}
@@ -35,7 +33,7 @@
         WHERE couple_id = #{coupleId} AND date = #{date}
     </update>
 
-    <delete id="deleteMemo" parameterType="String">
+    <delete id="deleteMemo" parameterType="map">
         DELETE
         FROM memo
         WHERE couple_id = #{coupleId} AND date = #{date}
