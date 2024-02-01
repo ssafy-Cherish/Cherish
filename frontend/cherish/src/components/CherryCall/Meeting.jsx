@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import sendImg from "../../assets/SendIcon.svg";
+import { motion } from "framer-motion";
 ////////
 
 function Meeting() {
@@ -67,6 +68,14 @@ function Meeting() {
 
   const chattingWindow = useRef();
 
+  const localCam = useRef();
+
+  const remoteCam = useRef();
+
+  const camContainer = useRef();
+
+  const localCamContainer = useRef();
+
   //////
   const getLocalMediaStream = function () {
     const constraints = {
@@ -75,7 +84,7 @@ function Meeting() {
           ideal: 60,
           max: 80,
         },
-        width: 300,
+        width: 500,
         height: 300,
         facingMode: "user",
       },
@@ -94,14 +103,35 @@ function Meeting() {
   };
 
   const updateLocalVideo = function (on, volume) {
-    readyCam.current.srcObject = on
-      ? meetingInfo.stream.localMediaStream
+    if (meetingInfo.dataChannel?.readyState === "open") {
+      JSON.stringify({
+        cmd: "responce peer cam state",
+        data: {
+          videoOn: meetingInfo.video.local.videoOn,
+          volume: meetingInfo.video.local.volume,
+        },
+      });
+    }
+
+    const newMeetingInfo = { ...meetingInfo };
+    newMeetingInfo.video.local.videoOn = on;
+    newMeetingInfo.video.local.volume = volume;
+    const newChattingHistory = [...meetingInfo.chattingHistory];
+    newMeetingInfo.chattingHistory = newChattingHistory;
+    setMeetingInfo(newMeetingInfo);
+  };
+
+  const updateRemoteVideo = function (on, volume) {
+    remoteCam.current.srcObject = on
+      ? meetingInfo.stream.remoteMediaStream
       : null;
-    readyCam.current.volume = volume;
-    const res = { ...meetingInfo };
-    res.video.local.videoOn = on;
-    res.video.local.volume = volume;
-    setMeetingInfo(res);
+    remoteCam.current.volume;
+    const newMeetingInfo = { ...meetingInfo };
+    newMeetingInfo.video.remote.videoOn = on;
+    newMeetingInfo.video.remote.volume = volume;
+    const newChattingHistory = [...meetingInfo.chattingHistory];
+    newMeetingInfo.chattingHistory = newChattingHistory;
+    setMeetingInfo(newMeetingInfo);
   };
 
   const setConnection = function () {
@@ -151,9 +181,11 @@ function Meeting() {
       });
     };
 
-    const nextMeetingInfo = { ...meetingInfo };
-    nextMeetingInfo.connect.conn = conn;
-    setMeetingInfo(nextMeetingInfo);
+    const newMeetingInfo = { ...meetingInfo };
+    newMeetingInfo.connect.conn = conn;
+    const newChattingHistory = [...meetingInfo.chattingHistory];
+    newMeetingInfo.chattingHistory = newChattingHistory;
+    setMeetingInfo(newMeetingInfo);
   };
 
   const initialize = function () {
@@ -191,25 +223,26 @@ function Meeting() {
       const msg = JSON.parse(event.data);
       console.log(msg);
       switch (msg.cmd) {
-        // case "request peer cam state":
-        //   sendMessage(
-        //     JSON.stringify({
-        //       cmd: "responce peer cam state",
-        //       data: camstate,
-        //     })
-        //   );
-        //   break;
+        case "request peer cam state":
+          sendMessage(
+            JSON.stringify({
+              cmd: "responce peer cam state",
+              data: {
+                videoOn: meetingInfo.video.local.videoOn,
+                volume: meetingInfo.video.local.volume,
+              },
+            })
+          );
+          break;
 
-        // case "responce peer cam state":
-        //   remoteStream = msg.data ? remoteMediaStream : null;
-        //   document.getElementById("peer").srcObject = remoteStream;
-        //   break;
+        case "responce peer cam state":
+          updateRemoteVideo(msg.data.videoOn, msg.data.volume);
+          break;
 
-        // case "send chatting massage":
-        //   changeChatting((prev) => {
-        //     return [msg.data, ...prev];
-        //   });
-        //   break;
+        case "send chatting massage":
+          handleRemoteChatting(msg.data);
+          break;
+
         default:
           break;
       }
@@ -242,7 +275,10 @@ function Meeting() {
           meetingInfo.stream.localMediaStream,
           meetingInfo.stream.remoteMediaStream
         );
-
+        updateLocalVideo(
+          meetingInfo.video.local.videoOn,
+          meetingInfo.video.local.volume
+        );
         recordStart();
       }
       sendMessage(
@@ -252,10 +288,12 @@ function Meeting() {
       );
     };
 
-    const nextMeetingInfo = { ...meetingInfo };
-    nextMeetingInfo.connect.peerConnection = peerConnection;
-    nextMeetingInfo.connect.dataChannel = dataChannel;
-    setMeetingInfo(nextMeetingInfo);
+    const newMeetingInfo = { ...meetingInfo };
+    newMeetingInfo.connect.peerConnection = peerConnection;
+    newMeetingInfo.connect.dataChannel = dataChannel;
+    const newChattingHistory = [...meetingInfo.chattingHistory];
+    newMeetingInfo.chattingHistory = newChattingHistory;
+    setMeetingInfo(newMeetingInfo);
   };
 
   const createOffer = function () {
@@ -282,6 +320,8 @@ function Meeting() {
   const handleAccess = function () {
     const newMeetingInfo = { ...meetingInfo };
     newMeetingInfo.connect.offerReady = true;
+    const newChattingHistory = [...meetingInfo.chattingHistory];
+    newMeetingInfo.chattingHistory = newChattingHistory;
     setMeetingInfo(newMeetingInfo);
   };
 
@@ -427,9 +467,38 @@ function Meeting() {
     }, 5000);
   }
 
+  function handleRemoteChatting(message) {
+    // const newMeetingInfo = { ...meetingInfo };
+    // console.log(meetingInfo.chattingHistory);
+    // const newChattingHistory = [
+    //   ...(meetingInfo.chattingHistory),
+    //   { isLocal: false, message: message },
+    // ];
+    // console.log(newChattingHistory);
+    // newMeetingInfo.chattingHistory = newChattingHistory;
+    setMeetingInfo((prevMeetingInfo)=>{
+      const newMeetingInfo = {...prevMeetingInfo, chattingHistory: [...prevMeetingInfo.chattingHistory, {isLocal:false, message:message}]}
+      return newMeetingInfo
+    });
+  }
+
   //////
 
   console.log(meetingInfo);
+
+  if (readyCam.current) {
+    readyCam.current.srcObject = meetingInfo.video.local.videoOn
+      ? meetingInfo.stream.localMediaStream
+      : new MediaStream();
+    readyCam.current.volume = meetingInfo.video.local.volume;
+  }
+
+  if (localCam.current) {
+    localCam.current.srcObject = meetingInfo.video.local.videoOn
+      ? meetingInfo.stream.localMediaStream
+      : new MediaStream();
+    localCam.current.volume = meetingInfo.video.local.volume;
+  }
 
   useEffect(() => {
     getLocalMediaStream();
@@ -454,17 +523,41 @@ function Meeting() {
             <button
               className="border-2 m-2 w-14 rounded-2xl"
               disabled={!meetingInfo.connect.offerReady}
+              onClick={() => {
+                createOffer();
+              }}
             >
               통화
             </button>
           </div>
           {!isModalOpen && (
-            <div className="h-full w-full">
+            <motion.div
+              className="h-full w-full relative flex flex-col-reverse items-center bg-slate-700 rounded-t-2xl z-50"
+              ref={camContainer}
+            >
               <video
-                src=""
-                className="h-full bg-slate-700 rounded-t-2xl"
+                className="h-full bg-slate-700 absolute rounded-t-2xl"
+                ref={remoteCam}
+                autoPlay
+                playsInline
               ></video>
-            </div>
+              {meetingInfo.video.local.videoOn && (
+                <motion.div
+                  className="h-[30%] w-[30%] z-100 relative left-[30%] bottom-[5%] rounded-2xl bg-pink flex flex-col justify-center items-center"
+                  drag
+                  dragConstraints={camContainer}
+                  ref={localCamContainer}
+                  dragMomentum={false}
+                >
+                  <video
+                    ref={localCam}
+                    autoPlay
+                    playsInline
+                    className="h-[90%] w-[90%] absolute "
+                  ></video>
+                </motion.div>
+              )}
+            </motion.div>
           )}
           {isModalOpen && (
             <div className="h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl">
@@ -492,6 +585,7 @@ function Meeting() {
                       }}
                     ></button>
                   </div>
+
                   <div className="h-full rounded-t-2xl bg-slate-700 flex justify-center relative">
                     <video
                       id="ready-cam"
@@ -548,10 +642,12 @@ function Meeting() {
               className="w-[50%] h-full font-extrabold text-xl"
               disabled={meetingInfo.rightWindowIsChatting}
               onClick={() => {
-                const nextMeetingInfo = { ...meetingInfo };
-                nextMeetingInfo.rightWindowIsChatting =
-                  !nextMeetingInfo.rightWindowIsChatting;
-                setMeetingInfo(nextMeetingInfo);
+                const newMeetingInfo = { ...meetingInfo };
+                newMeetingInfo.rightWindowIsChatting =
+                  !newMeetingInfo.rightWindowIsChatting;
+                const newChattingHistory = [...meetingInfo.chattingHistory];
+                newMeetingInfo.chattingHistory = newChattingHistory;
+                setMeetingInfo(newMeetingInfo);
               }}
             >
               체리톡
@@ -560,10 +656,13 @@ function Meeting() {
               className="w-[50%] h-full font-extrabold text-xl"
               disabled={!meetingInfo.rightWindowIsChatting}
               onClick={() => {
-                const nextMeetingInfo = { ...meetingInfo };
-                nextMeetingInfo.rightWindowIsChatting =
-                  !nextMeetingInfo.rightWindowIsChatting;
-                setMeetingInfo(nextMeetingInfo);
+                const newMeetingInfo = { ...meetingInfo };
+                newMeetingInfo.rightWindowIsChatting =
+                  !newMeetingInfo.rightWindowIsChatting;
+                const newChattingHistory = [...meetingInfo.chattingHistory];
+                newMeetingInfo.chattingHistory = newChattingHistory;
+
+                setMeetingInfo(newMeetingInfo);
               }}
             >
               클립
@@ -620,6 +719,13 @@ function Meeting() {
                   event.preventDefault();
                   if (event.target.childNodes[0].value.trim().length !== 0) {
                     console.log(event.target.childNodes[0].value);
+                    sendMessage(
+                      JSON.stringify({
+                        cmd: "send chatting massage",
+                        data: event.target.childNodes[0].value,
+                      })
+                    );
+
                     const newChattingHistory = [
                       ...meetingInfo.chattingHistory,
                       {
@@ -643,6 +749,12 @@ function Meeting() {
                         if (event.target.value.trim().length !== 0) {
                           event.preventDefault();
                           console.log(event.target.value);
+                          sendMessage(
+                            JSON.stringify({
+                              cmd: "send chatting massage",
+                              data: event.target.value,
+                            })
+                          );
                           const newChattingHistory = [
                             ...meetingInfo.chattingHistory,
                             {
