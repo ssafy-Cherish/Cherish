@@ -51,6 +51,7 @@ function Meeting() {
       conn: null,
       peerConnection: null,
       dataChannel: null,
+      offerReady: false,
     },
 
     chattingHistory: [],
@@ -104,16 +105,16 @@ function Meeting() {
   };
 
   const setConnection = function () {
-    const conn = new WebSocket("ws://192.168.100.58:8080/socket");
+    const conn = new WebSocket(import.meta.env.VITE_APP_SOCKET_URL);
 
     conn.onopen = function () {
       console.log("Connected to the signaling server");
       initialize();
       send({
         event: "access",
-        data: {
-          coupleId: 0,
-        },
+        data: JSON.stringify({
+          coupleId: 1,
+        }),
       });
     };
 
@@ -123,6 +124,9 @@ function Meeting() {
       var data = content.data;
       switch (content.event) {
         // when somebody wants to call us
+        case "access":
+          handleAccess();
+          break;
         case "offer":
           handleOffer(data);
           break;
@@ -142,7 +146,7 @@ function Meeting() {
       send({
         event: "exit",
         data: {
-          coupleId: 0,
+          coupleId: 1,
         },
       });
     };
@@ -153,7 +157,13 @@ function Meeting() {
   };
 
   const initialize = function () {
-    const configuration = null;
+    const configuration = {
+      iceServers: [
+        {
+          url: "stun:stun2.1.google.com:19302",
+        },
+      ],
+    };
 
     const peerConnection = new RTCPeerConnection(configuration);
 
@@ -267,6 +277,12 @@ function Meeting() {
         meetingInfo.connect.peerConnection.addTrack(track);
       });
     }
+  };
+
+  const handleAccess = function () {
+    const newMeetingInfo = { ...meetingInfo };
+    newMeetingInfo.connect.offerReady = true;
+    setMeetingInfo(newMeetingInfo);
   };
 
   const handleOffer = function (offer) {
@@ -435,7 +451,12 @@ function Meeting() {
         <div className="h-3/4 m-2 rounded-2xl flex flex-col-reverse">
           <div className="h-14 bg-pink rounded-b-2xl flex flex-row justify-between">
             <div className="border-2 m-2 w-1/6"></div>
-            <button className="border-2 m-2 w-14 rounded-2xl"></button>
+            <button
+              className="border-2 m-2 w-14 rounded-2xl"
+              disabled={!meetingInfo.connect.offerReady}
+            >
+              통화
+            </button>
           </div>
           {!isModalOpen && (
             <div className="h-full w-full">
@@ -471,12 +492,13 @@ function Meeting() {
                       }}
                     ></button>
                   </div>
-                  <div className="h-full rounded-t-2xl bg-slate-700 flex justify-center">
+                  <div className="h-full rounded-t-2xl bg-slate-700 flex justify-center relative">
                     <video
                       id="ready-cam"
                       ref={readyCam}
                       autoPlay
                       playsInline
+                      className="absolute h-full w-full"
                     ></video>
                   </div>
                 </div>
