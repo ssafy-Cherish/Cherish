@@ -17,7 +17,7 @@ public class MemoServiceImpl implements MemoService {
     }
 
     @Override
-    public MemoDto getMemo (String date, String coupleId) throws Exception {
+    public MemoDto getMemo (String date, int coupleId) throws Exception {
         return memoMapper.getMemo(date, coupleId);
     }
 
@@ -27,7 +27,7 @@ public class MemoServiceImpl implements MemoService {
     }
 
     @Override
-    public void deleteMemo (String date, String coupleId) throws Exception {
+    public void deleteMemo (String date, int coupleId) throws Exception {
         memoMapper.deleteMemo(date, coupleId);
     }
 }
