@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.cherish.clip.model.mapper.ClipMapper">
+
     <insert id="createClip" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
         INSERT INTO CLIP (meeting_id,keyword)
         VALUES (#{meetingId},#{keyword});
@@ -9,10 +10,30 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
+
     <update id="updateClipPath" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
         UPDATE CLIP
         SET FILEPATH1=#{filepath1},
             FILEPATH2=#{filepath2}
         WHERE ID = #{id};
     </update>
+
+    <select id="gatherLastMonthClips" resultType="clipVo">
+        SELECT C.ID,C.KEYWORD,M.COUPLE_ID,C.FILEPATH
+        FROM CLIP C
+        JOIN MEETING M ON C.MEETING_ID=M.ID
+        WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH),"%Y-%m")
+        AND IS_SELECTED IS TRUE
+        AND FILEPATH IS NOT NULL
+        AND (C.KEYWORD,M.COUPLE_ID) IN
+            (select C.KEYWORD,M.COUPLE_ID from CLIP C JOIN MEETING M
+            ON C.MEETING_ID=M.ID
+            WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH),"%Y-%m")
+            AND IS_SELECTED IS TRUE
+            AND FILEPATH IS NOT NULL
+            GROUP BY C.KEYWORD,M.COUPLE_ID
+            HAVING COUNT(C.ID)>=5)
+        ORDER BY M.COUPLE_ID,C.KEYWORD,C.CREATED_AT;
+    </select>
+
 </mapper>
