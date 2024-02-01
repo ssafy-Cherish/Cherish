@@ -122,7 +122,7 @@ public class SocketHandler extends TextWebSocketHandler {
         }
         
         // 커플 커넥션에서 웹소켓 연결이 끊긴 사용자 삭제
-        List<CherishSocketSession> couple = connections.get(session.getId());
+        List<CherishSocketSession> couple = connections.get(cherishSession.getCoupleId());
         for (CherishSocketSession cs : couple)
             if (cs.getSession().getId().equals(session.getId()))
                 couple.remove(cs);
