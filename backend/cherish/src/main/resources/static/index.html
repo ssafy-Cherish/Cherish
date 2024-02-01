@@ -20,6 +20,8 @@
         <button type="button" class="btn btn-primary" onclick='createOffer()'>Offer 생성</button>
         <input id="messageInput" type="text" class="form-control" placeholder="message">
         <button type="button" class="btn btn-primary" onclick='sendMessage()'>보내기</button>
+        <input id="messageInput2" type="text" class="form-control" placeholder="message">
+        <button type="button" class="btn btn-primary" onclick='sendMessageToServer()'>서버로 보내기</button>
         <!--WebRTC related code-->
         <br>
         <br>
@@ -34,16 +36,16 @@
 
 <!--        카카오 로그인 테스트-->
         <h1>Kakao Login Test</h1>
-        <span th:if="${userId==null}">
-		<a href="https://kauth.kakao.com/oauth/authorize?client_id=21f6f4f1f1f7333717bc3f2c5748e012&redirect_uri=http://localhost:8080/login&response_type=code">
+<!--        <span th:if="${userId==null}">-->
+		<a href="https://kauth.kakao.com/oauth/authorize?client_id=21f6f4f1f1f7333717bc3f2c5748e012&redirect_uri=http://localhost:8080/user/login&response_type=code">
 			<img src = "image/kakao_login_medium_narrow.png">
 		</a>
-	</span>
-        <span th:if="${userId!=null}">
-		<form name="logout" action="http://localhost:8080/logout">
-			<input type="submit" value="로그아웃">
-		</form>
-	</span>
+<!--	</span>-->
+<!--        <span th:if="${userId!=null}">-->
+<!--		<form name="logout" action="http://localhost:8080/logout">-->
+<!--			<input type="submit" value="로그아웃">-->
+<!--		</form>-->
+<!--	</span>-->
 
     </div>
 

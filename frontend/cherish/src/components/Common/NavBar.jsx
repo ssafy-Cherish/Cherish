@@ -1,11 +1,11 @@
-import MainLogo from "../assets/MainLogo.svg"
-import CherryCallIcon from "../assets/CherryCallIcon.svg"
-import DiaryIcon from "../assets/DiaryIcon.svg"
-import GalleryIcon from '../assets/GalleryIcon.svg'
-import PotIcon from '../assets/PotIcon.svg'
-import QuestionIcon from "../assets/QuestionIcon.svg"
-import DropdownIcon from "../assets/DropdownIcon.svg"
-import ProfileIcon from "../assets/ProfileIcon.svg"
+import MainLogo from "../../assets/MainLogo.svg"
+import CherryCallIcon from "../../assets/CherryCallIcon.svg"
+import DiaryIcon from "../../assets/DiaryIcon.svg"
+import GalleryIcon from '../../assets/GalleryIcon.svg'
+import PotIcon from '../../assets/PotIcon.svg'
+import QuestionIcon from "../../assets/QuestionIcon.svg"
+import DropdownIcon from "../../assets/DropdownIcon.svg"
+import ProfileIcon from "../../assets/ProfileIcon.svg"
 
 
 export default function NavBar() {
