@@ -3,6 +3,7 @@ package com.ssafy.cherish.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -106,5 +107,27 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.debug("웹소켓 클라이언트 연결 성공, session : {}", session);
         sessions.put(session.getId(), new CherishSocketSession(null, session));
+    }
+
+    // 웹소켓 연결이 끊긴 사용자
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        log.debug("웹소켓 클라이언트 연결 끊김, session : {}", session);
+
+        CherishSocketSession cherishSession = sessions.get(session.getId());
+        
+        if (cherishSession.getCoupleId() == null) {
+            log.debug("세션의 커플 아이디 없음, cherishSession : {}", cherishSession);
+            return;
+        }
+        
+        // 커플 커넥션에서 웹소켓 연결이 끊긴 사용자 삭제
+        List<CherishSocketSession> couple = connections.get(session.getId());
+        for (CherishSocketSession cs : couple)
+            if (cs.getSession().getId().equals(session.getId()))
+                couple.remove(cs);
+
+        // 세션들의 맵에서도 연결이 끊긴 사용자 삭제
+        sessions.remove(session.getId());
     }
 }
