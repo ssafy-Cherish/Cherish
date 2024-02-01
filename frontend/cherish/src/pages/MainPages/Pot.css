@@ -11,3 +11,6 @@
   background: linear-gradient(to right, #ffedeb, #fd8680);
 }
 
+#PotTimeLine::-webkit-scrollbar {
+  display: none;
+}
