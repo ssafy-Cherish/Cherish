@@ -7,8 +7,8 @@ import java.sql.SQLException;
 public interface MemoService {
 
     void writeMemo (MemoDto memoDto) throws Exception;
-    MemoDto getMemo (String date, String coupleId) throws Exception;
+    MemoDto getMemo (String date, int coupleId) throws Exception;
     void modifyMemo (MemoDto memoDto) throws Exception;
-    void deleteMemo (String date, String coupleId) throws Exception;
+    void deleteMemo (String date, int coupleId) throws Exception;
 
 }

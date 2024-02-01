@@ -16,12 +16,12 @@ public interface MemoMapper {
     void writeMemo (MemoDto memoDto) throws SQLException;
 
     // 메모 보여주기
-    MemoDto getMemo (String date, String coupleId) throws SQLException;
+    MemoDto getMemo (String date, int coupleId) throws SQLException;
 
     // 메모 수정하기
     void modifyMemo (MemoDto memoDto) throws SQLException;
 
     // 메모 삭제하기
-    void deleteMemo (String date, String coupleId) throws SQLException;
+    void deleteMemo (String date, int coupleId) throws SQLException;
 
 }
