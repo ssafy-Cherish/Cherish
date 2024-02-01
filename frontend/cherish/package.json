@@ -14,14 +14,13 @@
     "dayjs": "^1.11.10",
     "framer-motion": "^11.0.3",
     "million": "^2.6.4",
-    "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-calendar": "^4.8.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.3",
     "react-slick": "^0.30.1",
-    "slick-carousel": "^1.8.1",
     "react-speech-kit": "^3.0.1",
+    "slick-carousel": "^1.8.1",
     "vite-plugin-svgr": "^4.2.0"
   },
   "devDependencies": {
