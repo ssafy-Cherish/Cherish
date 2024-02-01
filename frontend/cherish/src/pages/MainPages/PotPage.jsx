@@ -1,5 +1,3 @@
-import Modal from "../../components/Main/Modal";
-
 import HeartIcon from "../../assets/HeartIcon.svg";
 import PotLv2 from "../../assets/PotLv2.svg";
 import Modaltest from "../../components/Common/ModalTest";
