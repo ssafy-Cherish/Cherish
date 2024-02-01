@@ -1,4 +1,4 @@
-package com.ssafy.cherish.kakao;
+package com.ssafy.cherish.user.controller;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,7 +29,7 @@ public class KakaoAPI {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=21f6f4f1f1f7333717bc3f2c5748e012");
-            sb.append("&redirect_uri=http://localhost:8080/login");
+            sb.append("&redirect_uri=http://localhost:8080/user/login");
             sb.append("&code="+code);
 
             bw.write(sb.toString());
@@ -55,7 +55,7 @@ public class KakaoAPI {
 
             br.close();
             bw.close();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return accessToken;
@@ -91,7 +91,9 @@ public class KakaoAPI {
 
             String nickname = properties.getAsJsonObject().get("nickname").getAsString();
             String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
+            long kakaoId = element.getAsJsonObject().get("id").getAsLong();
 
+            userInfo.put("kakaoId", kakaoId);
             userInfo.put("nickname", nickname);
             userInfo.put("email", email);
 
@@ -119,7 +121,7 @@ public class KakaoAPI {
             String line = "";
 
             while((line = br.readLine()) != null) {
-                result+=line;
+                result += line;
             }
             System.out.println(result);
         } catch (Exception e) {
