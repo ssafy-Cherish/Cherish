@@ -22,7 +22,7 @@ public class SocketHandler extends TextWebSocketHandler {
     // 연결이 성공한 모든 클라이언트와 서버의 연결이 저장되는 맵
     Map<String, CherishSocketSession> sessions = new HashMap<>();
     // 커플 아이디 별로 연결된 세션의 수
-    Map<String, List<CherishSocketSession>> connections = new HashMap<>();
+    Map<Integer, List<CherishSocketSession>> connections = new HashMap<>();
 
     // 연결이 성공한 클라이언트가 웹소켓을 통해 메세지를 부르면 호출되는 메소드
     @Override
@@ -42,7 +42,7 @@ public class SocketHandler extends TextWebSocketHandler {
                 case "offer":
                 case "answer":
                 case "candidate":
-                    if (cherishSession.getCoupleId() == null) {
+                    if (cherishSession.getCoupleId() == Integer.MIN_VALUE) {
                         log.debug("커플 아이디 없음 : {}", cherishSession);
                         return;
                     }
@@ -67,8 +67,8 @@ public class SocketHandler extends TextWebSocketHandler {
                     // 클라이언트가 처음 서버와 연결된 뒤 정보를 저장하기 위해 커플 아이디를 전송
                 case "access":
                     // 데이터를 맵으로 변환
-                    Map<String, String> map2 = mapper.readValue(map.get("data"), Map.class);
-                    String coupleId = map2.get("coupleId");
+                    Map<String, Integer> map2 = mapper.readValue(map.get("data"), Map.class);
+                    int coupleId = map2.get("coupleId");
                     
                     // 커플들의 각각의 세션에 커플 아이디 저장
                     cherishSession.setCoupleId(coupleId);
@@ -106,7 +106,7 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.debug("웹소켓 클라이언트 연결 성공, session : {}", session);
-        sessions.put(session.getId(), new CherishSocketSession(null, session));
+        sessions.put(session.getId(), new CherishSocketSession(session));
     }
 
     // 웹소켓 연결이 끊긴 사용자
@@ -116,7 +116,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
         CherishSocketSession cherishSession = sessions.get(session.getId());
         
-        if (cherishSession.getCoupleId() == null) {
+        if (cherishSession.getCoupleId() == Integer.MIN_VALUE) {
             log.debug("세션의 커플 아이디 없음, cherishSession : {}", cherishSession);
             return;
         }
