@@ -1,9 +1,8 @@
 .modal {
   margin: 5% auto;
-  border-radius: 20px;
   max-width: 90%;
   z-index: 10;
-  background-color: black;
+  background-color: #FEF8EC;
 }
 
 .backdrop {
