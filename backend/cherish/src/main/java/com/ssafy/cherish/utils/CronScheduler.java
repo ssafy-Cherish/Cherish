@@ -1,68 +1,124 @@
 package com.ssafy.cherish.utils;
 
+import com.ssafy.cherish.clip.model.dto.ClipVo;
+import com.ssafy.cherish.clip.model.mapper.ClipMapper;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
-import net.bramp.ffmpeg.probe.FFmpegFormat;
-import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @EnableScheduling
 @Component
 @Slf4j
 public class CronScheduler {
-    //cron = 초,분,시,일,월,요일
+
+    @Autowired
+    private ClipMapper clipMapper;
+
+    @Value("${custom.path.ffmpeg}")
+    private String ffmpegPath;
+
+    @Value("${custom.path.monthly-video}")
+    private String monthlyVideoPath;
+
 
     //매월 1일로 바뀔때 실행됨
     //@Scheduled(cron = "0 0 0 1 * *")
     //아래는 테스트용 (주석 빼면 10초에 한번씩 실행됨)
-//    @Scheduled(cron = "0/10 * * * * *")
-    public void mergeMonthlyVideo()
-    {
-        System.out.println("테스트");
+    @Scheduled(cron = "0/10 * * * * *")
+    public void saveMonthlyVideo() {
+
+        System.out.println(ffmpegPath+" "+monthlyVideoPath);
         try {
-            //TODO: AWS 환경에 맞게 변경해야함
-            //window 기준, 로컬에 설치해야함
-            String ffmpegPath="C:\\Program Files\\ffmpeg-6.1.1-essentials_build\\bin\\ffmpeg.exe";
-            String ffprobePath="C:\\Program Files\\ffmpeg-6.1.1-essentials_build\\bin\\ffprobe.exe";
-            //mac 기준
-            //String ffmpegPath=System.getProperty("user.home")+"/ffmpeg/6.1.1_3/bin";
 
-            FFmpeg ffmpeg = new FFmpeg(ffmpegPath);
-            FFprobe ffprobe = new FFprobe(ffprobePath);
+            List<ClipVo> clipList = clipMapper.gatherLastMonthClips();
 
-            FFmpegProbeResult videoProbe1=ffprobe.probe("C:/Users/SSAFY/Documents/cherish_video/1/1/1.mp4");
+            int coupleId = 0;
+            String keyword = "";
+            Path mPath =Paths.get(monthlyVideoPath);
+            StringBuilder content= new StringBuilder();
 
+            if(!Files.exists(mPath))
+            {
+                Files.createDirectories(mPath);
+            }
 
-//            filepath 경로에 있는 list.txt에
-//            / file 'C:\Users\SSAFY\Documents\cherish_video\1\1\1.mp4' /
-//            형식의 텍스트 저장 필요
+            for (ClipVo clip : clipList) {
+                if (clip.getCoupleId() != coupleId || !keyword.equals(clip.getKeyword())) {
 
-            String filepath="C:/Users/SSAFY/Documents/cherish_video/1/1/";
-            //ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
-            FFmpegBuilder builder=new FFmpegBuilder()
-                    .overrideOutputFiles(true)
-                    .addInput("C:/Users/SSAFY/list.txt")
-                    .addExtraArgs("-f","concat")
-                    .addExtraArgs("-safe","0")
-                    .addOutput(filepath+"output.mp4")
-                    .done();
+                    if(!content.isEmpty())
+                    {
+                        Path monthFileName = Paths.get(monthlyVideoPath+keyword + "_" + coupleId + "_" + LocalDateTime.now().toString()+".txt");
+                        Files.createFile(monthFileName);
+                        FileWriter fw=new FileWriter(monthFileName.toFile());
+                        fw.write(content.toString());
+                        content=new StringBuilder();
 
-            log.debug("FFmpeg command: {}", builder.build());
+                        // 동영상 병합 메서드 콜
+                        mergeMonthlyVideo(monthFileName.toString());
+                    }
+                    coupleId= clip.getCoupleId();
+                    keyword=clip.getKeyword();
+                }
+                // / file 'C:\Users\SSAFY\Documents\cherish_video\1\1\1.mp4' /형식의 텍스트 저장
+                content.append("file '"+clip.getFilepath()+"'\n");
+            }
 
-            FFmpegExecutor executor = new FFmpegExecutor(ffmpeg,ffprobe);
-            executor.createJob(builder).run();
+            if(!content.isEmpty())
+            {
+                Path monthFileName = mPath.resolve(keyword + "_" + coupleId + "_" + LocalDateTime.now().toString()+".txt");
+                Files.createFile(monthFileName);
+                FileWriter fw=new FileWriter(monthFileName.toFile());
+                fw.write(content.toString());
+                // 동영상 병합 메서드 콜
+                mergeMonthlyVideo(monthFileName.toString());
+            }
 
-        }catch (IOException e)
-        {
-            log.error(e.toString());
+        } catch (IOException e) {
+            log.error("파일 열기 중 에러 발생: {}", e.toString());
+        } catch (SQLException e) {
+            log.error("월별 커플 동영상 조회 중 에러 발생: {}", e.toString());
         }
+    }
+
+    void mergeMonthlyVideo(String clipListFile) throws IOException
+    {
+        FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg.exe");
+        FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe.exe");
+
+        String[] tmp=clipListFile.split(File.separator);
+        String outputFile=tmp[tmp.length-1].replaceAll(".txt",".mp4");
+        //ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .overrideOutputFiles(true)
+                .addInput(clipListFile)
+                .addExtraArgs("-f", "concat")
+                .addExtraArgs("-safe", "0")
+                .addOutput(monthlyVideoPath + outputFile)
+                .done();
+
+        log.debug("FFmpeg command: {}", builder.build());
+
+        FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+        executor.createJob(builder).run();
+
+        //TODO: 병합된 동영상 정보를 monthlyVideo 테이블에 입력
     }
 
 }

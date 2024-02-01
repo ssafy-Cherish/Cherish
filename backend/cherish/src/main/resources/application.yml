@@ -34,4 +34,12 @@ logging:
       ssafy:
         cherish: DEBUG
 
-
+# 로컬 스토리지 저장을 위한 자체 경로 정보
+# EC2에 맞춰서 수정 필요
+custom:
+  path:
+#    mac 기준
+#    String ffmpegPath=System.getProperty("user.home")+"/ffmpeg/6.1.1_3/bin";
+    ffmpeg: "C:\\Program Files\\ffmpeg-6.1.1-essentials_build\\bin\\"
+    monthly-video: "C:\\Users\\SSAFY\\Documents\\cherish_video\\monthly-video\\"
+    clip: "C:\\Users\\SSAFY\\Documents\\cherish_video\\clip\\"
