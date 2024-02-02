@@ -2,14 +2,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, useAnimate } from "framer-motion";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Modal from "../../components/Common/Modal";
+import { default as NavModal } from "../../components/Common/Modal";
+import { default as Modal } from "../../components/Diary/Modal";
 import dayjs from "dayjs";
 import dailyImg from "../../assets/diary/DiaryDailyPage.svg";
 import "../../components/Diary/DiaryDailyPage.css";
 import ChatModal from "../../components/Diary/ChatModal";
+import MemoModal from "../../components/Diary/MemoModal";
 import MemoImg from "../../assets/MemoImg.svg";
 import chatImg from "../../assets/diary/chat.svg";
-import Pin from "../../assets/diary/pin.svg";
 
 const DiaryDailyPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -167,7 +168,12 @@ const DiaryDailyPage = () => {
 
   const [selectedId, setSelectedId] = useState(null);
 
+  // 채팅 기록 모달 ON, OFF
   const [openChatModal, setOpenChatModal] = useState(false);
+
+  // 메모 모달 ON, OFF
+  const [openMemoModal, setOpenMemoModal] = useState(false);
+
   // Modal에 전달할 채팅 기록
   const [chats, setChats] = useState([]);
 
@@ -178,6 +184,14 @@ const DiaryDailyPage = () => {
 
   function closeChatModal() {
     setOpenChatModal(false);
+  }
+
+  function showMemo() {
+    setOpenMemoModal(true);
+  }
+
+  function closeMemoModal() {
+    setOpenMemoModal(false);
   }
 
   function moveToMonthly() {
@@ -203,7 +217,7 @@ const DiaryDailyPage = () => {
 
   return (
     <>
-      <Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false}>
+      <NavModal z={1} modalcss="h-[90vh] w-[70vw]" isX={false}>
         <div
           className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[50vw] items-center"
           ref={scope}
@@ -294,7 +308,11 @@ const DiaryDailyPage = () => {
 
             {/* 메모 영역 */}
             <div className="flex justify-end items-center">
-              <motion.div className="w-[17vw] relative" whileHover={{ scale: 1.2 }}>
+              <motion.div
+                className="w-[17vw] relative"
+                whileHover={{ scale: 1.2 }}
+                onClick={showMemo}
+              >
                 <div className="max-w-full h-full grid grid-rows-6 justify-center absolute">
                   <div className="text-[1vw] text-center row-start-2 max-w-full">
                     <span>Memo</span>
@@ -319,10 +337,15 @@ const DiaryDailyPage = () => {
         <div>
           <img className="w-full" src={dailyImg} alt="" />
         </div>
-      </Modal>
+      </NavModal>
       <AnimatePresence>
         {openChatModal && (
-          <ChatModal chats={chats} onClose={closeChatModal} myId={myId}></ChatModal>
+          <ChatModal onClose={closeChatModal} myId={myId} chats={chats}></ChatModal>
+        )}
+        {openMemoModal && (
+          <Modal onClose={closeMemoModal} dialogCss="w-[30vw] h-[60vh] bg-skyblue p-5 rounded-2xl">
+            <div></div>
+          </Modal>
         )}
       </AnimatePresence>
     </>
