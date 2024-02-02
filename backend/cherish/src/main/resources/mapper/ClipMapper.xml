@@ -13,8 +13,7 @@
 
     <update id="updateClipPath" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
         UPDATE CLIP
-        SET FILEPATH1=#{filepath1},
-            FILEPATH2=#{filepath2}
+        SET FILEPATH=#{filepath}
         WHERE ID = #{id};
     </update>
 
