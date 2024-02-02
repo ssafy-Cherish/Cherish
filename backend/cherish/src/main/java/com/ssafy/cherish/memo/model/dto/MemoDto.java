@@ -14,4 +14,5 @@ public class MemoDto {
     private int coupleId;
     private String content;
     private String createAt;
+    private String date;
 }
