@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import sendImg from "../../assets/SendIcon.svg";
 import { motion } from "framer-motion";
+import "./Meeting.css";
+import { useBeforeUnload } from "react-router-dom";
+import { useSpeechRecognition } from "react-speech-kit";
 ////////
 
 function Meeting() {
@@ -15,11 +18,11 @@ function Meeting() {
     video: {
       local: {
         videoOn: false,
-        volume: 0,
+        volume: 0.0,
       },
       remote: {
         videoOn: false,
-        volume: 0,
+        volume: 0.0,
       },
     },
 
@@ -45,7 +48,13 @@ function Meeting() {
         videoBitsPerSecond: 2500000,
       },
 
+      recogString: "",
+
+      canRecog: true,
+
       nowIdx: 0,
+
+      tmpRecord: [],
     },
 
     connect: {
@@ -62,6 +71,39 @@ function Meeting() {
     rightWindowIsChatting: true,
   });
 
+  const { listen, listening, stop } = useSpeechRecognition({
+    onResult: (result) => {
+      console.log(result);
+      setMeetingInfo((prevMeetingInfo) => {
+        const newMeetingInfo = { ...prevMeetingInfo };
+        if (prevMeetingInfo.record.recogString != result) {
+          newMeetingInfo.record.recogString = result;
+          const arr = result.split(" ");
+          if (
+            prevMeetingInfo.record.canRecog &&
+            arr[arr.length - 1] === "안녕"
+          ) {
+            newMeetingInfo.record.canRecog = false;
+            console.log("record Trigered");
+            setTimeout(() => {
+              setMeetingInfo((tmpMeetingInfo) => {
+                const newTmpMeetingInfo = { ...tmpMeetingInfo };
+                newTmpMeetingInfo.record.canRecog = true;
+                return newTmpMeetingInfo;
+              });
+            }, 1500);
+            newMeetingInfo.record.recordFlag[
+              prevMeetingInfo.record.nowIdx
+            ][0] = true;
+            newMeetingInfo.record.recordFlag[
+              prevMeetingInfo.record.nowIdx
+            ][1] = true;
+          }
+        }
+        return newMeetingInfo;
+      });
+    },
+  });
   //////
 
   const readyCam = useRef();
@@ -113,25 +155,42 @@ function Meeting() {
       });
     }
 
-    const newMeetingInfo = { ...meetingInfo };
-    newMeetingInfo.video.local.videoOn = on;
-    newMeetingInfo.video.local.volume = volume;
-    const newChattingHistory = [...meetingInfo.chattingHistory];
-    newMeetingInfo.chattingHistory = newChattingHistory;
-    setMeetingInfo(newMeetingInfo);
+    if (readyCam.current) {
+      readyCam.current.srcObject = on
+        ? meetingInfo.stream.localMediaStream
+        : new MediaStream();
+      readyCam.current.volume = volume;
+    }
+
+    if (localCam.current) {
+      localCam.current.srcObject = on
+        ? meetingInfo.stream.localMediaStream
+        : new MediaStream();
+      localCam.current.volume = volume;
+    }
+
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = { ...prevMeetingInfo };
+      newMeetingInfo.video.local.videoOn = on;
+      newMeetingInfo.video.local.volume = volume;
+      return newMeetingInfo;
+    });
   };
 
   const updateRemoteVideo = function (on, volume) {
-    remoteCam.current.srcObject = on
-      ? meetingInfo.stream.remoteMediaStream
-      : null;
-    remoteCam.current.volume;
-    const newMeetingInfo = { ...meetingInfo };
-    newMeetingInfo.video.remote.videoOn = on;
-    newMeetingInfo.video.remote.volume = volume;
-    const newChattingHistory = [...meetingInfo.chattingHistory];
-    newMeetingInfo.chattingHistory = newChattingHistory;
-    setMeetingInfo(newMeetingInfo);
+    if (remoteCam.current) {
+      remoteCam.current.srcObject = on
+        ? meetingInfo.stream.remoteMediaStream
+        : new MediaStream();
+      remoteCam.current.volume = volume;
+    }
+
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = { ...prevMeetingInfo };
+      newMeetingInfo.video.remote.videoOn = on;
+      newMeetingInfo.video.remote.volume = volume;
+      return newMeetingInfo;
+    });
   };
 
   const setConnection = function () {
@@ -181,11 +240,11 @@ function Meeting() {
       });
     };
 
-    const newMeetingInfo = { ...meetingInfo };
-    newMeetingInfo.connect.conn = conn;
-    const newChattingHistory = [...meetingInfo.chattingHistory];
-    newMeetingInfo.chattingHistory = newChattingHistory;
-    setMeetingInfo(newMeetingInfo);
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = { ...prevMeetingInfo };
+      newMeetingInfo.connect.conn = conn;
+      return newMeetingInfo;
+    });
   };
 
   const initialize = function () {
@@ -250,8 +309,37 @@ function Meeting() {
 
     dataChannel.onclose = function () {
       peerConnection.close();
-      initialize();
       console.log("data channel is closed");
+      setMeetingInfo((prevMeetingInfo) => {
+        const newMeetingInfo = { ...prevMeetingInfo };
+        newMeetingInfo.record.mediaRecorder = [
+          [null, null],
+          [null, null],
+        ];
+        newMeetingInfo.record.recordedChunks = [
+          [[], []],
+          [[], []],
+        ];
+        newMeetingInfo.record.recordFlag = [
+          [false, false],
+          [false, false],
+        ];
+
+        newMeetingInfo.stream.remoteMediaStream.getTracks().forEach((track) => {
+          newMeetingInfo.stream.remoteMediaStream.removeTrack(track);
+        });
+
+        newMeetingInfo.video.remote.videoOn = false;
+        newMeetingInfo.video.remote.volume = 0;
+
+        updateRemoteVideo(
+          newMeetingInfo.video.remote.videoOn,
+          newMeetingInfo.video.remote.volume
+        );
+        newMeetingInfo.connect.offerReady = false;
+        return newMeetingInfo;
+      });
+      initialize();
     };
 
     peerConnection.ondatachannel = function (event) {
@@ -286,14 +374,21 @@ function Meeting() {
           cmd: "request peer cam state",
         })
       );
+      setMeetingInfo((prevMeetingInfo) => {
+        const newMeetingInfo = { ...prevMeetingInfo };
+        newMeetingInfo.record.canRecog = true;
+        return newMeetingInfo;
+      });
     };
 
-    const newMeetingInfo = { ...meetingInfo };
-    newMeetingInfo.connect.peerConnection = peerConnection;
-    newMeetingInfo.connect.dataChannel = dataChannel;
-    const newChattingHistory = [...meetingInfo.chattingHistory];
-    newMeetingInfo.chattingHistory = newChattingHistory;
-    setMeetingInfo(newMeetingInfo);
+    peerConnection.onconnectionstatechange = function () {};
+
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = { ...prevMeetingInfo };
+      newMeetingInfo.connect.peerConnection = peerConnection;
+      newMeetingInfo.connect.dataChannel = dataChannel;
+      return newMeetingInfo;
+    });
   };
 
   const createOffer = function () {
@@ -315,14 +410,19 @@ function Meeting() {
         meetingInfo.connect.peerConnection.addTrack(track);
       });
     }
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = { ...prevMeetingInfo };
+      newMeetingInfo.connect.offerReady = false;
+      return newMeetingInfo;
+    });
   };
 
   const handleAccess = function () {
-    const newMeetingInfo = { ...meetingInfo };
-    newMeetingInfo.connect.offerReady = true;
-    const newChattingHistory = [...meetingInfo.chattingHistory];
-    newMeetingInfo.chattingHistory = newChattingHistory;
-    setMeetingInfo(newMeetingInfo);
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = { ...prevMeetingInfo };
+      newMeetingInfo.connect.offerReady = true;
+      return newMeetingInfo;
+    });
   };
 
   const handleOffer = function (offer) {
@@ -395,6 +495,7 @@ function Meeting() {
         meetingInfo.record.recordedChunks[idx][1].push(event.data);
       }
     };
+
     meetingInfo.record.mediaRecorder[idx][0].onstart = function () {
       meetingInfo.record.recordedChunks[idx][0] = [];
 
@@ -403,36 +504,46 @@ function Meeting() {
       }, 1000);
 
       setTimeout(() => {
-        meetingInfo.record.mediaRecorder[idx][0].stop();
+        if (meetingInfo.connect.dataChannel.readyState === "connected") {
+          meetingInfo.record.mediaRecorder[idx][0].stop();
+        }
       }, 10000);
     };
     meetingInfo.record.mediaRecorder[idx][1].onstart = function () {
       meetingInfo.record.recordedChunks[idx][1] = [];
 
       setTimeout(() => {
-        meetingInfo.record.mediaRecorder[idx][1].stop();
+        if (meetingInfo.connect.dataChannel.readyState === "connected") {
+          meetingInfo.record.mediaRecorder[idx][1].stop();
+        }
       }, 10000);
     };
 
     meetingInfo.record.mediaRecorder[idx][0].onstop = function () {
+      console.log(idx);
       if (meetingInfo.record.recordFlag[idx][0] === true) {
         meetingInfo.record.recordFlag[idx][0] = false;
         let blob = new Blob(meetingInfo.record.recordedChunks[idx][0], {
           mimeType: "video/webm; codecs=vp9",
         });
-        meetingInfo.record.mediaRecorder[idx][0].start(1000);
+        if (meetingInfo.connect.dataChannel.readyState === "connected") {
+          meetingInfo.record.mediaRecorder[idx][0].start(1000);
+        }
         let url = URL.createObjectURL(blob);
         console.log(url);
-
-        const localv = document.getElementById("record");
-        localv.src = url;
-        localv.load();
-        localv.oncanplaythrough = function () {
-          // 로드 완료되면 실행
-          localv.play();
-        };
+        setMeetingInfo((prevMeetingInfo) => {
+          const newMeetingInfo = { ...prevMeetingInfo };
+          newMeetingInfo.record.tmpRecord.push(url);
+          if (newMeetingInfo.record.tmpRecord.length === 2) {
+            newMeetingInfo.clipHistory.push(newMeetingInfo.record.tmpRecord);
+            newMeetingInfo.record.tmpRecord = [];
+          }
+          return newMeetingInfo;
+        });
       } else {
-        meetingInfo.record.mediaRecorder[idx][0].start(1000);
+        if (meetingInfo.connect.dataChannel.readyState === "connected") {
+          meetingInfo.record.mediaRecorder[idx][0].start(1000);
+        }
       }
     };
     meetingInfo.record.mediaRecorder[idx][1].onstop = function () {
@@ -441,64 +552,88 @@ function Meeting() {
         let blob = new Blob(meetingInfo.record.recordedChunks[idx][1], {
           mimeType: "video/webm; codecs=vp9",
         });
-        meetingInfo.record.mediaRecorder[idx][1].start(1000);
+        if (meetingInfo.connect.dataChannel.readyState === "connected") {
+          meetingInfo.record.mediaRecorder[idx][1].start(1000);
+        }
         let url = URL.createObjectURL(blob);
         console.log(url);
 
-        const remotev = document.getElementById("recordpeer");
-        remotev.src = url;
-        remotev.load();
-        remotev.oncanplaythrough = function () {
-          // 로드 완료되면 실행
-          remotev.play();
-        };
+        setMeetingInfo((prevMeetingInfo) => {
+          const newMeetingInfo = { ...prevMeetingInfo };
+          newMeetingInfo.record.tmpRecord.push(url);
+          if (newMeetingInfo.record.tmpRecord.length === 2) {
+            newMeetingInfo.clipHistory.push(newMeetingInfo.record.tmpRecord);
+            newMeetingInfo.record.tmpRecord = [];
+          }
+          return newMeetingInfo;
+        });
+        // const remotev = document.getElementById("recordpeer");
+        // remotev.src = url;
+        // remotev.load();
+        // remotev.oncanplaythrough = function () {
+        //   // 로드 완료되면 실행
+        //   remotev.play();
+        // };
       } else {
-        meetingInfo.record.mediaRecorder[idx][1].start(1000);
+        if (meetingInfo.record.mediaRecorder[idx][1]) {
+          if (meetingInfo.connect.dataChannel.readyState === "connected") {
+            meetingInfo.record.mediaRecorder[idx][1]?.start(1000);
+          }
+        }
       }
     };
   };
 
   function recordStart() {
-    meetingInfo.record.mediaRecorder[0][0].start(1000);
-    meetingInfo.record.mediaRecorder[0][1].start(1000);
+    if (meetingInfo.connect.dataChannel.readyState === "connected") {
+      meetingInfo.record.mediaRecorder[0][0].start(1000);
+      meetingInfo.record.mediaRecorder[0][1].start(1000);
+    }
     setTimeout(() => {
-      meetingInfo.record.mediaRecorder[1][0].start(1000);
-      meetingInfo.record.mediaRecorder[1][1].start(1000);
+      if (meetingInfo.connect.dataChannel.readyState === "connected") {
+        meetingInfo.record.mediaRecorder[1][0].start(1000);
+        meetingInfo.record.mediaRecorder[1][1].start(1000);
+      }
     }, 5000);
   }
 
   function handleRemoteChatting(message) {
-    // const newMeetingInfo = { ...meetingInfo };
-    // console.log(meetingInfo.chattingHistory);
-    // const newChattingHistory = [
-    //   ...(meetingInfo.chattingHistory),
-    //   { isLocal: false, message: message },
-    // ];
-    // console.log(newChattingHistory);
-    // newMeetingInfo.chattingHistory = newChattingHistory;
-    setMeetingInfo((prevMeetingInfo)=>{
-      const newMeetingInfo = {...prevMeetingInfo, chattingHistory: [...prevMeetingInfo.chattingHistory, {isLocal:false, message:message}]}
-      return newMeetingInfo
+    setMeetingInfo((prevMeetingInfo) => {
+      const newMeetingInfo = {
+        ...prevMeetingInfo,
+        chattingHistory: [
+          ...prevMeetingInfo.chattingHistory,
+          { isLocal: false, message: message },
+        ],
+      };
+      return newMeetingInfo;
     });
   }
 
   //////
 
-  console.log(meetingInfo);
+  console.log(meetingInfo, listening);
 
-  if (readyCam.current) {
-    readyCam.current.srcObject = meetingInfo.video.local.videoOn
-      ? meetingInfo.stream.localMediaStream
-      : new MediaStream();
-    readyCam.current.volume = meetingInfo.video.local.volume;
-  }
+  // if (readyCam.current) {
+  //   readyCam.current.srcObject = meetingInfo.video.local.videoOn
+  //     ? meetingInfo.stream.localMediaStream
+  //     : new MediaStream();
+  //   readyCam.current.volume = meetingInfo.video.local.volume;
+  // }
 
-  if (localCam.current) {
-    localCam.current.srcObject = meetingInfo.video.local.videoOn
-      ? meetingInfo.stream.localMediaStream
-      : new MediaStream();
-    localCam.current.volume = meetingInfo.video.local.volume;
-  }
+  // if (localCam.current) {
+  //   localCam.current.srcObject = meetingInfo.video.local.videoOn
+  //     ? meetingInfo.stream.localMediaStream
+  //     : new MediaStream();
+  //   localCam.current.volume = meetingInfo.video.local.volume;
+  // }
+
+  // if (remoteCam.current) {
+  //   remoteCam.current.srcObject = meetingInfo.video.remote.videoOn
+  //     ? meetingInfo.stream.remoteMediaStream
+  //     : new MediaStream();
+  //   remoteCam.current.volume = meetingInfo.video.remote.volume;
+  // }
 
   useEffect(() => {
     getLocalMediaStream();
@@ -513,6 +648,17 @@ function Meeting() {
       });
     }
   }, [meetingInfo.chattingHistory.length]);
+
+  useEffect(() => {
+    updateLocalVideo(
+      meetingInfo.video.local.videoOn,
+      meetingInfo.video.local.volume
+    );
+  }, [isModalOpen]);
+
+  useBeforeUnload(() => {
+    meetingInfo.connect.dataChannel.close();
+  });
 
   return (
     <div className="h-full w-full flex flex-row contents-center">
@@ -537,6 +683,7 @@ function Meeting() {
             >
               <video
                 className="h-full bg-slate-700 absolute rounded-t-2xl"
+                id="remoteCam"
                 ref={remoteCam}
                 autoPlay
                 playsInline
@@ -608,6 +755,14 @@ function Meeting() {
                       meetingInfo.stream.localMediaStream.getTracks().length ===
                       0
                     }
+                    onClick={(event) => {
+                      event.preventDefault();
+                      meetingInfo.stream.localMediaStream
+                        .getTracks()
+                        .forEach((track) => {
+                          track.stop();
+                        });
+                    }}
                   >
                     알림보내기
                   </button>
@@ -623,8 +778,10 @@ function Meeting() {
                       0
                     }
                     onClick={() => {
-                      setIsModalOpen(false);
                       setConnection();
+
+                      setIsModalOpen(false);
+                      listen();
                     }}
                   >
                     입장
@@ -642,12 +799,12 @@ function Meeting() {
               className="w-[50%] h-full font-extrabold text-xl"
               disabled={meetingInfo.rightWindowIsChatting}
               onClick={() => {
-                const newMeetingInfo = { ...meetingInfo };
-                newMeetingInfo.rightWindowIsChatting =
-                  !newMeetingInfo.rightWindowIsChatting;
-                const newChattingHistory = [...meetingInfo.chattingHistory];
-                newMeetingInfo.chattingHistory = newChattingHistory;
-                setMeetingInfo(newMeetingInfo);
+                setMeetingInfo((prevMeetingInfo) => {
+                  const newMeetingInfo = { ...prevMeetingInfo };
+                  newMeetingInfo.rightWindowIsChatting =
+                    !newMeetingInfo.rightWindowIsChatting;
+                  return newMeetingInfo;
+                });
               }}
             >
               체리톡
@@ -656,13 +813,12 @@ function Meeting() {
               className="w-[50%] h-full font-extrabold text-xl"
               disabled={!meetingInfo.rightWindowIsChatting}
               onClick={() => {
-                const newMeetingInfo = { ...meetingInfo };
-                newMeetingInfo.rightWindowIsChatting =
-                  !newMeetingInfo.rightWindowIsChatting;
-                const newChattingHistory = [...meetingInfo.chattingHistory];
-                newMeetingInfo.chattingHistory = newChattingHistory;
-
-                setMeetingInfo(newMeetingInfo);
+                setMeetingInfo((prevMeetingInfo) => {
+                  const newMeetingInfo = { ...prevMeetingInfo };
+                  newMeetingInfo.rightWindowIsChatting =
+                    !newMeetingInfo.rightWindowIsChatting;
+                  return newMeetingInfo;
+                });
               }}
             >
               클립
@@ -672,7 +828,7 @@ function Meeting() {
             <div className="h-[80%] flex flex-col justify-between px-4">
               <div className="relative rounded-b-2xl h-[85%]">
                 <div
-                  className="bg-white rounded-b-2xl h-full overflow-y-scroll absolute w-full"
+                  className="scroll-box bg-white rounded-b-2xl h-full overflow-y-scroll absolute w-full"
                   ref={chattingWindow}
                 >
                   {meetingInfo.chattingHistory.map((elem, idx) => {
@@ -680,14 +836,15 @@ function Meeting() {
                       return (
                         <div
                           key={idx}
-                          className="flex flex-row justify-end pl-8 pr-4 pt-4 "
+                          className="flex flex-row justify-end pl-8 pr-4 pt-4 w-full"
                         >
                           <div
                             style={{
                               backgroundColor: "#FEF8EC",
                               whiteSpace: "pre-line",
+                              wordWrap: "break-word",
                             }}
-                            className="py-2 pl-4 pr-4 rounded-tl-xl rounded-b-xl drop-shadow"
+                            className="py-2 pl-4 pr-4 rounded-tl-xl rounded-b-xl drop-shadow max-w-[90%]"
                           >
                             {elem.message}
                           </div>
@@ -697,14 +854,15 @@ function Meeting() {
                       return (
                         <div
                           key={idx}
-                          className="flex flex-row justify-start pl-4 pr-8 pt-4"
+                          className="flex flex-row justify-start pl-4 pr-8 pt-4 w-full"
                         >
                           <div
                             style={{
                               backgroundColor: "#E0F4FF",
                               whiteSpace: "pre-line",
+                              wordWrap: "break-word",
                             }}
-                            className="py-2 pl-4 pr-4 rounded-tr-xl rounded-b-xl drop-shadow"
+                            className="py-2 pl-4 pr-4 rounded-tr-xl rounded-b-xl drop-shadow max-w-[90%]"
                           >
                             {elem.message}
                           </div>
@@ -726,16 +884,17 @@ function Meeting() {
                       })
                     );
 
-                    const newChattingHistory = [
-                      ...meetingInfo.chattingHistory,
-                      {
-                        isLocal: true,
-                        message: event.target.childNodes[0].value,
-                      },
-                    ];
-                    const newMeetingInfo = { ...meetingInfo };
-                    newMeetingInfo.chattingHistory = newChattingHistory;
-                    setMeetingInfo(newMeetingInfo);
+                    setMeetingInfo((prevMeetingInfo) => {
+                      const newMeetingInfo = { ...prevMeetingInfo };
+                      newMeetingInfo.chattingHistory = [
+                        ...prevMeetingInfo.chattingHistory,
+                        {
+                          isLocal: true,
+                          message: event.target.childNodes[0].value,
+                        },
+                      ];
+                      return newMeetingInfo;
+                    });
                   }
                   event.target.childNodes[0].value = "";
                 }}
@@ -749,22 +908,26 @@ function Meeting() {
                         if (event.target.value.trim().length !== 0) {
                           event.preventDefault();
                           console.log(event.target.value);
+                          const msg = event.target.value;
+
                           sendMessage(
                             JSON.stringify({
                               cmd: "send chatting massage",
                               data: event.target.value,
                             })
                           );
-                          const newChattingHistory = [
-                            ...meetingInfo.chattingHistory,
-                            {
-                              isLocal: true,
-                              message: event.target.value,
-                            },
-                          ];
-                          const newMeetingInfo = { ...meetingInfo };
-                          newMeetingInfo.chattingHistory = newChattingHistory;
-                          setMeetingInfo(newMeetingInfo);
+
+                          setMeetingInfo((prevMeetingInfo) => {
+                            const newMeetingInfo = { ...prevMeetingInfo };
+                            newMeetingInfo.chattingHistory = [
+                              ...prevMeetingInfo.chattingHistory,
+                              {
+                                isLocal: true,
+                                message: msg,
+                              },
+                            ];
+                            return newMeetingInfo;
+                          });
                         }
                         event.target.value = "";
                       }
@@ -778,7 +941,18 @@ function Meeting() {
             </div>
           ) : (
             <div className="h-[80%] flex flex-col justify-between">
-              <div className="bg-white mx-4 rounded-b-2xl h-[100%] overflow-y-scroll"></div>
+              <div className="scroll-box bg-white mx-4 rounded-b-2xl h-[100%] overflow-y-scroll">
+                {meetingInfo.clipHistory.map((clip, idx) => {
+                  return (
+                    <div key={idx} className="flex flex-col items-center">
+                      <div className="flex flex-row justify-evenly">
+                        <video className="w-40%" src={clip} controls></video>
+                        <video className="w-40%" src={clip} controls></video>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
