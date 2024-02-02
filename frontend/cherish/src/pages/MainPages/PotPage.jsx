@@ -1,10 +1,10 @@
 import HeartIcon from "../../assets/HeartIcon.svg";
-import PotLv2 from "../../assets/PotLv2.svg";
-import Modaltest from "../../components/Common/ModalTest";
+import PotLv2 from "../../assets/Pot/PotLv2.svg";
+import ModalRoute from "../../components/Common/ModalRoute"
 
 export default function PotPage() {
   return (
-    <Modaltest modalcss="h-[41vw] w-[65vw] rounded-[20px] bg-beige" isX={true}>
+    <ModalRoute modalcss="h-[41vw] w-[65vw] rounded-[20px] bg-beige" isX={true}>
       <div
         id="Wrapper"
         className="grid grid-cols-12 gap-5 h-[35vw] mt-[4vw] mx-[2vw]"
@@ -168,6 +168,6 @@ export default function PotPage() {
             </div>
           </div>
       </div>
-    </Modaltest>
+    </ModalRoute>
   );
 }
