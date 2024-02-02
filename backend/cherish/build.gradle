@@ -46,6 +46,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
+    // aws s3
+    implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
+    implementation 'org.springframework:spring-test:6.1.2'
 }
 
 tasks.named('test') {
