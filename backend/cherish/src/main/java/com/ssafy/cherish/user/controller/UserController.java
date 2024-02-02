@@ -25,21 +25,16 @@ public class UserController {
 
     private final KakaoAPI kakaoApi = new KakaoAPI();
 
-    public UserController (UserService userService) {
-        this.userService = userService;
-    }
-
-
-     // 얘는 redirect를 통해서 로그인, 회원가입, 대기화면을 구분해서 보내주는 역할을 맡을 친구입니다.
+    // 얘는 redirect를 통해서 로그인, 회원가입, 대기화면을 구분해서 보내주는 역할을 맡을 친구입니다.
     // 우선 그렇게 생각하고 있는데 프론트랑 같이 해보면서 변경해봐야 할 것 같네요;;;
     // 생각해보면 join을 할 때 kakaoid를 먼저 넣어야 하는데 이게 고민인게 redirect를 하면
     @RequestMapping("/login")
     @Operation(summary = "카카오 로그인", description="카카오 정보를 받아와 db에 있는지 확인하고 없다면 회원가입 있다면 로그인을 할 수 있게 redirect")
     public String userLogin (@RequestParam("code") String code, HttpSession session) throws Exception {
+        log.debug("카카오 로그인 호출 : {}, {}", code, session);
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = HttpStatus.CREATED;
 
-        log.debug("kakao code : {}", code);
         // 1번 인증코드 요청 전달
         String accessToken = kakaoApi.getAccessToken(code);
         // 2번 인증코드로 토큰 전달
@@ -67,33 +62,40 @@ public class UserController {
     }
 
     // 카카오 아이디를 조회해서 user table에 있을 경우 true, 없을 경우 false를 반환
-    public boolean findByKakaoId (long kakaoId) throws Exception {
-        UserDto userDto = userService.findByKakaoId(kakaoId);
+    // 우선 여기는 수정할지 말지 다시 고민해봐야 할 것 같아용~ 02/02
+    public boolean findByKakaoId (long kakaoId) {
+        log.debug("findKakaoId 호출 : {}", kakaoId);
 
-        if (userDto == null) {
+        try {
+            UserDto userDto = userService.findByKakaoId(kakaoId);
+
+            if (userDto == null) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
             return false;
-        } else {
-            return true;
         }
     }
 
     @PostMapping("/join")
     @Operation(summary = "회원가입", description="code값에 따라 첫 번째 또는 두 번째 유저로 구분해 회원가입 진행")
     public ResponseEntity<?> join (@RequestBody UserDto userDto, @RequestBody CoupleDto coupleDto) {
-        log.debug("join : {}", userDto);
+        log.debug("join 호출 : {}", userDto);
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = HttpStatus.CREATED;
 
         // 여기서 code값을 받았는지 안 받았는지를 통해 firstJoin과 secondJoin을 나누어야 함
         // 프론트에서 code가 있는지 없는지에 따라 codeChk를 true, false로 보내줌 => 그걸로 나눠줘야함
         // 우선 예시로 true로 설정해놓음
-        boolean codeChk = true;
+        boolean hasCode = true;
 
         try {
             userService.join(userDto);
             int num = userDto.getId();
 
-            if (codeChk) {
+            if (hasCode) {
                 coupleDto.setUser1(num);
                 userService.coupleFirstJoin(coupleDto);
             } else {
@@ -111,14 +113,15 @@ public class UserController {
 
     // 이것은 카카오 아이디를 user DB에 insert 해주는 코드입니당 !
     public void insertKakaoId (long kakaoId) throws Exception {
+        log.debug("insertKakaoId 호출 : {}", kakaoId);
+
         userService.insertKakaoId(kakaoId);
     }
 
     @GetMapping("/userInfo/{id}")
     @Operation(summary = "유저 정보 조회", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
     public ResponseEntity<?> userInfo (@PathVariable("id") int id) throws Exception {
-
-        log.info("userInfo 호출 : " + id);
+        log.debug("userInfo 호출 : {}", id);
 
         return new ResponseEntity<UserDto>(userService.userInfo(id), HttpStatus.OK);
     }
@@ -126,8 +129,7 @@ public class UserController {
     @GetMapping("/coupleInfo/{id}")
     @Operation(summary = "커플 정보 조회", description="couple 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
     public ResponseEntity<?> coupleInfo (@PathVariable("id") int id) throws Exception {
-        
-        log.info("coupleInfo 호출 : " + id);
+        log.debug("coupleInfo 호출 : {}", id);
 
         return new ResponseEntity<CoupleDto>(userService.coupleInfo(id), HttpStatus.OK);
     }
@@ -135,20 +137,30 @@ public class UserController {
 
     @PutMapping("/modifyUser")
     @Operation(summary = "유저 정보 수정", description="user 테이블의 정보를 수정함")
-    public ResponseEntity<String> modifyUser (@RequestBody UserDto userDto) throws Exception {
-        log.info("modifyUser 호출 : " + userDto);
-        userService.modifyUser(userDto);
+    public ResponseEntity<?> modifyUser (@RequestBody UserDto userDto) {
+        log.debug("modifyUser 호출 : {}", userDto);
 
-        return ResponseEntity.ok().build();
+        try {
+            userService.modifyUser(userDto);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/modifyCouple")
     @Operation(summary = "커플 정보 수정", description="couple 테이블의 정보를 수정함")
-    public ResponseEntity<String> modifyCouple (@RequestBody CoupleDto coupleDto) throws Exception {
-        log.info("modifyCouple 호출 : " + coupleDto);
-        userService.modifyCouple(coupleDto);
+    public ResponseEntity<?> modifyCouple (@RequestBody CoupleDto coupleDto) {
+        log.debug("modifyCouple 호출 : {}", coupleDto);
 
-        return ResponseEntity.ok().build();
+        try {
+            userService.modifyCouple(coupleDto);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

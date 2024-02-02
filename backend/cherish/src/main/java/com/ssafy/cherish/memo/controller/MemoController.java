@@ -37,8 +37,8 @@ public class MemoController {
     @GetMapping("/{coupleId}/{date}")
     @Operation(summary = "메모 조회", description = "날짜와 커플 아이디에 맞는 메모를 조회한다.")
     public ResponseEntity<?> getMemo (@PathVariable("date") String date, @PathVariable("coupleId") int coupleId) {
-        Map<String, Object> map = new HashMap<>();
         log.debug("getMemo 호출 : {}, {}", coupleId, date);
+        Map<String, Object> map = new HashMap<>();
 
         try {
             MemoDto memoDto = memoService.getMemo(date, coupleId);
@@ -64,13 +64,13 @@ public class MemoController {
         }
     }
 
-    @DeleteMapping("/{coupleId}/{date}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "메모 삭제", description = "날짜와 커플 아이디에 맞는 메모를 삭제한다.")
-    public ResponseEntity<?> deleteMemo (@PathVariable("date") String date, @PathVariable("coupleId") int coupleId) {
-        log.debug("deleteMemo 호출 : {}, {}", coupleId, date);
+    public ResponseEntity<?> deleteMemo (@PathVariable("id") int id) {
+        log.debug("deleteMemo 호출 : {}", id);
 
         try {
-            memoService.deleteMemo(date, coupleId);
+            memoService.deleteMemo(id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

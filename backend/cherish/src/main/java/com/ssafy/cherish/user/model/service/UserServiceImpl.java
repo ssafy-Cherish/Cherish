@@ -13,10 +13,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    public UserServiceImpl (UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
-
     @Override
     public void join(UserDto userDto) throws Exception {
         userMapper.join(userDto);
