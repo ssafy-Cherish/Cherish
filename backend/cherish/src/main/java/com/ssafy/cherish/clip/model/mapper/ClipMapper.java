@@ -15,6 +15,7 @@ public interface ClipMapper {
     //id로 찾은 행의 filepath들 update(저장)
     int updateClipPath(ClipDto clipDto) throws SQLException;
 
-    List<ClipVo> gatherLastMonthClips() throws SQLException;
+    //입력받은 연월("2024-01-01")에 커플당,키워드당 조회했을때 5개 이상인 클립 리스트를 반환
+    List<ClipVo> gatherClipsForMonth(String yearMonth) throws SQLException;
 
 }
