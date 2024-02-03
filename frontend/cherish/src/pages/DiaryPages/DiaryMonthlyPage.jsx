@@ -1,12 +1,12 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion, useAnimate } from "framer-motion";
-import Modal from "../../components/Diary/Modal";
-import moment from "moment";
+import Modal from "../../components/Common/Modal";
+import dayjs from "dayjs";
 import Calendar from "react-calendar";
-import highlight from "../../assets/paintingLine.svg";
-import monthlyImg from "../../assets/DiaryMonthlyPage.svg";
-import Cake from "../../assets/Cake.svg";
+import highlight from "../../assets/diary/paintingLine.svg";
+import monthlyImg from "../../assets/diary/DiaryMonthlyPage.svg";
+import Cake from "../../assets/diary/Cake.svg";
 import "../../components/Diary/Calendar.css";
 
 const DiaryMonthlyPage = () => {
@@ -30,7 +30,7 @@ const DiaryMonthlyPage = () => {
   // TODO : zustand에 저장되어 있는 값 가져와야 함
   const [birthDay, setBirthDay] = useState(["2024-1-16", "2024-1-20"]);
 
-  // 기념일
+  // 시작 날
   // TODO : zustand에 저장되어 있는 값 가져와야 함
   const [anniversary, setAnniversary] = useState(["2024-1-16"]);
 
@@ -90,7 +90,7 @@ const DiaryMonthlyPage = () => {
 
   return (
     // Diary 재사용 모달
-    <Modal z={1} height="90vh" width="70vw">
+    <Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false}>
       <div
         className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center"
         ref={scope}
@@ -116,7 +116,7 @@ const DiaryMonthlyPage = () => {
               &lt;
             </motion.button>
             <span className="text-[#FD8680] text-[4vw] font-bold" id="month">
-              &nbsp;{moment(date).format("MM")}&nbsp;
+              &nbsp;{dayjs(date).format("MM")}&nbsp;
             </span>
             <motion.button
               className="text-[3vw] text-[#FD8680] font-bold"
@@ -132,22 +132,20 @@ const DiaryMonthlyPage = () => {
         <Calendar
           value={date}
           onChange={moveToDay}
-          formatDay={(locale, date) => moment(date).format("D")}
-          formatMonthYear={(locale, date) => moment(date).format("YYYY MM")}
+          formatDay={(locale, date) => dayjs(date).format("D")}
           minDetail="month"
           maxDetail="month"
           locale="en-US"
-          calendarType="gregory"
           showNeighboringMonth={false}
           tileClassName={({ date }) => {
-            if (highlights.find((x) => x === moment(date).format("YYYY-M-D"))) {
+            if (highlights.find((x) => x === dayjs(date).format("YYYY-M-D"))) {
               return "relative";
             }
           }}
           tileContent={({ date }) => {
             let html = [];
 
-            if (meetingDates.find((x) => x === moment(date).format("YYYY-M-D"))) {
+            if (meetingDates.find((x) => x === dayjs(date).format("YYYY-M-D"))) {
               html.push(
                 setImage(
                   highlight,
@@ -161,7 +159,7 @@ const DiaryMonthlyPage = () => {
               );
             }
 
-            if ([...anniversary, ...birthDay].find((x) => x === moment(date).format("YYYY-M-D"))) {
+            if ([...anniversary, ...birthDay].find((x) => x === dayjs(date).format("YYYY-M-D"))) {
               html.push(
                 setImage(
                   Cake,
