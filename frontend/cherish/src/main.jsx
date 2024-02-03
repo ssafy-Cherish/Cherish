@@ -10,11 +10,8 @@ import DiaryDailyPage from "./pages/DiaryPages/DiaryDailyPage.jsx";
 import DiaryLayout from "./pages/DiaryPages/DiaryLayout.jsx";
 import CherryCallMainPage from "./pages/CherryCallPages/CherryCallMainPage.jsx";
 import PotPage from "./pages/MainPages/PotPage.jsx";
-<<<<<<< Updated upstream
 import TodayQuestionRecodePage from "./pages/TodayQuestionPages/TodayQuestionRecodePage.jsx";
-=======
 import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
->>>>>>> Stashed changes
 
 const router = createBrowserRouter([
   // 메인 페이지
