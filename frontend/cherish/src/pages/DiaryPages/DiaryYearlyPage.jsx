@@ -43,7 +43,7 @@ const DiaryYearlyPage = () => {
 		animate("#month", { opacity: [1, 0, 1] });
 		year = +year + move;
 		searchParams.set("year", year);
-		setSearchParams(searchParams);
+		setSearchParams(searchParams, { replace: true });
 	}
 
 	function moveToMonth(month) {
@@ -51,7 +51,7 @@ const DiaryYearlyPage = () => {
 	}
 
 	return (
-		<Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false}>
+		<Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false} nav="/">
 			<div
 				className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center"
 				ref={scope}
