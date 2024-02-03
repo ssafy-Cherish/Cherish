@@ -1,0 +1,16 @@
+#PotExp::-webkit-progress-bar {
+  background: whitesmoke;
+  border-radius: 10px;
+  border: 1rem black;
+  box-shadow: inset 3px 3px 10px #ccc;
+}
+
+#PotExp::-webkit-progress-value {
+  border-radius: 10px;
+  border: 1rem black;
+  background: linear-gradient(to right, #ffedeb, #fd8680);
+}
+
+#PotTimeLine::-webkit-scrollbar {
+  display: none;
+}
