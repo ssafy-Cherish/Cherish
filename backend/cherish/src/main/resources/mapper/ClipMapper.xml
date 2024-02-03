@@ -17,17 +17,17 @@
         WHERE ID = #{id};
     </update>
 
-    <select id="gatherLastMonthClips" resultType="clipVo">
+    <select id="gatherClipsForMonth" parameterType="String" resultType="clipVo">
         SELECT C.ID,C.KEYWORD,M.COUPLE_ID,C.FILEPATH
         FROM CLIP C
         JOIN MEETING M ON C.MEETING_ID=M.ID
-        WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH),"%Y-%m")
+        WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(#{yearMonth},"%Y-%m")
         AND IS_SELECTED IS TRUE
         AND FILEPATH IS NOT NULL
         AND (C.KEYWORD,M.COUPLE_ID) IN
             (select C.KEYWORD,M.COUPLE_ID from CLIP C JOIN MEETING M
             ON C.MEETING_ID=M.ID
-            WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH),"%Y-%m")
+            WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(#{yearMonth},"%Y-%m")
             AND IS_SELECTED IS TRUE
             AND FILEPATH IS NOT NULL
             GROUP BY C.KEYWORD,M.COUPLE_ID
