@@ -15,4 +15,5 @@ public class MemoDto {
     private String date;
     private String content;
     private String createAt;
+    private String date;
 }

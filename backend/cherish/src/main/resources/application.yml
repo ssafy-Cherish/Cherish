@@ -6,7 +6,7 @@ spring:
     #hikari Datasource 설정
     hikari:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/cherish?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+      jdbc-url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/cherish?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
       username: ${db.username}
       password: ${db.password}
       pool-name: Hikari Connection Pool

@@ -172,7 +172,7 @@ const setMediaRecorder = function (idx, local, remote) {
 /* 시그널링 서버와 연결하고, 관련된 세팅 및 관련 함수들 */
 //connecting to our signaling server
 // 서버 주소로 변경해야 됨
-var conn = new WebSocket("ws://192.168.100.58:8080/socket");
+var conn = new WebSocket(import.meta.env.VITE_APP_SOCKET_URL);
 
 conn.onopen = function () {
   console.log("Connected to the signaling server");
@@ -395,6 +395,7 @@ window.onbeforeunload = () => {
     peerConnection.removeTrack(sender);
   });
   peerConnection.close();
+  stop()
 };
 
 //test
