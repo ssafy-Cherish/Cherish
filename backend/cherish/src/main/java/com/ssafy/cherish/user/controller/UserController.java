@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/user")
@@ -61,6 +62,7 @@ public class UserController {
         }
     }
 
+
     // 카카오 아이디를 조회해서 user table에 있을 경우 true, 없을 경우 false를 반환
     // 우선 여기는 수정할지 말지 다시 고민해봐야 할 것 같아용~ 02/02
     public boolean findByKakaoId (long kakaoId) {
@@ -75,9 +77,11 @@ public class UserController {
                 return true;
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             return false;
         }
     }
+
 
     @PostMapping("/join")
     @Operation(summary = "회원가입", description="code값에 따라 첫 번째 또는 두 번째 유저로 구분해 회원가입 진행")
@@ -89,6 +93,9 @@ public class UserController {
         // 여기서 code값을 받았는지 안 받았는지를 통해 firstJoin과 secondJoin을 나누어야 함
         // 프론트에서 code가 있는지 없는지에 따라 codeChk를 true, false로 보내줌 => 그걸로 나눠줘야함
         // 우선 예시로 true로 설정해놓음
+        // 그렇긴 한데 내가 원했던건 코드를 넣어서 보내는건데 흠,,,, 어떻게 할까요
+        // 아니지아니지 저건 사실 프론트에서 정해주는거긴함
+        // 우선 보류
         boolean hasCode = true;
 
         try {
@@ -97,6 +104,8 @@ public class UserController {
 
             if (hasCode) {
                 coupleDto.setUser1(num);
+                // 첫 번째 유저는 인증 코드가 없기 때문에 코드를 보내 줌
+                coupleDto.setCode(createCode());
                 userService.coupleFirstJoin(coupleDto);
             } else {
                 coupleDto.setUser2(num);
@@ -111,12 +120,14 @@ public class UserController {
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
+
     // 이것은 카카오 아이디를 user DB에 insert 해주는 코드입니당 !
     public void insertKakaoId (long kakaoId) throws Exception {
         log.debug("insertKakaoId 호출 : {}", kakaoId);
 
         userService.insertKakaoId(kakaoId);
     }
+
 
     @GetMapping("/userInfo/{id}")
     @Operation(summary = "유저 정보 조회", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
@@ -125,6 +136,7 @@ public class UserController {
 
         return new ResponseEntity<UserDto>(userService.userInfo(id), HttpStatus.OK);
     }
+
 
     @GetMapping("/coupleInfo/{id}")
     @Operation(summary = "커플 정보 조회", description="couple 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
@@ -149,6 +161,7 @@ public class UserController {
         }
     }
 
+
     @PutMapping("/modifyCouple")
     @Operation(summary = "커플 정보 수정", description="couple 테이블의 정보를 수정함")
     public ResponseEntity<?> modifyCouple (@RequestBody CoupleDto coupleDto) {
@@ -161,6 +174,47 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+
+    // 인증코드 생성 함수
+    public String createCode() throws Exception {
+        Random random = new Random();
+        String code; // 해시코드를 여기에 받을 예정
+        
+        while (true) {
+            StringBuffer key = new StringBuffer();
+
+            for (int i = 0; i < 12; i++) {
+                // 0 ~ 2 사이의 값을 랜덤하게 받아서 idx에 넣음
+                int idx = random.nextInt(3);
+
+                // idx의 값에 따라 switch를 통해 0이면 소문자 알파벳, 1이면 대문자 알파벳, 2면 숫자를 넣음
+                switch (idx) {
+                    case 0:
+                        // a(97) ~ z(122)
+                        key.append((char) ((int) random.nextInt(26) + 97));
+                        break;
+                    case 1:
+                        // A(65) ~ Z(90)
+                        key.append((char) ((int) random.nextInt(26) + 65));
+                        break;
+                    case 2:
+                        // 0 ~ 9
+                        key.append((random.nextInt(9)));
+                        break;
+                }
+            }
+
+            code = key.toString();
+
+            if (userService.hasCode(code)) { // code가 DB에 없다면 break
+                break;
+            }
+
+        }
+
+        return code;
     }
 
 }

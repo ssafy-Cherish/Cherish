@@ -16,5 +16,6 @@ public interface UserService {
     UserDto findByKakaoId (long kakaoId) throws Exception;
     void modifyUser (UserDto userDto) throws Exception;
     void modifyCouple (CoupleDto coupleDto) throws Exception;
+    boolean hasCode (String code) throws Exception;
 
 }

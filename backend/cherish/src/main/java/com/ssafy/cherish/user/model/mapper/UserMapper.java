@@ -38,5 +38,8 @@ public interface UserMapper {
     // 커플 정보 수정
     void modifyCouple (CoupleDto coupleDto) throws SQLException;
 
+    // 커플 인증 코드 가져오기
+    CoupleDto getCode (String code) throws SQLException;
+
 
 }
