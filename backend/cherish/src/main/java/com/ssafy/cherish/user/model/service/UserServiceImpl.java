@@ -58,5 +58,17 @@ public class UserServiceImpl implements UserService {
         userMapper.modifyCouple(coupleDto);
     }
 
+    @Override
+    public boolean hasCode(String code) throws Exception {
+        CoupleDto coupleDto = userMapper.getCode(code);
+
+        // 해당 코드와 맞는 Dto가 없으면 true를 return, 있다면 false를 return
+        if (coupleDto == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
 }
