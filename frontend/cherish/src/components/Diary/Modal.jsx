@@ -1,41 +1,41 @@
-import { motion, useAnimate } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
-
-import classes from "./Modal.module.css";
-
-const Modal = ({ children, z, width, height }) => {
-	const navigate = useNavigate();
-	const [scope, animate] = useAnimate();
-	function onClose() {
-		animate("dialog", { opacity: 0, y: 30 });
-		setTimeout(() => {
-			navigate("..");
-		}, 300);
-	}
+import { motion } from "framer-motion";
+import CloseIcon from "../../assets/CloseIcon.svg";
+const Modal = ({ z, onClose, children, dialogCss, isX }) => {
+	const backdropStyle = {
+		position: "fixed",
+		top: "0",
+		left: "0",
+		width: "100%",
+		height: "100vh",
+		backgroundColor: "rgba(0, 0, 0, 0.25)",
+		zIndex: z || "9",
+	};
+	const modalStyle = {
+		margin: "10% auto",
+		maxWidth: "90%",
+		zIndex: "10",
+	};
 
 	return createPortal(
-		<div
-			className={classes.backdrop}
-			onClick={onClose}
-			ref={scope}
-			style={{ zIndex: z ? z : undefined }}
-		>
+		<div onClick={onClose} style={backdropStyle}>
 			<motion.dialog
-				className={classes.modal}
+				className={dialogCss}
 				initial={{ opacity: 0, y: 30 }}
 				animate={{ opacity: 1, y: 0 }}
+				exit={{ opacity: 0, y: 30 }}
 				open
 				onClick={(e) => {
 					// 다이얼로그 안을 클릭 했을 때 onClose가 실행되는 이벤트 캡쳐링 방지
 					e.stopPropagation();
 				}}
-				style={{
-					height: height ? height : undefined,
-					width: width ? width : undefined,
-					padding: 0,
-				}}
+				style={modalStyle}
 			>
+				{isX && (
+					<button onClick={onClose} className="absolute left-[93%] w-[1vw] z-50">
+						<img src={CloseIcon} alt="CloseIcon" />
+					</button>
+				)}
 				{children}
 			</motion.dialog>
 		</div>,
