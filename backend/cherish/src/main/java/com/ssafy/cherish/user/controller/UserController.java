@@ -3,9 +3,11 @@ package com.ssafy.cherish.user.controller;
 import com.ssafy.cherish.user.model.dto.CoupleDto;
 import com.ssafy.cherish.user.model.dto.UserDto;
 import com.ssafy.cherish.user.model.service.UserService;
+import com.ssafy.cherish.utils.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +26,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JWTUtil jwtUtil;
+
     private final KakaoAPI kakaoApi = new KakaoAPI();
 
     // 얘는 redirect를 통해서 로그인, 회원가입, 대기화면을 구분해서 보내주는 역할을 맡을 친구입니다.
     // 우선 그렇게 생각하고 있는데 프론트랑 같이 해보면서 변경해봐야 할 것 같네요;;;
     // 생각해보면 join을 할 때 kakaoid를 먼저 넣어야 하는데 이게 고민인게 redirect를 하면
-    @RequestMapping("/login")
+    @RequestMapping("/oauth")
     @Operation(summary = "카카오 로그인", description="카카오 정보를 받아와 db에 있는지 확인하고 없다면 회원가입 있다면 로그인을 할 수 있게 redirect")
     public String userLogin (@RequestParam("code") String code, HttpSession session) throws Exception {
         log.debug("카카오 로그인 호출 : {}, {}", code, session);
@@ -60,6 +65,51 @@ public class UserController {
 
             return "redirect:/join";
         }
+    }
+
+
+    @PostMapping("/login")
+    @Operation(summary = "로그인", description = "kakaoId를 통한 로그인 처리")
+    public ResponseEntity<?> login (@RequestBody UserDto userDto) {
+        log.debug("login 호출 : {}", userDto);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            UserDto loginUser = userService.login(userDto);
+            String accessToken = jwtUtil.createAccessToken(loginUser.getKakaoId());
+            log.debug("access token : {}", accessToken);
+
+            userService.saveToken(loginUser.getKakaoId(), accessToken);
+
+            resultMap.put("accessToken", accessToken);
+
+            status = HttpStatus.CREATED;
+        } catch (Exception e) {
+            log.debug("login 에러 발생 : {}", e);
+            status = HttpStatus.UNAUTHORIZED;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+
+    @GetMapping("/logout/{kakaoId}")
+    @Operation(summary = "로그아웃", description = "회원 정보를 담은 token을 제거함")
+    public ResponseEntity<?> logout (long kakaoId) {
+        log.debug("logout 호출 : {}", kakaoId);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            userService.deleteToken(kakaoId);
+            status = HttpStatus.OK;
+        } catch (Exception e) {
+            log.debug("logout 에러 발생 : {}", e);
+            resultMap.put("message", e.getMessage());
+            status = HttpStatus.UNAUTHORIZED;
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
 

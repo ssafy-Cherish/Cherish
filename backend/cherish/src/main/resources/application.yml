@@ -34,4 +34,11 @@ logging:
       ssafy:
         cherish: DEBUG
 
+# jwt 설정
+jwt:
+  salt: ssafy-screte-key
+  access-token:
+    expiretime: 3600000  # 1 hour (millis)
+  refresh-token:
+    expiretime: 2592000000  # 30 days (millis)
 

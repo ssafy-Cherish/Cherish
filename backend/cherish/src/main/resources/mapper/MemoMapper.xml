@@ -30,13 +30,13 @@
     <update id="modifyMemo" parameterType="memoDto">
         UPDATE memo
         SET content = #{content}
-        WHERE id = #{id}
+        WHERE couple_id = #{coupleId} AND date = #{date}
     </update>
 
-    <delete id="deleteMemo" parameterType="id">
+    <delete id="deleteMemo" parameterType="memoDto">
         DELETE
         FROM memo
-        WHERE id = #{id}
+        WHERE couple_id = #{coupleId} AND date = #{date}
     </delete>
 
 </mapper>

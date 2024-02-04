@@ -70,7 +70,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="findByKakaoId" parameterType="int" resultMap="user">
+    <select id="findByKakaoId" parameterType="long" resultMap="user">
         SELECT *
         FROM user
         WHERE kakao_id = #{kakaoId}
@@ -93,5 +93,29 @@
         FROM couple
         WHERE code = #{code}
     </select>
+
+    <select id="login" parameterType="map" resultMap="user">
+        SELECT *
+        FROM user
+        WHERE kakao_id = #{kakaoId}
+    </select>
+
+    <update id="saveToken" parameterType="map">
+        UPDATE user
+        SET access_token = #{token}
+        WHERE kakao_id = #{kakaoId}
+    </update>
+
+    <select id="getToken" parameterType="String" resultMap="string">
+        SELECT access_token
+        FROM user
+        WHERE kakao_id = #{kakaoId}
+    </select>
+
+    <update id="deleteToken" parameterType="map">
+        UPDATE user
+        SET access_token = #{accessToken}
+        WHERE kakao_id = #{kakaoId}
+    </update>
 
 </mapper>
