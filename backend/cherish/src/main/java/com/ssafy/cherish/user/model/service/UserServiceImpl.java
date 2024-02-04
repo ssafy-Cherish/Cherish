@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -68,6 +70,34 @@ public class UserServiceImpl implements UserService {
         } else {
             return true;
         }
+    }
+
+    @Override
+    public UserDto login(UserDto userDto) throws Exception {
+        return userMapper.login(userDto);
+    }
+
+    @Override
+    public void saveToken(long kakaoId, String accessToken) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("kakao_id", kakaoId);
+        map.put("access token", accessToken);
+
+        userMapper.saveToken(map);
+    }
+
+    @Override
+    public Object getToken(long kakaoId) throws Exception {
+        return userMapper.getToken(kakaoId);
+    }
+
+    @Override
+    public void deleteToken(long kakaoId) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("kakaoId", kakaoId);
+        map.put("accessToken", null);
+
+        userMapper.deleteToken(map);
     }
 
 
