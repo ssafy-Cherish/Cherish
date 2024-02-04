@@ -88,4 +88,10 @@
         WHERE id = #{id}
     </update>
 
+    <select id="getCode" parameterType="String" resultMap="couple">
+        SELECT *
+        FROM couple
+        WHERE code = #{code}
+    </select>
+
 </mapper>
