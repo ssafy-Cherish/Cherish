@@ -1,20 +1,20 @@
-import Modal from "../../components/Diary/Modal";
+import Modal from "../../components/Common/Modal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, useAnimate } from "framer-motion";
-import yearlyImg from "../../assets/DiaryYearlyPage.svg";
+import yearlyImg from "../../assets/diary/DiaryYearlyPage.svg";
 
-import Month1 from "../../assets/Month/Month1.svg";
-import Month2 from "../../assets/Month/Month2.svg";
-import Month3 from "../../assets/Month/Month3.svg";
-import Month4 from "../../assets/Month/Month4.svg";
-import Month5 from "../../assets/Month/Month5.svg";
-import Month6 from "../../assets/Month/Month6.svg";
-import Month7 from "../../assets/Month/Month7.svg";
-import Month8 from "../../assets/Month/Month8.svg";
-import Month9 from "../../assets/Month/Month9.svg";
-import Month10 from "../../assets/Month/Month10.svg";
-import Month11 from "../../assets/Month/Month11.svg";
-import Month12 from "../../assets/Month/Month12.svg";
+import Month1 from "../../assets/diary/Month/Month1.svg";
+import Month2 from "../../assets/diary/Month/Month2.svg";
+import Month3 from "../../assets/diary/Month/Month3.svg";
+import Month4 from "../../assets/diary/Month/Month4.svg";
+import Month5 from "../../assets/diary/Month/Month5.svg";
+import Month6 from "../../assets/diary/Month/Month6.svg";
+import Month7 from "../../assets/diary/Month/Month7.svg";
+import Month8 from "../../assets/diary/Month/Month8.svg";
+import Month9 from "../../assets/diary/Month/Month9.svg";
+import Month10 from "../../assets/diary/Month/Month10.svg";
+import Month11 from "../../assets/diary/Month/Month11.svg";
+import Month12 from "../../assets/diary/Month/Month12.svg";
 
 const MonthArr = [
 	Month1,
@@ -51,7 +51,7 @@ const DiaryYearlyPage = () => {
 	}
 
 	return (
-		<Modal z={1} height="90vh" width="70vw">
+		<Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false}>
 			<div
 				className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center"
 				ref={scope}
