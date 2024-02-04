@@ -6,9 +6,7 @@ const Login = () => {
 			<div className="bg-pink h-[50%] w-[80%] flex flex-col items-center rounded-xl shadow-2xl">
 				<di className=" p-[8%]">로그인</di>
 				<div className="grow flex justify-center items-center pb-[10%]">
-					<div>
-						<SocialKakao></SocialKakao>
-					</div>
+					<SocialKakao />
 				</div>
 			</div>
 		</div>
