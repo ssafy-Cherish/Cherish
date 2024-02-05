@@ -9,10 +9,10 @@
     </insert>
 
     <select id="getExpHistory" parameterType="int" resultType="expHistoryDto">
-        SELECT ID,DATE_FORMAT(created_at,"%Y. %m. %d") AS CREATED_AT, CONTENT, EXP
+        SELECT ID,DATE_FORMAT(created_at,"%Y. %m. %d") AS createdAt, CONTENT, EXP
         FROM EXPHISTORY
         WHERE COUPLE_ID=#{coupleId} AND CREATED_AT>DATE_ADD(curdate(),INTERVAL -1 MONTH)
-        ORDER BY EXP DESC;
+        ORDER BY CREATED_AT DESC, EXP DESC;
     </select>
 
 </mapper>

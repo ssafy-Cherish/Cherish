@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ExpServiceImpl implements ExpService {
@@ -34,7 +31,7 @@ public class ExpServiceImpl implements ExpService {
     @Override
     public Map<String,ArrayList> getExpHistory(int coupleId) throws Exception {
         List<ExpHistoryDto> list=expMapper.getExpHistory(coupleId);
-        Map<String,ArrayList> map=new HashMap<>();
+        Map<String,ArrayList> map=new TreeMap<>(Comparator.reverseOrder());
 
         for(ExpHistoryDto exp:list) {
             if(!map.containsKey(exp.getCreatedAt()))
