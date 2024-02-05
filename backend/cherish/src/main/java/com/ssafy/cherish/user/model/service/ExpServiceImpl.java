@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -27,6 +29,22 @@ public class ExpServiceImpl implements ExpService {
 
             expMapper.createExpHistory(historyDto);
         }
+    }
+
+    @Override
+    public Map<String,ArrayList> getExpHistory(int coupleId) throws Exception {
+        List<ExpHistoryDto> list=expMapper.getExpHistory(coupleId);
+        Map<String,ArrayList> map=new HashMap<>();
+
+        for(ExpHistoryDto exp:list) {
+            if(!map.containsKey(exp.getCreatedAt()))
+            {
+                map.put(exp.getCreatedAt(),new ArrayList<>());
+            }
+            ArrayList<Object> curList = map.get(exp.getCreatedAt());
+            curList.add(exp);
+        }
+        return map;
     }
 
 }
