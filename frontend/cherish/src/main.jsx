@@ -11,6 +11,7 @@ import DiaryLayout from "./pages/DiaryPages/DiaryLayout.jsx";
 import CherryCallMainPage from "./pages/CherryCallPages/CherryCallMainPage.jsx";
 import PotPage from "./pages/MainPages/PotPage.jsx";
 import TodayQuestionRecodePage from "./pages/TodayQuestionPages/TodayQuestionRecodePage.jsx";
+import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
 
 const router = createBrowserRouter([
   // 메인 페이지
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path : "sttgpt",
+        element : <STTandGPTPage />,
+      }
       // {path: "cherrybox", element:},
       // {path: "question", element:},
       // {path: "signup", element:}
