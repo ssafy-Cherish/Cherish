@@ -21,9 +21,6 @@ public interface UserMapper {
     // 두 번째 유저 회원가입 시 커플 테이블 업데이트
     void coupleSecondJoin (CoupleDto coupleDto) throws SQLException;
 
-    // 카카오 아이디를 받아 user 테이블 생성 -> 회원가입의 시작이라고 할 수 있죠 후후,,,
-    void insertKakaoId (long kakaoId) throws SQLException;
-
     //회원 정보 조회
     UserDto userInfo (long kakaoId) throws SQLException;
 
@@ -41,7 +38,9 @@ public interface UserMapper {
 
     // 커플 인증 코드 가져오기
     CoupleDto getCode (String code) throws SQLException;
-    
+
+
+    // 이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.
 //    // 유저 로그인
 //    UserDto login (long kakaoId) throws SQLException;
 //
