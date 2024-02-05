@@ -1,19 +1,51 @@
 import dayjs from "dayjs";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Kakao from "../../utils/Kakao";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+	const navigate = useNavigate();
 	const [hasCode, setHasCode] = useState(false);
 	const today = dayjs();
 
 	function checkCode() {}
+
+	function handleSubmit(event) {
+		event.preventDefault();
+
+		const fd = new FormData(event.target);
+		const data = Object.fromEntries(fd.entries());
+
+		console.log(JSON.stringify(data));
+
+		async function fetchJoin() {
+			const response = await fetch(`${import.meta.env.VITE_APP_SERVER_URL}/user/join`, {
+				method: "POST",
+				headers: {
+					Authorization: Kakao.Auth.getAccessToken(),
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			});
+
+			if (!response.ok) {
+				throw Error("join fetch Error");
+			} else {
+				navigate("/user/login");
+			}
+		}
+
+		fetchJoin();
+	}
 
 	return (
 		<div className="flex justify-center items-center h-full text-[2vw]">
 			<div className="bg-pink h-[90%] w-[80%] flex flex-col items-center rounded-xl shadow-2xl">
 				<div className="h-[10%] my-[2vh]">추가정보 입력</div>
 				<form
-					action=""
+					method="post"
+					onSubmit={handleSubmit}
 					className="grow grid grid-rows-6 w-full px-[10%] h-[100%] max-h-full"
 				>
 					<div>
@@ -73,8 +105,8 @@ const Signup = () => {
 							</div>
 							<input
 								type="date"
-								name="birth"
-								id="birth"
+								name="birthday"
+								id="birthday"
 								className="input input-bordered w-full border-solid border-2 border-text-gray"
 								max={today.format("YYYY-MM-DD")}
 								required
@@ -98,6 +130,7 @@ const Signup = () => {
 								id="anniversary"
 								className="input input-bordered w-full border-solid border-2 border-text-gray"
 								max={today.format("YYYY-MM-DD")}
+								disabled={hasCode}
 								required
 							/>
 						</motion.label>
