@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -64,8 +65,10 @@ public class UserController {
                 // 나 뭐 보내줘 -> couple_id 보내주께, coupled
                 UserDto userDto = userService.userInfo(kakaoId);
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
-
+                List<String> birthdays = userService.getBirthdays(userDto.getCoupleId());
                 resultMap.put("kakao_id", kakaoId);
+                resultMap.put("nickname", userDto.getNickname());
+                resultMap.put("birthdays", birthdays);
                 resultMap.put("coupleDto", coupleDto);
                 resultMap.put("verified", true);
                 status = HttpStatus.OK;
@@ -160,14 +163,61 @@ public class UserController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입", description="code값에 따라 첫 번째 또는 두 번째 유저로 구분해 회원가입 진행")
-    public ResponseEntity<?> join (@RequestBody UserDto userDto, @RequestBody CoupleDto coupleDto, HttpServletRequest res) {
-        log.debug("join 호출 : {}", userDto);
-        HttpStatus status;
+    public ResponseEntity<?> join (@RequestBody HashMap<String, String> map, HttpServletRequest res) {
+        log.debug("join 호출 : {}", map);
+        HttpStatus status = HttpStatus.OK;
         String accessToken = res.getHeader(AUTHORIZATION);
 
         if (accessToken == null) {
             status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(status);
+        }
+
+        try {
+            CoupleDto coupleDto = new CoupleDto();
+
+            // 커플 테이블 정보 생성 또는 가져오는 단계
+
+            // 코드가 없다면 생성
+            if (!map.containsKey("code")) {
+                coupleDto.setCode(createCode());
+                coupleDto.setAnniversary(map.get("anniversary"));
+                userService.createCouple(coupleDto);
+            }
+            // 코드가 있다면 code로 id 가져오기
+            else {
+                coupleDto.setId(userService.findByCode(map.get("code")));
+            }
+
+            // join 단계
+            HashMap<String, Object> userIn = kakaoApi.getUserInfo(accessToken);
+
+            System.out.println("login info : " + userIn.toString());
+
+            long kakaoId = (long)userIn.get("kakaoId");
+            log.debug("kakaoId : {}", kakaoId);
+
+            UserDto userDto = new UserDto();
+            userDto.setKakaoId(kakaoId);
+            userDto.setNickname(map.get("nickname"));
+            userDto.setBirthday(map.get("birthday"));
+            userDto.setEmail(map.get("email"));
+            userDto.setCoupleId(coupleDto.getId());
+
+            userService.join(userDto);
+
+            // 첫 번째 회원가입일 경우의 update
+            if (!map.containsKey("code")) {
+                userService.coupleFirstJoin(userDto);
+            }
+            // 두 번째 회원가입일 경우의 update
+            else {
+                userService.coupleSecondJoin(userDto);
+            }
+
+        } catch (Exception e) {
+            log.error("회원가입 에러 : {}", e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         // 여기서 code값을 받았는지 안 받았는지를 통해 firstJoin과 secondJoin을 나누어야 함
@@ -176,32 +226,27 @@ public class UserController {
         // 첫 번째 join : code 생성 후 저장
         // userDto를 보내줄 때, code값이 null이면 첫join, 아니면 두join
 
-        HashMap<String, Object> userIn = kakaoApi.getUserInfo(accessToken);
 
-        System.out.println("login info : " + userIn.toString());
 
-        long kakaoId = (long)userIn.get("kakaoId");
-        log.debug("kakaoId : {}", kakaoId);
-
-        try {
-            userDto.setKakaoId(kakaoId);
-            int num = userDto.getId();
-            userService.join(userDto);
-
-            if (coupleDto.getCode() == null) {
-                coupleDto.setUser1(num);
-                // 첫 번째 유저는 인증 코드가 없기 때문에 코드를 보내 줌
-                coupleDto.setCode(createCode());
-                userService.coupleFirstJoin(coupleDto);
-            } else {
-                coupleDto.setUser2(num);
-                userService.coupleSecondJoin(coupleDto);
-            }
-            status = HttpStatus.CREATED;
-        } catch (Exception e) {
-            log.error("회원가입 에러 : {}", e.getMessage());
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
+//        try {
+//            userDto.setKakaoId(kakaoId);
+//            int num = userDto.getId();
+//            userService.join(userDto);
+//
+//            if (coupleDto.getCode() == null) {
+//                coupleDto.setUser1(num);
+//                // 첫 번째 유저는 인증 코드가 없기 때문에 코드를 보내 줌
+//                coupleDto.setCode(createCode());
+//                userService.coupleFirstJoin(coupleDto);
+//            } else {
+//                coupleDto.setUser2(num);
+//                userService.coupleSecondJoin(coupleDto);
+//            }
+//            status = HttpStatus.CREATED;
+//        } catch (Exception e) {
+//            log.error("회원가입 에러 : {}", e.getMessage());
+//            status = HttpStatus.INTERNAL_SERVER_ERROR;
+//        }
 
         return new ResponseEntity<>(status);
     }
@@ -297,7 +342,7 @@ public class UserController {
 
             code = key.toString();
 
-            if (userService.hasCode(code)) { // code가 DB에 없다면 break
+            if (!userService.hasCode(code)) { // code가 DB에 없다면 break
                 break;
             }
 
