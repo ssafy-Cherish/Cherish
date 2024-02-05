@@ -86,17 +86,9 @@ public class KakaoAPI {
             JsonParser parser = new JsonParser();
             JsonElement element =  parser.parse(result);
 
-            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
-
-            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-            String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
             long kakaoId = element.getAsJsonObject().get("id").getAsLong();
 
             userInfo.put("kakaoId", kakaoId);
-            userInfo.put("nickname", nickname);
-            userInfo.put("email", email);
-
 
         } catch (Exception e) {
             e.printStackTrace();
