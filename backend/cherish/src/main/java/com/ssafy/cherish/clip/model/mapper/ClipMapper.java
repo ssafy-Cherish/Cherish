@@ -1,9 +1,11 @@
 package com.ssafy.cherish.clip.model.mapper;
 
 import com.ssafy.cherish.clip.model.dto.ClipDto;
+import com.ssafy.cherish.clip.model.dto.ClipVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Mapper
 public interface ClipMapper {
@@ -13,5 +15,7 @@ public interface ClipMapper {
     //id로 찾은 행의 filepath들 update(저장)
     int updateClipPath(ClipDto clipDto) throws SQLException;
 
+    //입력받은 연월("2024-01-01")에 커플당,키워드당 조회했을때 5개 이상인 클립 리스트를 반환
+    List<ClipVo> gatherClipsForMonth(String yearMonth) throws SQLException;
 
 }
