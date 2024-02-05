@@ -38,9 +38,10 @@ public class ExpController {
         }
     }
     @GetMapping
+    @Operation(summary = "커플 최근 한달 경험치",description = "커플 아이디를 입력하면 날짜별 최신순 경험치 기록 리스트 맵을 반환")
     public ResponseEntity<?> getExp(
             @RequestParam("coupleId")
-            @Parameter(name = "",description = "")
+            @Parameter(name = "커플아이디")
             int coupleId
     )
     {
