@@ -1,7 +1,14 @@
 package com.ssafy.cherish.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.cherish.meeting.model.mapper.MeetingMapper;
+import com.ssafy.cherish.meeting.model.service.MeetingService;
+import com.ssafy.cherish.meeting.model.service.MeetingServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -9,15 +16,14 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 @Slf4j
 public class SocketHandler extends TextWebSocketHandler {
+    @Autowired
+    private MeetingService meetingService;
 
     // 연결이 성공한 모든 클라이언트와 서버의 연결이 저장되는 맵
     Map<String, CherishSocketSession> sessions = new HashMap<>();
@@ -85,10 +91,25 @@ public class SocketHandler extends TextWebSocketHandler {
                         return;
                     connections.put(coupleId, list);
 
-                    // 둘 다 연결 되었다면 둘에게 알림
-                    if (list.size() > 1)
-                        for (CherishSocketSession cs : list)
-                            cs.getSession().sendMessage(message);
+                    // 둘 다 연결 되었다면 둘에게 meeting 생성 후 알림
+                    if (list.size() > 1) {
+                        try {
+                            Map<String, Object> res = new HashMap<>();
+                            res.put("event", "access");
+                            log.debug("미팅 : {}", meetingService);
+                            int meetingId = meetingService.createMeeting(3);
+                            log.debug("미팅 생성 완료 : {}", meetingId);
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("meetingId", meetingId);
+                            res.put("data", data);
+                            TextMessage newMessage = new TextMessage(mapper.writeValueAsBytes(res));
+                            for (CherishSocketSession cs : list)
+                                cs.getSession().sendMessage(newMessage);
+                        } catch (Exception e) {
+                            log.error("미팅 생성 중 에러 발생 : {}", e.getMessage());
+                        }
+
+                    }
 
                     break;
 
