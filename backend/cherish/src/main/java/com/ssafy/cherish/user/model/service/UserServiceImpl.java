@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto userInfo(int kakaoId) throws Exception {
+    public UserDto userInfo(long kakaoId) throws Exception {
         return userMapper.userInfo(kakaoId);
     }
 
@@ -72,33 +72,33 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public UserDto login(UserDto userDto) throws Exception {
-        return userMapper.login(userDto);
-    }
-
-    @Override
-    public void saveToken(long kakaoId, String accessToken) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("kakao_id", kakaoId);
-        map.put("access token", accessToken);
-
-        userMapper.saveToken(map);
-    }
-
-    @Override
-    public Object getToken(long kakaoId) throws Exception {
-        return userMapper.getToken(kakaoId);
-    }
-
-    @Override
-    public void deleteToken(long kakaoId) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("kakaoId", kakaoId);
-        map.put("accessToken", null);
-
-        userMapper.deleteToken(map);
-    }
+//    @Override
+//    public UserDto login(long kakaoId) throws Exception {
+//        return userMapper.login(kakaoId);
+//    }
+//
+//    @Override
+//    public void saveToken(long kakaoId, String accessToken) throws Exception {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("kakao_id", kakaoId);
+//        map.put("access token", accessToken);
+//
+//        userMapper.saveToken(map);
+//    }
+//
+//    @Override
+//    public Object getToken(long kakaoId) throws Exception {
+//        return userMapper.getToken(kakaoId);
+//    }
+//
+//    @Override
+//    public void deleteToken(long kakaoId) throws Exception {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("kakaoId", kakaoId);
+//        map.put("accessToken", null);
+//
+//        userMapper.deleteToken(map);
+//    }
 
 
 }
