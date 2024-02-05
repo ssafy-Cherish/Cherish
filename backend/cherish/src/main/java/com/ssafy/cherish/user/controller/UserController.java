@@ -30,7 +30,7 @@ public class UserController {
     private final KakaoAPI kakaoApi = new KakaoAPI();
     public static final String AUTHORIZATION = "Authorization";
 
-    @PostMapping("/login")
+    @GetMapping("/login")
     @Operation(summary = "카카오 로그인", description="카카오 정보를 받아와 db에 있는지 확인하고 없다면 회원가입 있다면 로그인")
     public ResponseEntity<?> userLogin (HttpServletRequest res) {
         String accessToken = res.getHeader(AUTHORIZATION);
