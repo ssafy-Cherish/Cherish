@@ -12,7 +12,6 @@ import lombok.*;
 public class MemoDto {
     private int id;
     private int coupleId;
-    private String date;
     private String content;
     private String createAt;
     private String date;
