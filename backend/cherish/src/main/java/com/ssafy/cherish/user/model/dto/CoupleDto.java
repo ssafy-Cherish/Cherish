@@ -14,12 +14,11 @@ public class CoupleDto {
     private int id;
     private int user1;
     private int user2;
-    private String name;
     private String code;
     private Boolean coupled;
     private String anniversary;
     private String createdAt;
-    private String deletedAt;
     private int exp;
+    private int questionCnt;
 
 }
