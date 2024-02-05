@@ -53,11 +53,6 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
     implementation 'org.springframework:spring-test:6.1.2'
 
-<<<<<<< HEAD
-    // jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-=======
->>>>>>> 3dde0a39338b2069bef2ec2ada2e8ff3b12e269e
 }
 
 tasks.named('test') {
