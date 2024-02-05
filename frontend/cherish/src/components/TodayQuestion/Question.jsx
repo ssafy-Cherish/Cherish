@@ -1,7 +1,6 @@
 import { useState } from "react";
 import DropDownIcon from "../../assets/DropDownIcon.svg";
 import LockIcon from "../../assets/LockIcon.svg";
-import test from "../../assets/test.png";
 import Answer from "./Answer";
 
 export default function Question({ reply }) {
@@ -34,7 +33,6 @@ export default function Question({ reply }) {
         </button>
         {isOpened && reply ? <Answer /> : undefined}
       </div>
-
     </>
   );
 }
