@@ -45,7 +45,6 @@ public class UserController {
         Map<String, Object> resultMap = new HashMap<>();
 
         try {
-            status = HttpStatus.CREATED;
 
 //        // 1번 인증코드 요청 전달
 //        String accessToken = kakaoApi.getAccessToken(code);
@@ -68,6 +67,8 @@ public class UserController {
 
                 resultMap.put("kakao_id", kakaoId);
                 resultMap.put("coupleDto", coupleDto);
+                resultMap.put("verified", true);
+                status = HttpStatus.OK;
 
                 return new ResponseEntity<Map<String, Object>>(resultMap, status);
             } else {
@@ -76,10 +77,12 @@ public class UserController {
                 // 하지만 그러면 id값을 보내야 하겠조 ??? 흠 어떻게 하는게 좋을까요
                 // 이게 redirect로 보내는게 맞읋까 흠흠흠 고민고밈이가 되네요
                 // 401로 보내고
+                // 200으로 보내기 OK
 
-                status = HttpStatus.UNAUTHORIZED;
+                resultMap.put("verified", false);
+                status = HttpStatus.OK;
 
-                return new ResponseEntity<>(status);
+                return new ResponseEntity<Map<String, Object>>(resultMap, status);
             }
         } catch (Exception e) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
