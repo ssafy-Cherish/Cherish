@@ -5,15 +5,12 @@
 
     <resultMap id="user" type="userDto">
         <result column="id" property="id" />
-        <result column="id_str" property="idStr" />
         <result column="kakao_id" property="kakaoId" />
         <result column="couple_id" property="coupleId" />
         <result column="nickname" property="nickname" />
         <result column="email" property="email" />
         <result column="birthday" property="birthday" />
         <result column="created_at" property="createdAt" />
-        <result column="updated_at" property="updatedAt" />
-        <result column="deleted_at" property="deletedAt" />
         <result column="access_token" property="accessToken" />
         <result column="refresh_token" property="refreshToken" />
     </resultMap>
@@ -22,21 +19,21 @@
         <result column="id" property="id" />
         <result column="user1" property="user1" />
         <result column="user2" property="user2" />
-        <result column="name" property="name" />
         <result column="code" property="code" />
         <result column="coupled" property="coupled" />
         <result column="anniversary" property="anniversary" />
         <result column="created_at" property="createdAt" />
-        <result column="deleted_at" property="deletedAt" />
         <result column="exp" property="exp" />
+        <result column="questionCnt" property="question_cnt" />
     </resultMap>
 
 
-    <update id="join" parameterType = "userDto">
-        UPDATE user
-        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
-        WHERE kakao_id = #{kakaoId}
-    </update>
+    <insert id="join" parameterType = "userDto">
+        INSERT INTO user
+        (kakao_id, nickname, email, birthday)
+        VALUES
+        (#{kakaoId}, #{nickname}, #{email}, #{birthday})
+    </insert>
 
     <insert id="coupleFirstJoin" parameterType="coupleDto">
         INSERT INTO couple
@@ -50,13 +47,6 @@
         SET user2 = #{id}, coupled = true
         WHERE code = #{code}
     </update>
-
-    <insert id="insertKakaoId" parameterType="long">
-        INSERT INTO user
-        (kakao_id)
-        VALUES
-        (#{kakaoId})
-    </insert>
 
     <select id="userInfo" parameterType="long" resultMap="user">
         SELECT *
@@ -94,6 +84,8 @@
         WHERE code = #{code}
     </select>
 
+
+<!--    이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.-->
 <!--    <select id="login" parameterType="long" resultMap="user">-->
 <!--        SELECT *-->
 <!--        FROM user-->

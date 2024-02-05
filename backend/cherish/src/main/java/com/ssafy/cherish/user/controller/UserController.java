@@ -204,14 +204,6 @@ public class UserController {
     }
 
 
-    // 이것은 카카오 아이디를 user DB에 insert 해주는 코드입니당 !
-    public void insertKakaoId (long kakaoId) throws Exception {
-        log.debug("insertKakaoId 호출 : {}", kakaoId);
-
-        userService.insertKakaoId(kakaoId);
-    }
-
-
     @GetMapping("/userInfo")
     @Operation(summary = "유저 정보 조회", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
     public ResponseEntity<?> userInfo (@RequestParam("kakaoId") long kakaoId) {
