@@ -34,6 +34,7 @@ public class UserController {
     @Operation(summary = "카카오 로그인", description="카카오 정보를 받아와 db에 있는지 확인하고 없다면 회원가입 있다면 로그인")
     public ResponseEntity<?> userLogin (HttpServletRequest res) {
         String accessToken = res.getHeader(AUTHORIZATION);
+        log.debug("access token", accessToken);
         HttpStatus status;
 
         if (accessToken == null) {
