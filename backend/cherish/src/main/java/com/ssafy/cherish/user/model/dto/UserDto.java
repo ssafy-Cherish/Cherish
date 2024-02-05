@@ -12,15 +12,12 @@ import lombok.*;
 public class UserDto {
 
     private int id;
-    private String idStr;
-    private int kakaoId;
+    private long kakaoId;
     private int coupleId;
     private String nickname;
     private String email;
     private String birthday;
     private String createdAt;
-    private String updatedAt;
-    private String deletedAt;
     private String accessToken;
     private String refreshToken;
 
