@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../../components/Diary/DiaryDailyPage.css";
 import Modal from "./Modal";
 
-const ChatModal = ({ onClose, memo, setMemo }) => {
+const MemoModal = ({ onClose, memo, setMemo }) => {
 	const [isWriting, setIsWriting] = useState();
 	const [content, setContent] = useState(memo.content);
 
@@ -39,7 +39,7 @@ const ChatModal = ({ onClose, memo, setMemo }) => {
 						<textarea
 							cols="30"
 							rows="10"
-							className="w-full h-full resize-none rounded-xl drop-shadow-xl"
+							className="w-full h-full resize-none rounded-xl drop-shadow-xl p-[1vw] border-solid border-2 border-text-gray"
 							value={content}
 							onChange={changeContent}
 						></textarea>
@@ -50,7 +50,7 @@ const ChatModal = ({ onClose, memo, setMemo }) => {
 								whiteSpace: "pre-line",
 								wordWrap: "break-word",
 							}}
-							className="rounded-xl drop-shadow-xl h-full "
+							className="rounded-xl drop-shadow-xl h-full p-[1vw] border-solid border-2 border-text-gray"
 						>
 							{memo.content}
 						</div>
@@ -61,20 +61,23 @@ const ChatModal = ({ onClose, memo, setMemo }) => {
 						<>
 							<div
 								onClick={cancelContent}
-								className="btn btn-outline bg-white text-cherry"
+								className="btn hover:bg-slate-600 hover:text-white text-black bg-beige w-[4vw] text-[0.9vw]"
 							>
 								취소
 							</div>
-							<div onClick={saveContent} className="btn bg-cherry text-white">
+							<div
+								onClick={saveContent}
+								className="btn bg-slate-600 text-white hover:text-black hover:bg-beige w-[4vw] text-[0.9vw]"
+							>
 								저장
 							</div>
 						</>
 					) : (
 						<div
 							onClick={() => setIsWriting(true)}
-							className="btn btn-outline bg-white text-cherry"
+							className="btn bg-slate-600 text-white hover:text-black hover:bg-beige text-[0.9vw]"
 						>
-							수정
+							<span>수정</span>
 						</div>
 					)}
 				</div>
@@ -83,4 +86,4 @@ const ChatModal = ({ onClose, memo, setMemo }) => {
 	);
 };
 
-export default ChatModal;
+export default MemoModal;

@@ -46,12 +46,18 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
+    // 동영상 편집 라이브러리 ffmpeg
+    implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.8.0'
+
     // aws s3
     implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
     implementation 'org.springframework:spring-test:6.1.2'
 
+<<<<<<< HEAD
     // jwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+=======
+>>>>>>> 3dde0a39338b2069bef2ec2ada2e8ff3b12e269e
 }
 
 tasks.named('test') {

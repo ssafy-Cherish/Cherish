@@ -5,6 +5,7 @@ import com.ssafy.cherish.user.model.dto.UserDto;
 import com.ssafy.cherish.user.model.service.UserService;
 //import com.ssafy.cherish.utils.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,49 +28,61 @@ public class UserController {
 //    private JWTUtil jwtUtil;
 
     private final KakaoAPI kakaoApi = new KakaoAPI();
+    public static final String AUTHORIZATION = "Authorization";
 
-    // 얘는 redirect를 통해서 로그인, 회원가입, 대기화면을 구분해서 보내주는 역할을 맡을 친구입니다.
-    // 우선 그렇게 생각하고 있는데 프론트랑 같이 해보면서 변경해봐야 할 것 같네요;;;
-    // 생각해보면 join을 할 때 kakaoid를 먼저 넣어야 하는데 이게 고민인게 redirect를 하면
     @PostMapping("/login")
     @Operation(summary = "카카오 로그인", description="카카오 정보를 받아와 db에 있는지 확인하고 없다면 회원가입 있다면 로그인")
-    public ResponseEntity<?> userLogin (@RequestParam("accessToken") String accessToken) throws Exception {
+    public ResponseEntity<?> userLogin (HttpServletRequest res) {
+        String accessToken = res.getHeader(AUTHORIZATION);
+        HttpStatus status;
+
+        if (accessToken == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return  new ResponseEntity<>(status);
+        }
+
         log.debug("카카오 로그인 호출 : {}", accessToken);
         Map<String, Object> resultMap = new HashMap<>();
-        HttpStatus status = HttpStatus.CREATED;
+
+        try {
+            status = HttpStatus.CREATED;
 
 //        // 1번 인증코드 요청 전달
 //        String accessToken = kakaoApi.getAccessToken(code);
-        // 2번 인증코드로 토큰 전달
-        HashMap<String, Object> userIn = kakaoApi.getUserInfo(accessToken);
+            // 2번 인증코드로 토큰 전달
+            HashMap<String, Object> userIn = kakaoApi.getUserInfo(accessToken);
 
-        System.out.println("login info : " + userIn.toString());
+            System.out.println("login info : " + userIn.toString());
 
-        long kakaoId = (long)userIn.get("kakaoId");
-        log.debug("kakaoId : {}", kakaoId);
+            long kakaoId = (long) userIn.get("kakaoId");
+            log.debug("kakaoId : {}", kakaoId);
 
-        if (findByKakaoId(kakaoId)) {
-            // db가 있다면, 즉 회원가입이 되어 있다면 로그인 성공으로 해야하는거 아닌가 그럼 바로 메인으로 보내줘 ? -> 고민해보겠습니다,,,,
-            // 우선 login이라고 써 놨는데 메인화면이 나오면 바꿔 주겠읍니다 ..
-            // 있으면 coupleDto를 던져줄까?
+            if (findByKakaoId(kakaoId)) {
+                // db가 있다면, 즉 회원가입이 되어 있다면 로그인 성공으로 해야하는거 아닌가 그럼 바로 메인으로 보내줘 ? -> 고민해보겠습니다,,,,
+                // 우선 login이라고 써 놨는데 메인화면이 나오면 바꿔 주겠읍니다 ..
+                // 있으면 coupleDto를 던져줄까?
 
-            // 나 뭐 보내줘 -> couple_id 보내주께, coupled
-            UserDto userDto = userService.userInfo(kakaoId);
-            CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
+                // 나 뭐 보내줘 -> couple_id 보내주께, coupled
+                UserDto userDto = userService.userInfo(kakaoId);
+                CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
 
-            resultMap.put("kakao_id", kakaoId);
-            resultMap.put("coupleDto", coupleDto);
+                resultMap.put("kakao_id", kakaoId);
+                resultMap.put("coupleDto", coupleDto);
 
-            return new ResponseEntity<Map<String, Object>>(resultMap, status);
-        } else {
-            // db가 없다면, 즉 아직 회원이 아니라면 회원가입
-            // 먼저 카카오 아이디를 등록한 후에 보내는 것도 방법일지도?? 라는 생각을 하게 되었습니다
-            // 하지만 그러면 id값을 보내야 하겠조 ??? 흠 어떻게 하는게 좋을까요
-            // 이게 redirect로 보내는게 맞읋까 흠흠흠 고민고밈이가 되네요
-            // 401로 보내고
+                return new ResponseEntity<Map<String, Object>>(resultMap, status);
+            } else {
+                // db가 없다면, 즉 아직 회원이 아니라면 회원가입
+                // 먼저 카카오 아이디를 등록한 후에 보내는 것도 방법일지도?? 라는 생각을 하게 되었습니다
+                // 하지만 그러면 id값을 보내야 하겠조 ??? 흠 어떻게 하는게 좋을까요
+                // 이게 redirect로 보내는게 맞읋까 흠흠흠 고민고밈이가 되네요
+                // 401로 보내고
 
-            status = HttpStatus.UNAUTHORIZED;
+                status = HttpStatus.UNAUTHORIZED;
 
+                return new ResponseEntity<>(status);
+            }
+        } catch (Exception e) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
             return new ResponseEntity<>(status);
         }
     }
@@ -144,9 +157,15 @@ public class UserController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입", description="code값에 따라 첫 번째 또는 두 번째 유저로 구분해 회원가입 진행")
-    public ResponseEntity<?> join (@RequestBody UserDto userDto, @RequestBody CoupleDto coupleDto, @RequestParam("accessToken") String accessToken) {
+    public ResponseEntity<?> join (@RequestBody UserDto userDto, @RequestBody CoupleDto coupleDto, HttpServletRequest res) {
         log.debug("join 호출 : {}", userDto);
         HttpStatus status;
+        String accessToken = res.getHeader(AUTHORIZATION);
+
+        if (accessToken == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
 
         // 여기서 code값을 받았는지 안 받았는지를 통해 firstJoin과 secondJoin을 나누어야 함
 

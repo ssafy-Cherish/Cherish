@@ -20,6 +20,10 @@ const DiaryMonthlyPage = () => {
   // 화상채팅 했던 날들
   // TODO : useEffect로 서버에서 받아와야 함
   const [meetingDates, setMeetingDate] = useState([
+    "2024-2-4",
+    "2024-2-10",
+    "2024-2-11",
+    "2024-2-16",
     "2024-1-4",
     "2024-1-10",
     "2024-1-11",
@@ -28,11 +32,11 @@ const DiaryMonthlyPage = () => {
 
   // 생일
   // TODO : zustand에 저장되어 있는 값 가져와야 함
-  const [birthDay, setBirthDay] = useState(["2024-1-16", "2024-1-20"]);
+  const [birthDay, setBirthDay] = useState(["2024-1-16", "2024-2-20"]);
 
   // 시작 날
   // TODO : zustand에 저장되어 있는 값 가져와야 함
-  const [anniversary, setAnniversary] = useState(["2024-1-16"]);
+  const [anniversary, setAnniversary] = useState(["2024-2-16"]);
 
   // 각 특별한 날에 해당하는 날짜들을 모아서 식별하기 위한 배열
   const highlights = [...meetingDates, ...birthDay, ...anniversary];
@@ -53,7 +57,7 @@ const DiaryMonthlyPage = () => {
     animate(".react-calendar", { opacity: [0, 1] }, { duration: 0.5 });
     searchParams.set("year", mvYear);
     searchParams.set("month", mvMonth);
-    setSearchParams(searchParams);
+    setSearchParams(searchParams, { replace: true });
   }
 
   // daily로 화면 이동
@@ -90,7 +94,7 @@ const DiaryMonthlyPage = () => {
 
   return (
     // Diary 재사용 모달
-    <Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false}>
+    <Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false} nav="/">
       <div
         className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center"
         ref={scope}
@@ -98,7 +102,7 @@ const DiaryMonthlyPage = () => {
         {/* MonthYear */}
         <div className="flex flex-col me-auto">
           <motion.div
-            className="bloc text-center z-10"
+            className="bloc text-center z-10 hover:cursor-pointer"
             onClick={() => moveToYearly(year)}
             whileHover={{ scale: 1.2 }}
             transition={{ duration: 0.2 }}
