@@ -6,6 +6,7 @@ import com.ssafy.cherish.user.model.dto.UserDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -24,7 +25,7 @@ public interface UserMapper {
     void insertKakaoId (long kakaoId) throws SQLException;
 
     //회원 정보 조회
-    UserDto userInfo (int id) throws SQLException;
+    UserDto userInfo (long kakaoId) throws SQLException;
 
     // 커플 정보 조회
     CoupleDto coupleInfo (int id) throws SQLException;
@@ -38,5 +39,19 @@ public interface UserMapper {
     // 커플 정보 수정
     void modifyCouple (CoupleDto coupleDto) throws SQLException;
 
+    // 커플 인증 코드 가져오기
+    CoupleDto getCode (String code) throws SQLException;
+    
+//    // 유저 로그인
+//    UserDto login (long kakaoId) throws SQLException;
+//
+//    // 토큰 저장
+//    void saveToken (Map<String, Object> map) throws SQLException;
+//
+//    // 토큰 가져오기
+//    Object getToken (long kakaoId) throws SQLException;
+//
+//    // 로그아웃 시 토큰 삭제
+//    void deleteToken (Map<String, Object> map) throws SQLException;
 
 }
