@@ -13,5 +13,10 @@ public class AnswerDto {
 
     private int id;
     private long kakaoId;
+    private String nickname;
+    private int coupleId;
+    private int questionId;
+    private String filepath;
+    private String createdAt;
 
 }
