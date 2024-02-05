@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DropDownIcon from "../../assets/DropDownIcon.svg";
+import DropdownIcon from "../../assets/DropdownIcon.svg";
 import LockIcon from "../../assets/LockIcon.svg";
 import Answer from "./Answer";
 
@@ -26,8 +26,8 @@ export default function Question({ reply }) {
           className="m-auto col-span-1 w-full h-full"
         >
           <img
-            src={reply ? DropDownIcon : LockIcon}
-            alt="DropDwonIcon"
+            src={reply ? DropdownIcon : LockIcon}
+            alt="DropdownIcon"
             className="m-auto"
           />
         </button>
