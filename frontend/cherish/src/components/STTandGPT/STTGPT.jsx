@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import "../CherryCall/Meeting.css";
 import { useBeforeUnload } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-kit";
-////////
 
 function STTGPT() {
   const [isModalOpen, setIsModalOpen] = useState(true);
@@ -106,7 +105,6 @@ function STTGPT() {
             newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][1] = true;
           }
         }
-        console.log(result);
         newMeetingInfo.scriptHistory.push({
           message: result,
           isLocal: true,
@@ -115,8 +113,10 @@ function STTGPT() {
         return newMeetingInfo;
       });
     },
+    onEnd: () => {
+      console.log("on end");
+    },
   });
-  //////
 
   const readyCam = useRef();
 
@@ -131,7 +131,7 @@ function STTGPT() {
   const localCamContainer = useRef();
 
   const getLocalMediaStream = function () {
-    console.log("get cam mic");
+    console.log("getLocalMediaStream");
     const constraints = {
       video: {
         frameRate: {
@@ -150,6 +150,7 @@ function STTGPT() {
     };
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
       stream.getTracks().forEach((track) => {
+        console.log("getTracks");
         meetingInfo.stream.localMediaStream.addTrack(track);
       });
       updateLocalVideo(true, 1);
@@ -584,9 +585,6 @@ function STTGPT() {
     });
   }
 
-  console.log("여기 어디지");
-  console.log(meetingInfo, listening);
-
   if (!meetingInfo.init) {
     getLocalMediaStream();
     setMeetingInfo((prevMeetingInfo) => {
@@ -922,7 +920,6 @@ function STTGPT() {
                           setConnection();
 
                           setIsModalOpen(false);
-                          console.log("웹스피치 시작");
                           listen({ interimResults: false, lang: "ko-KR" });
                         }}
                       >
