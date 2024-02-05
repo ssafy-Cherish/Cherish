@@ -6,11 +6,6 @@ var canCheck = true;
 function STTGPT() {
   // fetch
   const fetchTest = () => {
-    const messages = [
-      { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: `${keywords}가 뭔지 간단하게 설명해줘.` },
-    ];
-
     // fetch("http://localhost:8080/meeting/chat", {
     fetch("https://i10d103.p.ssafy.io/meeting/chat", {
       method: "POST", // HTTP 메소드를 POST로 설정
@@ -60,7 +55,14 @@ function STTGPT() {
       }
       setRecogString(result);
     },
+    onSpeechend: (event) => {
+      console.log(event);
+    },
+    onSpeechstart: (event) => {
+      console.log(event);
+    }
   });
+
 
   // GPT
   const [apiKey, setApiKey] = useState("");
