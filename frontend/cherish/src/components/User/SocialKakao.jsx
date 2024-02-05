@@ -14,15 +14,21 @@ const SocialKakao = () => {
 
   function handleKakaoLogin() {
     // TODO: 여러 번 클릭누르는거 막아둬야 함
-
     Kakao.Auth.login({
       success(data) {
-        console.log(data);
+        console.log(data.access_token);
 
-        signupFlow();
+        fetch(`http://192.168.100.142:8080/user/login`, {
+          headers: {
+            Authorization: data.access_token,
+          },
+        }).then((res) => {
+          console.log(res);
+        });
       },
       fail(err) {
         console.log(err);
+        return;
       },
     });
   }
