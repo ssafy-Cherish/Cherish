@@ -11,7 +11,7 @@ export default function TodayQuestionCard() {
           </p>
           <div className="bg-white w-[1.5vw] h-[1.5vw] rounded-full drop-shadow-inner"></div>
         </div>
-        <div className="absolute z-10 ml-[34vw] mb-[5px]">
+        <div className="absolute ml-[34vw] mb-[5px]">
           <img src={MainBookmarkIcon} alt="" />
         </div>
       </div>

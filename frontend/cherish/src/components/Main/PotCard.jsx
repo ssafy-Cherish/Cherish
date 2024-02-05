@@ -1,5 +1,5 @@
 import HeartIcon from "../../assets/HeartIcon.svg";
-import PotLv1 from "../../assets/PotLv1.svg";
+import PotLv1 from "../../assets/Pot/PotLv1.svg";
 
 
 export default function PotCard() {
