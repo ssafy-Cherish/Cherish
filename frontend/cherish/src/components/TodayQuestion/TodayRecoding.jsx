@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Modal from "../Common/Modal";
+import ModalForSave from "../Common/ModalForSave";
 import StartRecord from "../../assets/StartRecord.svg";
 import StopRecord from "../../assets/StopRecord.svg";
 
@@ -85,7 +85,6 @@ export default function TodayRecoding2() {
     getMedia();
   }, []);
 
-  
   return (
     <>
       <div className="w-[42vw] mt-[2vw]">
@@ -110,26 +109,38 @@ export default function TodayRecoding2() {
       </div>
 
       {modalOpen && (
-        <Modal closeModalfun={closeModal} modalcss="w-[40vw] h-[30vw] rounded-[20px] bg-pink">
+        <ModalForSave
+          closeModalfun={closeModal}
+          modalcss="w-[40vw] h-[30vw] rounded-[20px] bg-pink"
+        >
           <div className="flex flex-col items-center">
-          <div className="bg-white w-[30vw] h-[4vw] text-center leading-[4vw] text-[1vw] rounded-[35px] mt-[2vw]">오늘의 질문란</div>
-          <div className="w-[30vw] mt-[1.5vw]">
-          <video
-            ref={recodeOutput}
-            preload="metadata"
-            playsInline
-            controls
-            width="100%"
-            height="100%"
-            className="rounded-[20px]"
-          ></video>
+            <div className="bg-white w-[30vw] h-[4vw] text-center leading-[4vw] text-[1vw] rounded-[35px] mt-[2vw]">
+              오늘의 질문란
+            </div>
+            <div className="w-[30vw] mt-[1.5vw]">
+              <video
+                ref={recodeOutput}
+                preload="metadata"
+                playsInline
+                controls
+                width="100%"
+                height="100%"
+                className="rounded-[20px]"
+              ></video>
+            </div>
+            <div className="w-[13vw] flex flex-row justify-between mt-[1vw]">
+              <button
+                onClick={closeModal}
+                className="w-[4vw] h-[2vw] bg-white border-[3px] border-cherry text-cherry rounded-[5px]"
+              >
+                취소
+              </button>
+              <button className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]">
+                저장
+              </button>
+            </div>
           </div>
-          <div className="w-[13vw] flex flex-row justify-between mt-[1vw]">
-            <button onClick={closeModal} className="w-[4vw] h-[2vw] bg-white border-[3px] border-cherry text-cherry rounded-[5px]">취소</button>
-            <button className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]">저장</button>
-          </div>
-          </div>
-        </Modal>
+        </ModalForSave>
       )}
     </>
   );
