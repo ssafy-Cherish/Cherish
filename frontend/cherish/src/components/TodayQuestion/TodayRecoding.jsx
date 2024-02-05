@@ -84,6 +84,8 @@ export default function TodayRecoding2() {
   useEffect(() => {
     getMedia();
   }, []);
+
+  
   return (
     <>
       <div className="w-[42vw] mt-[2vw]">
@@ -94,7 +96,7 @@ export default function TodayRecoding2() {
           autoPlay
           playsInline
         ></video>
-        <div className="bg-pink h-[3vw] rounded-b-[15px] shadow-md text-center leading-[3vw]">
+        <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
           {isRecording ? (
             <button onClick={stopRecoding} id="finish-btn">
               <img src={StopRecord} alt="" />
