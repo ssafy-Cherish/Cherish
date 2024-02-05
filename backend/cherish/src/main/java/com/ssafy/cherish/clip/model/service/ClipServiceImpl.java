@@ -83,12 +83,10 @@ public class ClipServiceImpl implements ClipService {
             Files.createDirectories(uploadPath); // 디렉토리 생성
         }
 
-        // 파일명 중복을 줄이기 위한 현재시간 String
-        String curTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmSSS"));
         // 파일명 생성
-        String leftVideoPath = uploadDir + curTime + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "templeft.mp4";
-        String rightVideoPath = uploadDir + curTime + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "tempright.mp4";
-        String resPath = uploadDir + curTime + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".mp4";
+        String leftVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "templeft.mp4";
+        String rightVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "tempright.mp4";
+        String resPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".mp4";
 
         return new String[]{leftVideoPath, rightVideoPath, resPath};
     }
