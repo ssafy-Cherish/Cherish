@@ -2,7 +2,7 @@ import { motion, useAnimate } from "framer-motion";
 import { createPortal } from "react-dom";
 import CloseIcon from "../../assets/CloseIcon.svg";
 
-export default function Modaltest({
+export default function Modal({
   children,
   z,
   modalcss,
