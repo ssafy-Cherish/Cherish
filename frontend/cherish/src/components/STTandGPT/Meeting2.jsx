@@ -395,7 +395,6 @@ window.onbeforeunload = () => {
     peerConnection.removeTrack(sender);
   });
   peerConnection.close();
-  stop()
 };
 
 //test

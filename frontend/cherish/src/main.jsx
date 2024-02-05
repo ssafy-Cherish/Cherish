@@ -14,6 +14,8 @@ import TodayQuestionRecodePage from "./pages/TodayQuestionPages/TodayQuestionRec
 import UserLayout from "./pages/UserPages/UserLayout";
 import Login from "./pages/UserPages/Login";
 import Signup from "./pages/UserPages/Signup";
+import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
+
 
 const router = createBrowserRouter([
 	// 메인 페이지
@@ -78,7 +80,12 @@ const router = createBrowserRouter([
 			},
 		],
 	},
+    {
+    	path : "sttgpt",
+    	element : <STTandGPTPage />,
+    }
 ]);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<>
 		<RouterProvider router={router} />
