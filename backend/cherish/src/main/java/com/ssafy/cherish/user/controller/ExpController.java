@@ -7,11 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
@@ -36,6 +34,24 @@ public class ExpController {
         catch (Exception e)
         {
             log.error("경험치 입력 중 error 발생 : {}",e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping
+    public ResponseEntity<?> getExp(
+            @RequestParam("coupleId")
+            @Parameter(name = "",description = "")
+            int coupleId
+    )
+    {
+        log.debug("커플 경험치 불러오기 coupleId : {}",coupleId);
+        try {
+            Map<String, ArrayList> map=expService.getExpHistory(coupleId);
+            return new ResponseEntity<>(map,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            log.error("경험치 불러오기 중 error 발생 : {}",e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
