@@ -13,7 +13,7 @@
         <result column="birthday" property="birthday" />
         <result column="created_at" property="createdAt" />
         <result column="updated_at" property="updatedAt" />
-        <result column="deleted_at" property="deletedASt" />
+        <result column="deleted_at" property="deletedAt" />
         <result column="access_token" property="accessToken" />
         <result column="refresh_token" property="refreshToken" />
     </resultMap>
@@ -58,10 +58,10 @@
         (#{kakaoId})
     </insert>
 
-    <select id="userInfo" parameterType="int" resultMap="user">
+    <select id="userInfo" parameterType="long" resultMap="user">
         SELECT *
         FROM user
-        WHERE id = #{id}
+        WHERE kakao_id = #{kakaoId}
     </select>
 
     <select id="coupleInfo" parameterType="int" resultMap="couple">
@@ -70,7 +70,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="findByKakaoId" parameterType="int" resultMap="user">
+    <select id="findByKakaoId" parameterType="long" resultMap="user">
         SELECT *
         FROM user
         WHERE kakao_id = #{kakaoId}
@@ -87,5 +87,35 @@
         SET nickname = #{nickname}
         WHERE id = #{id}
     </update>
+
+    <select id="getCode" parameterType="String" resultMap="couple">
+        SELECT *
+        FROM couple
+        WHERE code = #{code}
+    </select>
+
+<!--    <select id="login" parameterType="long" resultMap="user">-->
+<!--        SELECT *-->
+<!--        FROM user-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </select>-->
+
+<!--    <update id="saveToken" parameterType="map">-->
+<!--        UPDATE user-->
+<!--        SET access_token = #{accessToken}-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </update>-->
+
+<!--    <select id="getToken" parameterType="long" resultMap="string">-->
+<!--        SELECT access_token-->
+<!--        FROM user-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </select>-->
+
+<!--    <update id="deleteToken" parameterType="map">-->
+<!--        UPDATE user-->
+<!--        SET access_token = #{accessToken}-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </update>-->
 
 </mapper>
