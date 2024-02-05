@@ -13,8 +13,7 @@ public class ClipDto {
     private int id;
     private int meetingId;
     private String keyword;
-    private String filepath1;
-    private String filepath2;
+    private String filepath;
     private boolean isSelected;
     private boolean isPinned;
     private String createdAt;
