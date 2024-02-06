@@ -13,7 +13,7 @@ const constraints = {
   },
 };
 
-export default function TodayRecoding2() {
+export default function TodayRecoding() {
   const [mediaStream, setMediaStream] = useState(null);
   const [recordedMediaUrl, setRecordedMediaUrl] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);

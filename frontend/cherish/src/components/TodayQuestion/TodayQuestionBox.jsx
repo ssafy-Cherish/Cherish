@@ -1,5 +1,5 @@
 import Question from "./Question";
-import "./TodayQuestionBox.css"
+
 
 export default function TodayQuestionBox() {
   return (

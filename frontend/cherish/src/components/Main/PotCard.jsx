@@ -21,7 +21,7 @@ export default function PotCard() {
       </div>
       <div
         id="PotDescrption"
-        className="col-span-3 flex flex-col items-center justify-around"
+        className="h-[15vw] mt-[2vw] col-span-3 flex flex-col items-center justify-around"
       >
         <p id="PotCouple" className="text-[1.5vw]">
           알콩달콩 <span className="text-cherry">커플</span>
