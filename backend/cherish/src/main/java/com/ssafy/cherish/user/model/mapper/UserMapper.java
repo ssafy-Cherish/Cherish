@@ -45,7 +45,9 @@ public interface UserMapper {
 
     CoupleDto findByCode(String code);
 
-    List<String> getBirthdays(int coupleId);
+    List<Map<String, String>> getUserInfos(int coupleId);
+
+    int deleteUser(UserDto userDto);
 
 
     // 이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.
