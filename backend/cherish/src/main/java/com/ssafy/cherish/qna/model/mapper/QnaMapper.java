@@ -15,8 +15,10 @@ public interface QnaMapper {
     int getQuestionCnt (int coupleId) throws SQLException;
     // 가져온 question_cnt로 question 테이블 가져오기
     QuestionDto getQuestion (int questionId) throws SQLException;
-    // 사용자가 찍은 영상의 filepath값을 answer 테이블 생성 후 넣기
-    void saveAnswer (AnswerDto answerDto) throws SQLException;
+    // answer 테이블 만들기
+    void createAnswer(AnswerDto answerDto) throws SQLException;
+    // id로 찾은 행의 filepath를 update(저장)
+    int updateAnswerPath (AnswerDto answerDto) throws SQLException;
     // 커플 두 명이 모두 answer를 찍었는지 확인
     int chkAnswer (Map<String, Object> map) throws SQLException;
     // 특정 answer 영상 보기
