@@ -21,7 +21,7 @@
     <select id="getQuestionCnt" parameterType="int" resultType="int">
         SELECT question_cnt
         FROM couple
-        WHERE couple_id = #{coupleId}
+        WHERE id = #{coupleId}
      </select>
 
     <select id="getQuestion" parameterType="int" resultMap="question">
