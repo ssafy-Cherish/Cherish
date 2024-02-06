@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.user.model.mapper.ExpMapper">
+
+    <insert id="createExpHistory" parameterType="expHistoryDto">
+        INSERT INTO EXPHISTORY(COUPLE_ID,EXP,CONTENT)
+        VALUE (#{coupleId},#{exp},#{content});
+    </insert>
+
+    <select id="getExpHistory" parameterType="int" resultType="expHistoryDto">
+        SELECT ID,DATE_FORMAT(created_at,"%Y. %m. %d") AS createdAt, CONTENT, EXP
+        FROM EXPHISTORY
+        WHERE COUPLE_ID=#{coupleId} AND CREATED_AT>DATE_ADD(curdate(),INTERVAL -1 MONTH)
+        ORDER BY CREATED_AT DESC, EXP DESC;
+    </select>
+
+</mapper>
