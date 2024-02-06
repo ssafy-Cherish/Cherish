@@ -5,7 +5,7 @@ import "./Meeting.css";
 import { useBeforeUnload } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-kit";
 ////////
-import userStore from "../../stores/userUserStore";
+import userStore from "../../stores/useUserStore";
 import coupleStore from "../../stores/useCoupleStore";
 
 function Meeting() {
