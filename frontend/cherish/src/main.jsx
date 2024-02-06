@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom";
 import Index from "./pages/MainPages/Index.jsx";
 import RootLayout from "./pages/RootLayout.jsx";
 import DiaryMonthlyPage from "./pages/DiaryPages/DiaryMonthlyPage.jsx";
@@ -18,80 +18,84 @@ import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
 import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxPage.jsx";
 
 const router = createBrowserRouter([
-  // 메인 페이지
-  {
-    path: "/",
-    element: <RootLayout />,
-    children: [
-      {
-        path: "",
-        element: <Index />,
-        children: [
-          {
-            path: "pot",
-            element: <PotPage />,
-          },
-          {
-            path: "today",
-            element: <TodayQuestionRecodePage />,
-          },
-          {
-            path: "diary",
-            element: <DiaryLayout />,
-            children: [
-              {
-                path: "month",
-                element: <DiaryMonthlyPage />,
-              },
-              {
-                path: "year",
-                element: <DiaryYearlyPage />,
-              },
-              {
-                path: "day",
-                element: <DiaryDailyPage />,
-              },
-            ],
-          },
-          {
-            path: "cherrybox",
-            element: <CherryBoxPage />,
-          },
-        ],
-      },
-      {
-        path: "cherrycall",
-        element: <CherryCallMainPage />,
-      },
+	// 메인 페이지
+	{
+		path: "/",
+		element: <RootLayout />,
+		children: [
+			{
+				path: "",
+				element: <Index />,
+				children: [
+					{
+						path: "pot",
+						element: <PotPage />,
+					},
+					{
+						path: "today",
+						element: <TodayQuestionRecodePage />,
+					},
+					{
+						path: "diary",
+						element: <DiaryLayout />,
+						children: [
+							{
+								path: "month",
+								element: <DiaryMonthlyPage />,
+							},
+							{
+								path: "year",
+								element: <DiaryYearlyPage />,
+							},
+							{
+								path: "day",
+								element: <DiaryDailyPage />,
+							},
+						],
+					},
+					{
+						path: "cherrybox",
+						element: <CherryBoxPage />,
+					},
+				],
+			},
+			{
+				path: "cherrycall",
+				element: <CherryCallMainPage />,
+			},
 
-      // {path: "cherrybox", element:},
-      // {path: "question", element:},
-      // {path: "signup", element:}
-      // {path: "login", element:}
-    ],
-  },
-  {
-    path: "/user",
-    element: <UserLayout />,
-    children: [
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-    ],
-  },
-  {
-    path: "sttgpt",
-    element: <STTandGPTPage />,
-  },
+			// {path: "cherrybox", element:},
+			// {path: "question", element:},
+			// {path: "signup", element:}
+			// {path: "login", element:}
+		],
+	},
+	{
+		path: "/user",
+		element: <UserLayout />,
+		children: [
+			{
+				index: true,
+				loader: () => redirect("/user/login"),
+			},
+			{
+				path: "login",
+				element: <Login />,
+			},
+			{
+				path: "signup",
+				element: <Signup />,
+			},
+		],
+	},
+	{
+		path: "sttgpt",
+		element: <STTandGPTPage />,
+	},
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <>
-    <RouterProvider router={router} />
-  </>
+	<>
+		<RouterProvider router={router} />
+	</>
 );
