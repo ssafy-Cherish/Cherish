@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-const UserStore = create(
+const useUserStore = create(
   devtools(
     (set) => ({
       kakaoId: null,
@@ -21,4 +21,4 @@ const UserStore = create(
   )
 );
 
-export default UserStore;
+export default useUserStore;
