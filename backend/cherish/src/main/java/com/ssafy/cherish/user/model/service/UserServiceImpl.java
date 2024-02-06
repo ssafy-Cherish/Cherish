@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int findByCode(String code) {
+    public CoupleDto findByCode(String code) {
         return userMapper.findByCode(code);
     }
 

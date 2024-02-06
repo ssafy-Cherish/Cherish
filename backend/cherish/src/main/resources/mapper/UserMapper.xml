@@ -35,8 +35,8 @@
         </selectKey>
     </insert>
 
-    <select id="findByCode" resultType="Integer">
-        SELECT id
+    <select id="findByCode" resultMap="couple">
+        SELECT *
         FROM couple
         where code = #{code}
     </select>

@@ -43,7 +43,7 @@ public interface UserMapper {
 
     void createCouple(CoupleDto coupleDto);
 
-    int findByCode(String code);
+    CoupleDto findByCode(String code);
 
     List<String> getBirthdays(int coupleId);
 
