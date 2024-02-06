@@ -47,8 +47,6 @@ public class ClipServiceImpl implements ClipService {
 
         log.info("saveClip 중 생성된 filepath 빈 객체 : {}", clipDto.toString());
 
-        //TODO: 좌우에 누구를 넣을 것인지 논의 필요
-
         // 클립 병합 시 필요한 경로 설정
         // String[] {leftVideoPath,rightVideoPath,resPath};
         String[] pathForMerge = setClipDir(clipDto);
@@ -84,9 +82,9 @@ public class ClipServiceImpl implements ClipService {
         }
 
         // 파일명 생성
-        String leftVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "templeft.mp4";
-        String rightVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "tempright.mp4";
-        String resPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".mp4";
+        String leftVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "templeft.webm";
+        String rightVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "tempright.webm";
+        String resPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".webm";
 
         return new String[]{leftVideoPath, rightVideoPath, resPath};
     }
@@ -102,7 +100,9 @@ public class ClipServiceImpl implements ClipService {
                 .overrideOutputFiles(true)
                 .addInput(leftVideoPath)
                 .addInput(rightVideoPath)
-                .setComplexFilter("[0:v][1:v]hstack=inputs=2[v]; [0:a][1:a]amerge[a]")
+                .setComplexFilter("[0][1]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[0s][1s]; " +
+                        "[1s][0s]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[1s][0s]; " +
+                        "[0s][1s]hstack=inputs=2[v]; [0:a][1:a]amerge[a]")
                 .addOutput(uploadDir)
                 .addExtraArgs("-map", "[v]")
                 .addExtraArgs("-map", "[a]")
