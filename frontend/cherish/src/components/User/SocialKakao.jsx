@@ -5,15 +5,15 @@ import Kakao from "../../utils/Kakao";
 import WaitingModal from "./WaitingModal";
 import { AnimatePresence } from "framer-motion";
 import KakaoLogin from "../../assets/User/kakao_login_large_wide.png";
-import UserStore from "../../stores/UserStore";
-import CoupleStore from "../../stores/CoupleStore";
+import useUserStore from "../../stores/useUserStore";
+import useCoupleStore from "../../stores/useCoupleStore";
 
 const SocialKakao = () => {
   const navigate = useNavigate();
   const [openWaitingModal, setOpenWaitingModal] = useState(false);
 
-  const { setUserInfo } = UserStore();
-  const { setCoupleInfo } = CoupleStore();
+  const { setUserInfo } = useUserStore();
+  const { setCoupleInfo } = useCoupleStore();
 
   const [coupleCode, setCoupleCode] = useState("");
   const [preventClick, setPreventClick] = useState(false);
