@@ -34,10 +34,10 @@ const DiaryMonthlyPage = () => {
 	]);
 
 	// 생일
-	const birthdays = [userInfos.map((item) => item.birthday)];
+	const birthdays = userInfos.map((item) => dayjs(item.birthday).format("M-D"));
 
 	// 각 특별한 날에 해당하는 날짜들을 모아서 식별하기 위한 배열
-	const highlights = [...meetingDates, ...birthdays, ...anniversary];
+	const highlights = [...birthdays, dayjs(anniversary).format("M-D")];
 
 	console.log(highlights);
 
@@ -144,7 +144,10 @@ const DiaryMonthlyPage = () => {
 					locale="en-US"
 					showNeighboringMonth={false}
 					tileClassName={({ date }) => {
-						if (highlights.find((x) => x === dayjs(date).format("YYYY-M-D"))) {
+						if (highlights.find((x) => x === dayjs(date).format("M-D"))) {
+							return "relative";
+						}
+						if (meetingDates.find((x) => x === dayjs(date).format("YYYY-M-D"))) {
 							return "relative";
 						}
 					}}
@@ -165,11 +168,7 @@ const DiaryMonthlyPage = () => {
 							);
 						}
 
-						if (
-							[...anniversary, ...birthdays].find(
-								(x) => x === dayjs(date).format("YYYY-M-D")
-							)
-						) {
+						if (highlights.find((x) => x === dayjs(date).format("M-D"))) {
 							html.push(
 								setImage(
 									Cake,
