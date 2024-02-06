@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 const useUserStore = create(
-  devtools(
-    (set) => ({
+  persist(
+    devtools((set) => ({
       kakaoId: null,
       nickname: null,
       userId: null,
@@ -14,7 +14,7 @@ const useUserStore = create(
           userId,
         }));
       },
-    }),
+    })),
     {
       name: "user-store",
     }
