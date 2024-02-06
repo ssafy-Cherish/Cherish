@@ -67,6 +67,7 @@ public class UserController {
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
                 List<String> birthdays = userService.getBirthdays(userDto.getCoupleId());
                 resultMap.put("kakao_id", kakaoId);
+                resultMap.put("user_id", userDto.getId());
                 resultMap.put("nickname", userDto.getNickname());
                 resultMap.put("birthdays", birthdays);
                 resultMap.put("coupleDto", coupleDto);
