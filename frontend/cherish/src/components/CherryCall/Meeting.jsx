@@ -7,12 +7,12 @@ import { useSpeechRecognition } from "react-speech-kit";
 ////////
 import userStore from "../../stores/useUserStore";
 import coupleStore from "../../stores/useCoupleStore";
+////////
+import LeftWindow from "./LeftWindow";
 
 function Meeting() {
-  const { kakaoId, nickname, userId } = userStore(
-    (state) => state
-  );
-  const {user1, user2, coupleId } = coupleStore()
+  const { kakaoId, nickname, userId } = userStore((state) => state);
+  const { user1, user2, coupleId } = coupleStore();
 
   const [meetingInfo, setMeetingInfo] = useState({
     stream: {
@@ -209,7 +209,7 @@ function Meeting() {
   };
 
   const setConnection = function () {
-    const conn = new WebSocket(import.meta.env.VITE_APP_SOCKET_URL);
+    const conn = new WebSocket(`${import.meta.env.VITE_APP_SOCKET_URL}`);
 
     conn.onopen = function () {
       console.log("Connected to the signaling server");
@@ -627,7 +627,7 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const blob = message
+    const blob = message;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.clipHistory.push(blob);
@@ -679,9 +679,9 @@ function Meeting() {
     fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
       method: "post",
       headers: {
-        Accept: "*/*", 
+        Accept: "*/*",
       },
-      body: formData
+      body: formData,
     })
       .then((response) => {
         // sendMessage(
@@ -690,7 +690,6 @@ function Meeting() {
         //     data: response.body,
         //   })
         // );
-
         // setMeetingInfo((prevMeetingInfo) => {
         //   const newMeetingInfo = { ...prevMeetingInfo };
         //   newMeetingInfo.clipHistory.push(
@@ -742,7 +741,7 @@ function Meeting() {
   return (
     <div className="h-full w-full flex flex-row contents-center">
       <div className="w-9/12 flex flex-col justify-center">
-        <div className="h-3/4 m-2 rounded-2xl flex flex-col-reverse">
+        {/* <div className="h-3/4 m-2 rounded-2xl flex flex-col-reverse">
           <div className="h-14 bg-pink rounded-b-2xl flex flex-row justify-between">
             <div className="border-2 m-2 w-1/6"></div>
             <button
@@ -873,7 +872,20 @@ function Meeting() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
+        <LeftWindow
+          meetingInfo={meetingInfo}
+          createOffer={createOffer}
+          updateLocalVideo={updateLocalVideo}
+          readyCam={readyCam}
+          setConnection={setConnection}
+          setMeetingInfo={setMeetingInfo}
+          listen={listen}
+          camContainer={camContainer}
+          remoteCam={remoteCam}
+          localCamContainer={localCamContainer}
+          localCam={localCam}
+        ></LeftWindow>
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">
         <div className="bg-pink h-[75%] m-2 rounded-2xl flex flex-col justify-evenly">
