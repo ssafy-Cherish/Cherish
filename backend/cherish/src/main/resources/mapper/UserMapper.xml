@@ -5,15 +5,12 @@
 
     <resultMap id="user" type="userDto">
         <result column="id" property="id" />
-        <result column="id_str" property="idStr" />
         <result column="kakao_id" property="kakaoId" />
         <result column="couple_id" property="coupleId" />
         <result column="nickname" property="nickname" />
         <result column="email" property="email" />
         <result column="birthday" property="birthday" />
         <result column="created_at" property="createdAt" />
-        <result column="updated_at" property="updatedAt" />
-        <result column="deleted_at" property="deletedASt" />
         <result column="access_token" property="accessToken" />
         <result column="refresh_token" property="refreshToken" />
     </resultMap>
@@ -22,46 +19,63 @@
         <result column="id" property="id" />
         <result column="user1" property="user1" />
         <result column="user2" property="user2" />
-        <result column="name" property="name" />
         <result column="code" property="code" />
         <result column="coupled" property="coupled" />
         <result column="anniversary" property="anniversary" />
         <result column="created_at" property="createdAt" />
-        <result column="deleted_at" property="deletedAt" />
         <result column="exp" property="exp" />
+        <result column="questionCnt" property="question_cnt" />
     </resultMap>
 
-
-    <update id="join" parameterType = "userDto">
-        UPDATE user
-        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
-        WHERE kakao_id = #{kakaoId}
-    </update>
-
-    <insert id="coupleFirstJoin" parameterType="coupleDto">
-        INSERT INTO couple
-        (name, user1, code, anniversary)
-        VALUES
-        (#{name}, #{id}, #{code}, #{anniversary})
+    <insert id="createCouple" parameterType="coupleDto" >
+        INSERT INTO couple (code, anniversary)
+        VALUES (#{code}, #{anniversary})
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
-    <update id="coupleSecondJoin" parameterType="coupleDto">
+    <select id="findByCode" resultType="Integer">
+        SELECT id
+        FROM couple
+        where code = #{code}
+    </select>
+
+    <insert id="join" parameterType = "userDto">
+        INSERT INTO user
+        (kakao_id, nickname, email, birthday, couple_id)
+        VALUES
+        (#{kakaoId}, #{nickname}, #{email}, #{birthday}, #{coupleId})
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="coupleFirstJoin" parameterType="userDto">
+        UPDATE couple
+        SET user1 = #{id}
+        where id = #{coupleId}
+        and user1 is null
+    </update>
+
+    <update id="coupleSecondJoin" parameterType="userDto">
         UPDATE couple
         SET user2 = #{id}, coupled = true
-        WHERE code = #{code}
+        where id = #{coupleId}
+        and user2 is null
     </update>
 
-    <insert id="insertKakaoId" parameterType="long">
-        INSERT INTO user
-        (kakao_id)
-        VALUES
-        (#{kakaoId})
-    </insert>
+    <select id="getBirthdays" parameterType="int" resultType="String">
+        SELECT DATE_FORMAT(u.birthday,"%Y-%m-%d")
+        FROM couple c
+        join user u on c.id = u.couple_id
+        where c.id = #{coupleId}
+    </select>
 
-    <select id="userInfo" parameterType="int" resultMap="user">
+    <select id="userInfo" parameterType="long" resultMap="user">
         SELECT *
         FROM user
-        WHERE id = #{id}
+        WHERE kakao_id = #{kakaoId}
     </select>
 
     <select id="coupleInfo" parameterType="int" resultMap="couple">
@@ -70,7 +84,7 @@
         WHERE id = #{id}
     </select>
 
-    <select id="findByKakaoId" parameterType="int" resultMap="user">
+    <select id="findByKakaoId" parameterType="long" resultMap="user">
         SELECT *
         FROM user
         WHERE kakao_id = #{kakaoId}
@@ -87,5 +101,37 @@
         SET nickname = #{nickname}
         WHERE id = #{id}
     </update>
+
+    <select id="getCode" parameterType="String" resultMap="couple">
+        SELECT *
+        FROM couple
+        WHERE code = #{code}
+    </select>
+
+
+<!--    이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.-->
+<!--    <select id="login" parameterType="long" resultMap="user">-->
+<!--        SELECT *-->
+<!--        FROM user-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </select>-->
+
+<!--    <update id="saveToken" parameterType="map">-->
+<!--        UPDATE user-->
+<!--        SET access_token = #{accessToken}-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </update>-->
+
+<!--    <select id="getToken" parameterType="long" resultMap="string">-->
+<!--        SELECT access_token-->
+<!--        FROM user-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </select>-->
+
+<!--    <update id="deleteToken" parameterType="map">-->
+<!--        UPDATE user-->
+<!--        SET access_token = #{accessToken}-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </update>-->
 
 </mapper>
