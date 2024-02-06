@@ -1,7 +1,6 @@
 import HeartIcon from "../../assets/HeartIcon.svg";
 import PotLv2 from "../../assets/Pot/PotLv2.svg";
 import ModalRoute from "../../components/Common/ModalRoute";
-import "./Pot.css";
 
 export default function PotPage() {
   return (
