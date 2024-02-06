@@ -1,16 +1,20 @@
 package com.ssafy.cherish.qna.controller;
 
+import com.ssafy.cherish.qna.model.dto.AnswerDto;
 import com.ssafy.cherish.qna.model.dto.QuestionDto;
 import com.ssafy.cherish.qna.model.service.QnaService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.rmi.MarshalledObject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,6 +48,76 @@ public class QnaController {
         }
     }
 
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> saveAnswer(@RequestPart("answer") MultipartFile answer, @RequestParam Map<String, Object> map) {
+        log.debug("saveAnswer 호출 : {}", map.toString());
+        HttpStatus status;
 
+        try {
+            int result = qnaService.saveAnswer(answer, map);
+
+            if (result == 1) {
+                status = HttpStatus.CREATED;
+                return new ResponseEntity<>(status);
+            } else {
+                status = HttpStatus.OK;
+                return new ResponseEntity<>(status);
+            }
+
+        } catch (Exception e) {
+            log.error("saveAnswer 에러 : {}", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<>(status);
+        }
+
+    }
+
+    @GetMapping("/getAnswer")
+    public ResponseEntity<?> getAnswer (@RequestParam("questionId") int questionId, @RequestParam("coupleId") int coupleId) {
+        log.debug("getAnswer 호출 : {}, {}", questionId, coupleId);
+        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            map.put("questionId", questionId);
+            map.put("coupleId", coupleId);
+
+            AnswerDto answerDto = qnaService.getAnswer(map);
+            resultMap.put("answerDto", answerDto);
+            status = HttpStatus.OK;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        } catch (Exception e) {
+            log.error("getAnswer 에러 : {}", e.getMessage());
+            resultMap.put("getAnswer 에러", e.getMessage());
+
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        }
+
+    }
+
+    @GetMapping("/getAnswerList")
+    public ResponseEntity<?> getAnswerList (@RequestParam("coupleId") int coupleId) {
+        log.debug("getAnswerList 호출 : {}");
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            List<AnswerDto> list = qnaService.getAnswerList(coupleId);
+            resultMap.put("answerDto List", list);
+            status = HttpStatus.OK;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        } catch (Exception e) {
+            log.error("getAnswerList 에러 : {}", e.getMessage());
+            resultMap.put("getAnswerList 에러", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        }
+    }
 
 }
