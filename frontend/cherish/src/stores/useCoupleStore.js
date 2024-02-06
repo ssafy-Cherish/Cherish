@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 const useCoupleStore = create(
-  devtools(
-    (set) => ({
+  persist(
+    devtools((set) => ({
       coupleId: null,
       code: null,
       user1: null,
@@ -20,7 +20,7 @@ const useCoupleStore = create(
           birthdays,
         }));
       },
-    }),
+    })),
     { name: "couple-store" }
   )
 );
