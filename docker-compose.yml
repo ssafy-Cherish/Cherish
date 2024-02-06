@@ -9,6 +9,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
+      - /etc:/etc
+      - /usr/local:/usr/local
       - /usr/bin:/usr/bin
       - /home/ubuntu/ffmpeg/monthly-video:/home/ubuntu/ffmpeg/monthly-video
       - /home/ubuntu/ffmpeg/clip:/home/ubuntu/ffmpeg/clip
