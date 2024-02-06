@@ -60,7 +60,7 @@
 
     <update id="coupleSecondJoin" parameterType="userDto">
         UPDATE couple
-        SET user2 = #{id}
+        SET user2 = #{id}, coupled = true
         where id = #{coupleId}
         and user2 is null
     </update>
