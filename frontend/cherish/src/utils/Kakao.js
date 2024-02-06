@@ -1,10 +1,14 @@
 const { Kakao } = window;
 
 if (!Kakao.isInitialized()) {
-  Kakao.init(import.meta.env.VITE_APP_KAKAO_JAVASCRIPT_KEY);
+	Kakao.init(import.meta.env.VITE_APP_KAKAO_JAVASCRIPT_KEY);
 }
 
 export default Kakao;
+
+export function getAccessToken() {
+	return Kakao.Auth.getAccessToken();
+}
 
 // function handleKakaoLogin() {
 //   // TODO: 여러 번 클릭누르는거 막아둬야 함
