@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
-@RequestMapping("exp")
+@RequestMapping("/exp")
 @Slf4j
 public class ExpController {
     @Autowired
@@ -23,7 +23,7 @@ public class ExpController {
     @Operation(summary = "경험치 입력", description = "경험치 내역 추가")
     public ResponseEntity addExp(
             @RequestBody
-            @Parameter(name = "커플아이디, 커플의 경험치 내역 리스트", description = "json으로 던진 커플아이디,커플 경험치 내역")
+            @Parameter(description = "json으로 던진 커플아이디,커플 경험치 내역")
             Map<String, Object> map)
     {
         log.debug("커플 경험치 입력 : {}",map.toString());
@@ -41,7 +41,7 @@ public class ExpController {
     @Operation(summary = "커플 최근 한달 경험치",description = "커플 아이디를 입력하면 날짜별 최신순 경험치 기록 리스트 맵을 반환")
     public ResponseEntity<?> getExp(
             @RequestParam("coupleId")
-            @Parameter(name = "커플아이디")
+            @Parameter(description = "커플아이디")
             int coupleId
     )
     {
