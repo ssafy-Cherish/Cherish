@@ -17,11 +17,11 @@ export default function NavBar() {
         </div>
       </Link>
       <div className="grid gird-rows-6 gap-14 mt-[5.5vw]" id="네브바메인">
-        <button className="ml-[2vw] flex flex-row justify-around items-center bg-white w-[12vw] h-[3.6vw] rounded-[36px] shadow-md">
+        <button className="mx-auto flex flex-row justify-around items-center bg-white w-[15.6rem] h-[4.3rem] rounded-[36px] shadow-md">
           <div>
             <img src={ProfileIcon} alt="ProfileIcon" />
           </div>
-          <p className="text-[1.2vw]">나희도</p>
+          <p className="text-[1.5rem]">나희도</p>
           <div>
             <img src={DropdownIcon} alt="DropdownIcon" />
           </div>
@@ -32,7 +32,7 @@ export default function NavBar() {
           </div>
           <p
             className="text-neutral-400
-                text-[1.5vw]
+                text-[1.75rem]
                 font-bold"
           >
             체리콜
@@ -42,7 +42,7 @@ export default function NavBar() {
           <img src={DiaryIcon} alt="DirayIcon" />
           <p
             className="text-neutral-400
-                text-[1.5vw]
+                text-[1.75rem]
                 font-bold"
           >
             다이어리
@@ -52,7 +52,7 @@ export default function NavBar() {
           <img src={PotIcon} alt="PotIcon" />
           <p
             className="text-neutral-400
-                text-[1.5vw]
+                text-[1.75rem]
                 font-bold"
           >
             화분
@@ -62,7 +62,7 @@ export default function NavBar() {
           <img src={QuestionIcon} alt="QuestionIcon" />
           <p
             className="text-neutral-400
-                text-[1.5vw]
+                text-[1.75rem]
                 font-bold"
           >
             오늘의질문
@@ -72,7 +72,7 @@ export default function NavBar() {
           <img src={GalleryIcon} alt="GalleryIcon" />
           <p
             className="text-neutral-400
-                text-[1.5vw]
+                text-[1.75rem]
                 font-bold"
           >
             체리보관함

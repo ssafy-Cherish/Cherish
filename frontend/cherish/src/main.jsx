@@ -15,6 +15,7 @@ import UserLayout from "./pages/UserPages/UserLayout";
 import Login from "./pages/UserPages/Login";
 import Signup from "./pages/UserPages/Signup";
 import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
+import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxpage.jsx";
 
 const router = createBrowserRouter([
   // 메인 페이지
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
                 element: <DiaryDailyPage />,
               },
             ],
+          },
+          {
+            path: "cherrybox",
+            element: <CherryBoxPage />,
           },
         ],
       },
