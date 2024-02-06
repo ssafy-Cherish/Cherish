@@ -117,8 +117,8 @@ function STTGPT() {
               content: 
                 // `A : ${newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].message}. \n` +
                 // `B : ${script.message}.` },
-                `A : . \n` +
-                `B : .` },
+                `A : 저녁 뭐 먹을까?. \n` +
+                `B : 글쎄 좀 새로운거 없나? 한 번 생각해보자.` },
           ];
           console.log(messages);
 
