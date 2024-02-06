@@ -6,6 +6,9 @@ import com.ssafy.cherish.user.model.dto.UserDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -15,16 +18,13 @@ public interface UserMapper {
     void join (UserDto userDto) throws SQLException;
 
     // 첫 번째 유저 회원가입 시 커플 테이블 업데이트
-    void coupleFirstJoin (CoupleDto coupleDto) throws SQLException;
+    void coupleFirstJoin (UserDto userDto) throws SQLException;
 
     // 두 번째 유저 회원가입 시 커플 테이블 업데이트
-    void coupleSecondJoin (CoupleDto coupleDto) throws SQLException;
-
-    // 카카오 아이디를 받아 user 테이블 생성 -> 회원가입의 시작이라고 할 수 있죠 후후,,,
-    void insertKakaoId (long kakaoId) throws SQLException;
+    void coupleSecondJoin (UserDto userDto) throws SQLException;
 
     //회원 정보 조회
-    UserDto userInfo (int id) throws SQLException;
+    UserDto userInfo (long kakaoId) throws SQLException;
 
     // 커플 정보 조회
     CoupleDto coupleInfo (int id) throws SQLException;
@@ -38,5 +38,27 @@ public interface UserMapper {
     // 커플 정보 수정
     void modifyCouple (CoupleDto coupleDto) throws SQLException;
 
+    // 커플 인증 코드 가져오기
+    CoupleDto getCode (String code) throws SQLException;
+
+    void createCouple(CoupleDto coupleDto);
+
+    int findByCode(String code);
+
+    List<String> getBirthdays(int coupleId);
+
+
+    // 이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.
+//    // 유저 로그인
+//    UserDto login (long kakaoId) throws SQLException;
+//
+//    // 토큰 저장
+//    void saveToken (Map<String, Object> map) throws SQLException;
+//
+//    // 토큰 가져오기
+//    Object getToken (long kakaoId) throws SQLException;
+//
+//    // 로그아웃 시 토큰 삭제
+//    void deleteToken (Map<String, Object> map) throws SQLException;
 
 }
