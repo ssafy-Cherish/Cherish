@@ -15,7 +15,7 @@ import UserLayout from "./pages/UserPages/UserLayout";
 import Login from "./pages/UserPages/Login";
 import Signup from "./pages/UserPages/Signup";
 import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
-import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxpage.jsx";
+import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxPage.jsx";
 
 const router = createBrowserRouter([
   // 메인 페이지
