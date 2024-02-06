@@ -187,7 +187,7 @@ public class UserController {
             }
             // 코드가 있다면 code로 id 가져오기
             else {
-                coupleDto.setId(userService.findByCode(map.get("code")));
+                coupleDto = userService.findByCode(map.get("code"));
             }
 
             // join 단계
