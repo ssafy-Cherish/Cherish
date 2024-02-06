@@ -35,8 +35,8 @@
         </selectKey>
     </insert>
 
-    <select id="findByCode" resultType="Integer">
-        SELECT id
+    <select id="findByCode" resultMap="couple">
+        SELECT *
         FROM couple
         where code = #{code}
     </select>
@@ -50,6 +50,11 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
     </insert>
+
+    <delete id="deleteUser" parameterType="userDto">
+        DELETE FROM user
+        WHERE id = #{id} and kakao_id = #{kakaoId}
+    </delete>
 
     <update id="coupleFirstJoin" parameterType="userDto">
         UPDATE couple
@@ -65,8 +70,8 @@
         and user2 is null
     </update>
 
-    <select id="getBirthdays" parameterType="int" resultType="String">
-        SELECT DATE_FORMAT(u.birthday,"%Y-%m-%d")
+    <select id="getUserInfos" parameterType="int" resultType="map">
+        SELECT u.id, u.nickname nickname ,DATE_FORMAT(u.birthday,"%Y-%m-%d") birthday
         FROM couple c
         join user u on c.id = u.couple_id
         where c.id = #{coupleId}
