@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,13 +22,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void coupleFirstJoin(CoupleDto coupleDto) throws Exception {
-        userMapper.coupleFirstJoin(coupleDto);
+    public void coupleFirstJoin(UserDto userDto) throws Exception {
+        userMapper.coupleFirstJoin(userDto);
     }
 
     @Override
-    public void coupleSecondJoin(CoupleDto coupleDto) throws Exception {
-        userMapper.coupleSecondJoin(coupleDto);
+    public void coupleSecondJoin(UserDto userDto) throws Exception {
+        userMapper.coupleSecondJoin(userDto);
     }
 
     @Override
@@ -65,6 +66,21 @@ public class UserServiceImpl implements UserService {
         } else {
             return true;
         }
+    }
+
+    @Override
+    public void createCouple(CoupleDto coupleDto) {
+        userMapper.createCouple(coupleDto);
+    }
+
+    @Override
+    public int findByCode(String code) {
+        return userMapper.findByCode(code);
+    }
+
+    @Override
+    public List<String> getBirthdays(int coupleId) {
+        return userMapper.getBirthdays(coupleId);
     }
 
 
