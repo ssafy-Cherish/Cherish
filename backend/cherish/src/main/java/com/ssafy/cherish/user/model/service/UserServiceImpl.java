@@ -74,13 +74,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int findByCode(String code) {
+    public CoupleDto findByCode(String code) {
         return userMapper.findByCode(code);
     }
 
     @Override
-    public List<String> getBirthdays(int coupleId) {
-        return userMapper.getBirthdays(coupleId);
+    public List<Map<String, String>> getUserInfos(int coupleId) {
+        return userMapper.getUserInfos(coupleId);
+    }
+
+    @Override
+    public int deleteUser(UserDto userDto) {
+        return userMapper.deleteUser(userDto);
     }
 
 

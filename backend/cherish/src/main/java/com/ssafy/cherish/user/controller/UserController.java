@@ -65,11 +65,11 @@ public class UserController {
                 // 나 뭐 보내줘 -> couple_id 보내주께, coupled
                 UserDto userDto = userService.userInfo(kakaoId);
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
-                List<String> birthdays = userService.getBirthdays(userDto.getCoupleId());
+                List<Map<String, String>> userInfos = userService.getUserInfos(userDto.getCoupleId());
                 resultMap.put("kakao_id", kakaoId);
                 resultMap.put("user_id", userDto.getId());
                 resultMap.put("nickname", userDto.getNickname());
-                resultMap.put("birthdays", birthdays);
+                resultMap.put("userInfos", userInfos);
                 resultMap.put("coupleDto", coupleDto);
                 resultMap.put("verified", true);
                 status = HttpStatus.OK;
@@ -187,7 +187,10 @@ public class UserController {
             }
             // 코드가 있다면 code로 id 가져오기
             else {
-                coupleDto.setId(userService.findByCode(map.get("code")));
+                coupleDto = userService.findByCode(map.get("code"));
+                if(coupleDto.getUser1() != null && coupleDto.getUser2() != null) {
+                    throw new Exception("Invalid Code");
+                }
             }
 
             // join 단계
@@ -208,11 +211,11 @@ public class UserController {
             userService.join(userDto);
 
             // 첫 번째 회원가입일 경우의 update
-            if (!map.containsKey("code")) {
+            if (coupleDto.getUser1() == null) {
                 userService.coupleFirstJoin(userDto);
             }
             // 두 번째 회원가입일 경우의 update
-            else {
+            else if (coupleDto.getUser2() == null){
                 userService.coupleSecondJoin(userDto);
             }
 
@@ -226,8 +229,6 @@ public class UserController {
         // 엑세스 토큰을 보내줘 -> kakaoId를 찾아 ->
         // 첫 번째 join : code 생성 후 저장
         // userDto를 보내줄 때, code값이 null이면 첫join, 아니면 두join
-
-
 
 //        try {
 //            userDto.setKakaoId(kakaoId);
@@ -252,6 +253,44 @@ public class UserController {
         return new ResponseEntity<>(status);
     }
 
+    @DeleteMapping("/delete/{userId}")
+    @Operation(summary = "유저 정보 삭제", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
+    public  ResponseEntity<?> deleteUser (@PathVariable Integer userId, HttpServletRequest req) {
+
+        String accessToken = req.getHeader(AUTHORIZATION);
+        HttpStatus status = HttpStatus.OK;
+
+        if (accessToken == null) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(status);
+        }
+
+        HashMap<String, Object> userIn = kakaoApi.getUserInfo(accessToken);
+
+        System.out.println("login info : " + userIn.toString());
+
+        long kakaoId = (long)userIn.get("kakaoId");
+        log.debug("kakaoId : {}", kakaoId);
+        
+        try {
+            UserDto userDto = new UserDto();
+            userDto.setId(userId);
+            userDto.setKakaoId(kakaoId);
+
+            int value = userService.deleteUser(userDto);
+
+            if(value == 0)
+                status = HttpStatus.BAD_REQUEST;
+
+
+
+        }catch (Exception e) {
+            log.error("회원삭제 에러 : {}", e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<>(status);
+    }
 
     @GetMapping("/userInfo")
     @Operation(summary = "유저 정보 조회", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")

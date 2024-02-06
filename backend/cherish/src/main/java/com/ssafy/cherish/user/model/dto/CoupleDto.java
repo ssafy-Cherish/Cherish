@@ -12,8 +12,8 @@ import lombok.*;
 public class CoupleDto {
 
     private int id;
-    private int user1;
-    private int user2;
+    private Integer user1;
+    private Integer user2;
     private String code;
     private Boolean coupled;
     private String anniversary;
