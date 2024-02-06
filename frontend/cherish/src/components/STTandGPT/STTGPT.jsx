@@ -79,37 +79,70 @@ function STTGPT() {
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       console.log(result);
+      var script = {
+        message: result,
+        isLocal: false,
+        time: new Date(),
+      };
+      sendMessage(
+        JSON.stringify({
+          cmd: "script",
+          data: script,
+        })
+      );
       setMeetingInfo((prevMeetingInfo) => {
         const newMeetingInfo = { ...prevMeetingInfo };
-        if (prevMeetingInfo.record.recogString != result) {
-          newMeetingInfo.record.recogString = result;
-          const arr = result.split(" ");
-          if (
-            prevMeetingInfo.video.local.videoOn &&
-            prevMeetingInfo.video.local.volume != 0 &&
-            prevMeetingInfo.video.remote.videoOn &&
-            prevMeetingInfo.video.remote.volume != 0 &&
-            prevMeetingInfo.record.canRecog &&
-            arr[arr.length - 1] === "안녕"
-          ) {
-            newMeetingInfo.record.canRecog = false;
-            console.log("record Trigered");
-            setTimeout(() => {
-              setMeetingInfo((tmpMeetingInfo) => {
-                const newTmpMeetingInfo = { ...tmpMeetingInfo };
-                newTmpMeetingInfo.record.canRecog = true;
-                return newTmpMeetingInfo;
-              });
-            }, 1500);
-            newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][0] = true;
-            newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][1] = true;
-          }
+        script.isLocal = true;
+        newMeetingInfo.scriptHistory.push(script);
+
+        // 한 번의 대화가 완성 됐다면 gpt 이용 조건 완료
+        if (newMeetingInfo.scriptHistory.length == 2 && newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].isLocal == false) {
+          const messages = [
+            { role: "system", 
+              content: 
+                "You are a helpful assistant who suggests interesting topics between a couple to excites their relationship. \n" +
+                "And the the topics you answer have to be short like 1 or 2 lines. \n" +
+                "You also have to return `true` if you have some interesting topics about this conversation or `false` if it's not.\n" +
+                "You also have to return whether the conversation that you've got is worth to save or not by returning `true` if it's worth to save or `false` if it's not.\n" +
+                "You must answer in Korean. \n" +
+                "So you have to follow the answer template like below. \n" +
+                "```\n" +
+                "true or false depends on if it's worth to save\n" +
+                "true or false depends on if you have interesting topics\n" +
+                "1 or 2 lines of interesting topics about the conversation that you've got.\n" +
+                "```\n" +
+                "So the answer must be only 3 or 4 lines.\n" +
+                "You must answer in Korean." },
+            { role: "user", 
+              content: 
+                // `A : ${newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].message}. \n` +
+                // `B : ${script.message}.` },
+                `A : . \n` +
+                `B : .` },
+          ];
+          console.log(messages);
+
+          fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST", // HTTP 메소드를 POST로 설정
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_APP_GPT_API_KEY}`, // API 키를 포함한 인증 헤더
+              "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
+            },
+            body: JSON.stringify({
+              // 요청 바디에 JSON 데이터를 문자열로 변환하여 전달
+              model: "gpt-3.5-turbo",
+              temperature: 0.5,
+              n: 1,
+              messages: messages,
+            }),
+          }).then((response) => response.json()) // 응답을 JSON으로 변환
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((error) => {
+              console.error(error); // 오류 처리
+            });
         }
-        newMeetingInfo.scriptHistory.push({
-          message: result,
-          isLocal: true,
-          time: new Date(),
-        });
         return newMeetingInfo;
       });
     },
@@ -286,6 +319,8 @@ function STTGPT() {
 
     // when we receive a message from the other peer, printing it on the console
     dataChannel.onmessage = function (event) {
+      console.log('onmessage');
+      console.log(event);
       const msg = JSON.parse(event.data);
       console.log(msg);
       switch (msg.cmd) {
@@ -307,6 +342,14 @@ function STTGPT() {
 
         case "send chatting massage":
           handleRemoteChatting(msg.data);
+          break;
+
+        case "script":
+          setMeetingInfo((prevMeetingInfo) => {
+            const newMeetingInfo = { ...prevMeetingInfo };
+            newMeetingInfo.scriptHistory.push(msg.data);
+            return newMeetingInfo;
+          });
           break;
 
         default:
@@ -382,7 +425,7 @@ function STTGPT() {
       });
     };
 
-    peerConnection.onconnectionstatechange = function () {};
+    peerConnection.onconnectionstatechange = function () { };
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
@@ -586,7 +629,7 @@ function STTGPT() {
   }
 
   if (!meetingInfo.init) {
-    getLocalMediaStream();
+    //getLocalMediaStream();
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.init = true;
@@ -915,7 +958,7 @@ function STTGPT() {
                             ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
                             : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
                         }
-                        disabled={meetingInfo.stream.localMediaStream.getTracks().length === 0}
+                        // disabled={meetingInfo.stream.localMediaStream.getTracks().length === 0}
                         onClick={() => {
                           setConnection();
 
