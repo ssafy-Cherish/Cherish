@@ -5,13 +5,14 @@ import "./Meeting.css";
 import { useBeforeUnload } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-kit";
 ////////
-import userStore from "../../stores/userStore";
-
+import userStore from "../../stores/userUserStore";
+import coupleStore from "../../stores/useCoupleStore";
 
 function Meeting() {
-  const { kakaoId, nickname, user1, user2, userId } = userStore(
+  const { kakaoId, nickname, userId } = userStore(
     (state) => state
   );
+  const {user1, user2, coupleId } = coupleStore()
 
   const [meetingInfo, setMeetingInfo] = useState({
     stream: {
@@ -180,7 +181,7 @@ function Meeting() {
       localCam.current.srcObject = on
         ? meetingInfo.stream.localMediaStream
         : new MediaStream();
-      localCam.current.volume = volume;
+      localCam.current.volume = 0;
     }
 
     setMeetingInfo((prevMeetingInfo) => {
@@ -216,7 +217,7 @@ function Meeting() {
       send({
         event: "access",
         data: JSON.stringify({
-          coupleId: 1,
+          coupleId: coupleId,
         }),
       });
     };
@@ -626,7 +627,7 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const blob = new Blob(message);
+    const blob = message
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.clipHistory.push(blob);
@@ -669,38 +670,36 @@ function Meeting() {
   }
 
   if (meetingInfo.record.tmpRecord[0] && meetingInfo.record.tmpRecord[1]) {
-    fetch("http://localhost:8080/clip", {
+    let formData = new FormData();
+    formData.set("meeting_id", meetingInfo.meetingId);
+    formData.set("keyword", "안녕");
+    formData.set("clip1", meetingInfo.record.tmpRecord[0], "clip1.webm");
+    formData.set("clip2", meetingInfo.record.tmpRecord[1], "clip2.webm");
+
+    fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
       method: "post",
       headers: {
-        Accept: "*/*", // 응답 데이터 타입
-        "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
+        Accept: "*/*", 
       },
-      body: JSON.stringify({
-        user1: user1,
-        user2: user2,
-        meeting_id: meetingInfo.meetingId,
-        keyword: "안녕",
-        clip1: meetingInfo.record.tmpRecord[0],
-        clip2: meetingInfo.record.tmpRecord[1],
-      }),
+      body: formData
     })
       .then((response) => {
-        sendMessage(
-          JSON.stringify({
-            cmd: "send new clip",
-            data: response.body,
-          })
-        );
+        // sendMessage(
+        //   JSON.stringify({
+        //     cmd: "send new clip",
+        //     data: response.body,
+        //   })
+        // );
 
-        setMeetingInfo((prevMeetingInfo) => {
-          const newMeetingInfo = { ...prevMeetingInfo };
-          newMeetingInfo.clipHistory.push(
-            new Blob(response.body, {
-              mimeType: "video/webm; codecs=vp9",
-            })
-          );
-          return newMeetingInfo;
-        });
+        // setMeetingInfo((prevMeetingInfo) => {
+        //   const newMeetingInfo = { ...prevMeetingInfo };
+        //   newMeetingInfo.clipHistory.push(
+        //     new Blob(response.body, {
+        //       mimeType: "video/webm; codecs=vp9",
+        //     })
+        //   );
+        //   return newMeetingInfo;
+        // });
       })
       .catch((err) => {
         console.log(err);
@@ -968,19 +967,22 @@ function Meeting() {
                       })
                     );
 
-                    fetch("http://localhost:8080/meeting/chat", {
-                      method: "post",
-                      headers: {
-                        Accept: "*/*", // 응답 데이터 타입
-                        "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
-                      },
-                      body: JSON.stringify({
-                        kakaoId: kakaoId,
-                        nickname: nickname,
-                        meetingId: meetingInfo.meetingId,
-                        content: event.target.childNodes[0].value,
-                      }),
-                    }).catch((err) => {
+                    fetch(
+                      `${import.meta.env.VITE_APP_BACKEND_URL}/meeting/chat`,
+                      {
+                        method: "post",
+                        headers: {
+                          Accept: "*/*", // 응답 데이터 타입
+                          "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
+                        },
+                        body: JSON.stringify({
+                          kakaoId: kakaoId,
+                          nickname: nickname,
+                          meetingId: meetingInfo.meetingId,
+                          content: event.target.childNodes[0].value,
+                        }),
+                      }
+                    ).catch((err) => {
                       console.log(err);
                     });
 
@@ -1017,19 +1019,24 @@ function Meeting() {
                             })
                           );
 
-                          fetch("http://localhost:8080/meeting/chat", {
-                            method: "post",
-                            headers: {
-                              Accept: "*/*", // 응답 데이터 타입
-                              "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
-                            },
-                            body: JSON.stringify({
-                              kakaoId: kakaoId,
-                              nickname: nickname,
-                              meetingId: meetingInfo.meetingId,
-                              content: event.target.value,
-                            }),
-                          }).catch((err) => {
+                          fetch(
+                            `${
+                              import.meta.env.VITE_APP_BACKEND_URL
+                            }/meeting/chat`,
+                            {
+                              method: "post",
+                              headers: {
+                                Accept: "*/*", // 응답 데이터 타입
+                                "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
+                              },
+                              body: JSON.stringify({
+                                kakaoId: kakaoId,
+                                nickname: nickname,
+                                meetingId: meetingInfo.meetingId,
+                                content: event.target.value,
+                              }),
+                            }
+                          ).catch((err) => {
                             console.log(err);
                           });
 
