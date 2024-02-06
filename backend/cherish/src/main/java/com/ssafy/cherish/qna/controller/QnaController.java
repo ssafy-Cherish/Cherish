@@ -49,6 +49,7 @@ public class QnaController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "오늘의 질문 답변 등록하기", description = "오늘의 질문에 대한 대답 영상을 db에 저장한다.")
     public ResponseEntity<?> saveAnswer(@RequestPart("answer") MultipartFile answer, @RequestParam Map<String, Object> map) {
         log.debug("saveAnswer 호출 : {}", map.toString());
         HttpStatus status;
@@ -74,6 +75,7 @@ public class QnaController {
     }
 
     @GetMapping("/getAnswer")
+    @Operation(summary = "오늘의 질문의 답변 가져옴", description = "커플아이디와 질문번호에 맞는 answerDto를 가져온다.")
     public ResponseEntity<?> getAnswer (@RequestParam("questionId") int questionId, @RequestParam("coupleId") int coupleId) {
         log.debug("getAnswer 호출 : {}, {}", questionId, coupleId);
         Map<String, Object> map = new HashMap<String, Object>();
@@ -100,6 +102,7 @@ public class QnaController {
     }
 
     @GetMapping("/getAnswerList")
+    @Operation(summary = "오늘의 질문 답변 list 가져옴", description = "couple_id를 받아 해당 커플이 답변한 answerDto을 list로 가져온다")
     public ResponseEntity<?> getAnswerList (@RequestParam("coupleId") int coupleId) {
         log.debug("getAnswerList 호출 : {}");
         Map<String, Object> resultMap = new HashMap<String, Object>();
