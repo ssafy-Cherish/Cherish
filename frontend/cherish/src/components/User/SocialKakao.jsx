@@ -5,26 +5,63 @@ import Kakao from "../../utils/Kakao";
 import WaitingModal from "./WaitingModal";
 import { AnimatePresence } from "framer-motion";
 import KakaoLogin from "../../assets/User/kakao_login_large_wide.png";
+import useUserStore from "../../stores/useUserStore";
+import useCoupleStore from "../../stores/useCoupleStore";
 
 const SocialKakao = () => {
   const navigate = useNavigate();
   const [openWaitingModal, setOpenWaitingModal] = useState(false);
 
-  const [coupleCode, setCoupleCode] = useState("!VCJmYMh3LP*9@j");
+  const { setUserInfo } = useUserStore();
+  const { setCoupleInfo } = useCoupleStore();
+
+  const [coupleCode, setCoupleCode] = useState("");
+  const [preventClick, setPreventClick] = useState(false);
 
   function handleKakaoLogin() {
-    // TODO: 여러 번 클릭누르는거 막아둬야 함
-    Kakao.Auth.login({
-      success(data) {
-        console.log(data.access_token);
+    async function fetchKakaoLogin() {
+      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/user/login`, {
+        headers: {
+          Authorization: Kakao.Auth.getAccessToken(),
+        },
+      });
+      const resData = await response.json();
+      if (!response.ok) {
+        throw Error("login fetch Error");
+      }
 
-        fetch(`http://192.168.100.142:8080/user/login`, {
-          headers: {
-            Authorization: data.access_token,
-          },
-        }).then((res) => {
-          console.log(res);
-        });
+      if (resData.verified) {
+        if (!resData.coupleDto.coupled) {
+          setCoupleCode(resData.coupleDto.code);
+          setOpenWaitingModal(true);
+        } else {
+          setUserInfo(resData.kakao_id, resData.nickname, resData.user_id);
+          const couple = resData.coupleDto;
+          setCoupleInfo(
+            couple.id,
+            couple.code,
+            couple.user1,
+            couple.user2,
+            couple.anniversary,
+            resData.birthdays
+          );
+          navigate("/");
+        }
+      } else {
+        navigate("/user/signup");
+      }
+
+      return resData;
+    }
+
+    if (preventClick) return;
+    setPreventClick(true);
+
+    Kakao.Auth.login({
+      success() {
+        fetchKakaoLogin();
+
+        setPreventClick(false);
       },
       fail(err) {
         console.log(err);
@@ -32,32 +69,6 @@ const SocialKakao = () => {
       },
     });
   }
-
-  function signupFlow() {
-    Kakao.API.request({
-      url: "/v2/user/me",
-      success(info) {
-        console.log(info);
-
-        // 회원이 없으면
-        // navigate("/user/signup");
-        // return
-
-        // 받은 데이터로 Zustand 세팅
-
-        // 회원이 있는데 coupled false면
-        // TODO: setCoupleCode
-        setOpenWaitingModal(true);
-
-        // 회원이 있는데 coupled true면
-        // navigate("/");
-      },
-      fail(err) {
-        console.log(err);
-      },
-    });
-  }
-
   function handleKakaoLogout() {
     if (!Kakao.Auth.getAccessToken()) {
       alert("로그인중이 아닙니다.");
