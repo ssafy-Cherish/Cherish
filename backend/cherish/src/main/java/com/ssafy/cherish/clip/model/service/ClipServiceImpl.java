@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Map;
 
 @Service
@@ -38,29 +39,11 @@ public class ClipServiceImpl implements ClipService {
 
     @Value("${custom.path.ffmpeg}")
     private String ffmpegPath;
-    @Value("${custom.path.clip}")
-    private String clipPath;
 
     @Override
     //파일 입출력이 잘못되었을 경우에도 전체 롤백이 됨
     @Transactional(rollbackFor = Exception.class)
-    public String saveClip(MultipartFile clip1, MultipartFile clip2, Map<String, Object> map) throws Exception {
-        ClipDto clipDto = new ClipDto();
-
-        clipDto.setMeetingId(Integer.parseInt((String) map.get("meeting_id")));
-        clipDto.setKeyword((String) map.get("keyword"));
-
-        clipMapper.createClip(clipDto);
-
-        log.info("saveClip 중 생성된 filepath 빈 객체 : {}", clipDto.toString());
-
-        // 클립 병합 시 필요한 경로 설정
-        // String[] {leftVideoPath,rightVideoPath,resPath};
-        String[] pathForMerge = setClipDir(clipDto);
-
-        //클립 임시 저장
-        clip1.transferTo(new File(pathForMerge[0]));
-        clip2.transferTo(new File(pathForMerge[1]));
+    public String saveClip(ClipDto clipDto,String[] pathForMerge) throws Exception {
 
         //클립 병합
         mergeCoupleClip(pathForMerge[0], pathForMerge[1], pathForMerge[2]);
@@ -87,26 +70,6 @@ public class ClipServiceImpl implements ClipService {
         return clipURL;
     }
 
-    String[] setClipDir(ClipDto clipDto) throws Exception {
-        // 클립 저장 경로 설정
-        String uploadDir = clipPath + clipDto.getMeetingId() + File.separator;
-        Path uploadPath = Paths.get(uploadDir);
-
-
-        // 디렉토리가 없으면 생성
-        if (!Files.exists(uploadPath)) {
-            //여기서 IOException 발생 가능성 있음
-            Files.createDirectories(uploadPath); // 디렉토리 생성
-        }
-
-        // 파일명 생성
-        String leftVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "templeft.webm";
-        String rightVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "tempright.webm";
-        String resPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".webm";
-        String resFile=clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".webm";
-
-        return new String[]{leftVideoPath, rightVideoPath, resPath,resFile};
-    }
 
     void mergeCoupleClip(String leftVideoPath, String rightVideoPath, String uploadDir) throws IOException {
 
@@ -133,6 +96,10 @@ public class ClipServiceImpl implements ClipService {
         executor.createJob(builder).run();
     }
 
+    @Override
+    public void createClip(ClipDto clipDto) throws Exception {
+        clipMapper.createClip(clipDto);
+    }
 }
 
 
