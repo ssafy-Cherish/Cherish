@@ -1,9 +1,12 @@
+// 이승준이 수정한 파일
+
 import micOnImg from "../../assets/meeting/mic-on.svg"
 import micOffImg from "../../assets/meeting/mic-off.svg"
 import camOnImg from "../../assets/meeting/cam-on.svg"
 import camOffImg from "../../assets/meeting/cam-off.svg"
 
 function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, setMeetingInfo, listen}) {
+
   return (
     <div className="h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl">
       <div className="h-5/6 w-1/2 mt-5 rounded-2xl bg-pink flex flex-col justify-center items-center">
@@ -74,9 +77,6 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
                 : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
             }
-            disabled={
-              meetingInfo.stream.localMediaStream.getTracks().length === 0
-            }
             onClick={() => {
               setConnection();
 
@@ -85,7 +85,8 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 newMeetingInfo.isModalOpen = false;
                 return newMeetingInfo;
               });
-              listen();
+              // 이승준이 수정한 코드
+              listen({ interimResults: false, lang: "ko-KR" });
             }}
           >
             입장
