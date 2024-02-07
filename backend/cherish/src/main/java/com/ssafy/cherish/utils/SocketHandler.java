@@ -149,4 +149,36 @@ public class SocketHandler extends TextWebSocketHandler {
         // 세션들의 맵에서도 연결이 끊긴 사용자 삭제
         sessions.remove(session.getId());
     }
+
+    // 완성된 클립의 url을 커플에게 전송
+    public void sendClipUrl(int coupleId, String url) {
+        log.debug("완성된 클립 url 전송 : {}", url);
+
+        if (!connections.containsKey(coupleId)) {
+            log.error("연결된 커플 없음 : {}", coupleId);
+            return;
+        }
+
+        // 상대방이 연결되어 있다면 세션 리스트가 존재
+        List<CherishSocketSession> list = connections.get(coupleId);
+
+        if (list.size() != 2) {
+            log.error("커플이 모두 웹소켓에 연결되어 있지 않음 : {}", list);
+            return;
+        }
+
+        // 둘 다 정상적으로 웹 소켓에 연결 되어 있다면 url 전송
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> res = new HashMap<>();
+            res.put("event", "getClipURL");
+            res.put("data", url);
+            TextMessage newMessage = new TextMessage(mapper.writeValueAsBytes(res));
+            for (CherishSocketSession cs : list)
+                cs.getSession().sendMessage(newMessage);
+            log.debug("클립 url 전송 완료 : {}", res);
+        } catch (Exception e) {
+            log.error("클립 url 전송 중 에러 발생 : {}", e.getMessage());
+        }
+    }
 }
