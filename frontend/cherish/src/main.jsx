@@ -66,11 +66,6 @@ const router = createBrowserRouter([
         path: "cherrycall",
         element: <CherryCallMainPage />,
       },
-
-      // {path: "cherrybox", element:},
-      // {path: "question", element:},
-      // {path: "signup", element:}
-      // {path: "login", element:}
     ],
   },
   {
@@ -96,6 +91,8 @@ const router = createBrowserRouter([
     element: <STTandGPTPage />,
   },
 ]);
+
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <QueryClientProvider client={queryClient}>

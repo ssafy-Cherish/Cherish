@@ -1,8 +1,17 @@
-import HeartIcon from "../../assets/HeartIcon.svg";
+import HeartIcon from "../../assets/Common/HeartIcon.svg";
 import PotLv2 from "../../assets/Pot/PotLv2.svg";
 import ModalRoute from "../../components/Common/ModalRoute";
+import { fetchExp } from "../../utils/FetchMain.js";
+import PotTimeLine from "../../components/Main/PotTimeLine.jsx";
+import { useQuery } from "@tanstack/react-query";
 
 export default function PotPage() {
+  const { data } = useQuery({
+    queryKey: ["exp"],
+    // 추후에 커플아이디가 입력되도록 수정해야함
+    queryFn: () => fetchExp(1),
+  });
+
   return (
     <ModalRoute modalcss="h-[41vw] w-[65vw] rounded-[20px] bg-beige" isX={true}>
       <div
@@ -51,119 +60,20 @@ export default function PotPage() {
           className="col-span-4 flex flex-col items-center mt-[3vw]"
         >
           <div className="h-[70%]">
-            <img className="w-[100%]" src={PotLv2} alt="PotLv1" />
+            <img className="w-[100%] animate-wiggle" src={PotLv2} alt="PotLv1" />
           </div>
           <p className="mt-[4vw]">체리 떡잎 단계</p>
         </div>
         <div id="PotHistory" className="col-span-4 h-[35vw]">
           <div className="flex flex-col items-center mt-[1.5vw]">
-            <p className="text-[2vw]">이달의 성장 내역</p>
+            <p className="text-[2vw] text-text-black font-bold">
+              이달의 성장 내역
+            </p>
             <ul
               id="PotTimeLine"
               className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical mt-[1vw] overflow-y-auto h-[30vw]"
             >
-              <li>
-                <div className="timeline-middle">
-                  <div className="rounded-full bg-subpuple w-[1vw] h-[1vw]"></div>
-                </div>
-                <div className="timeline-start md:text-end mb-10">
-                  <time className="text-[1vw]">2023. 09. 17</time>
-                  <div className="text-[1vw] mt-[3vw]">체리콜 TIME +6</div>
-                  <div className="text-[1vw]">클립 영상 +1</div>
-                </div>
-                <hr className="bg-subpuple" />
-              </li>
-              <li>
-                <hr />
-                <div className="timeline-middle">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-5 w-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="timeline-end mb-10">
-                  <time className="font-mono italic">2023. 09. 17</time>
-                  <div className="text-lg font-black">체리콜 TIME +6</div>
-                  클립 영상 +1
-                </div>
-                <hr />
-              </li>
-              <li>
-                <hr />
-                <div className="timeline-middle">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-5 w-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="timeline-start md:text-end mb-10">
-                  <time className="text-[1.5vw]">2023. 09. 17</time>
-                  <div className="text-[1.5vw]">체리콜 TIME +6</div>
-                  클립 영상 +1
-                </div>
-                <hr />
-              </li>
-              <li>
-                <hr />
-                <div className="timeline-middle">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-5 w-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="timeline-end mb-10">
-                  <time className="font-mono italic">2023. 09. 17</time>
-                  <div className="text-lg font-black">체리콜 TIME +6</div>
-                  클립 영상 +1
-                </div>
-                <hr />
-              </li>
-              <li>
-                <hr />
-                <div className="timeline-middle">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-5 w-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="timeline-start md:text-end mb-10">
-                  <time className="font-mono italic">2023. 09. 17</time>
-                  <div className="text-lg font-black">체리콜 TIME +6</div>
-                  클립 영상 +1
-                </div>
-              </li>
+              {data && <PotTimeLine timeLine={data} />}
             </ul>
           </div>
         </div>

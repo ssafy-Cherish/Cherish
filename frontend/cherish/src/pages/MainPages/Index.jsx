@@ -1,5 +1,5 @@
 import Carousel from "../../components/Main/Carousel";
-import CoupleImg1 from "../../assets/CoupleImg1.svg";
+import CoupleImg1 from "../../assets/Common/CoupleImg1.svg";
 import MemoImg from "../../assets/MemoImg.svg";
 import { Outlet, Link } from "react-router-dom";
 import PotCard from "../../components/Main/PotCard";
