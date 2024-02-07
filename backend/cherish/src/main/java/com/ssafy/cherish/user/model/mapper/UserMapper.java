@@ -6,6 +6,8 @@ import com.ssafy.cherish.user.model.dto.UserDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -16,10 +18,10 @@ public interface UserMapper {
     void join (UserDto userDto) throws SQLException;
 
     // 첫 번째 유저 회원가입 시 커플 테이블 업데이트
-    void coupleFirstJoin (CoupleDto coupleDto) throws SQLException;
+    void coupleFirstJoin (UserDto userDto) throws SQLException;
 
     // 두 번째 유저 회원가입 시 커플 테이블 업데이트
-    void coupleSecondJoin (CoupleDto coupleDto) throws SQLException;
+    void coupleSecondJoin (UserDto userDto) throws SQLException;
 
     //회원 정보 조회
     UserDto userInfo (long kakaoId) throws SQLException;
@@ -38,6 +40,14 @@ public interface UserMapper {
 
     // 커플 인증 코드 가져오기
     CoupleDto getCode (String code) throws SQLException;
+
+    void createCouple(CoupleDto coupleDto);
+
+    CoupleDto findByCode(String code);
+
+    List<Map<String, String>> getUserInfos(int coupleId);
+
+    int deleteUser(UserDto userDto);
 
 
     // 이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.
