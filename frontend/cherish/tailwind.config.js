@@ -12,6 +12,9 @@ export default {
         "text-black": "#685454",
         "text-gray": "#9D9D9D",
       },
+      gridTemplateColumns: {
+        mainLayout: "150px 152px repeat(10, 1fr)",
+      },
     },
   },
   plugins: [require("daisyui")],
