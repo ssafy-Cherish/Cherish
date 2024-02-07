@@ -97,7 +97,7 @@ public class SocketHandler extends TextWebSocketHandler {
                             Map<String, Object> res = new HashMap<>();
                             res.put("event", "access");
                             log.debug("미팅 : {}", meetingService);
-                            int meetingId = meetingService.createMeeting(3);
+                            int meetingId = meetingService.createMeeting(coupleId);
                             log.debug("미팅 생성 완료 : {}", meetingId);
                             Map<String, Object> data = new HashMap<>();
                             data.put("meetingId", meetingId);

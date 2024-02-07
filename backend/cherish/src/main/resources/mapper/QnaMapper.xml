@@ -48,7 +48,7 @@
     <update id="updateAnswerPath" parameterType="answerDto" >
         UPDATE answer
         SET filepath = #{filepath}
-        WHERE id = #{id}
+        WHERE kakao_id = #{kakaoId} AND question_id = #{questionId}
     </update>
 
     <select id="getAnswer" parameterType="map" resultMap="answer">
@@ -61,7 +61,7 @@
         SELECT *
         FROM answer
         WHERE couple_id = #{coupleId}
-        ORDER BY question_id DESC
+        ORDER BY question_id
     </select>
 
 </mapper>

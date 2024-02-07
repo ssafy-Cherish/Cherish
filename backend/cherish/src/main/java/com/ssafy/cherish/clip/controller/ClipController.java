@@ -29,7 +29,7 @@ public class ClipController {
     public ResponseEntity saveClip(
             @RequestPart("clip1") MultipartFile clip1,
             @RequestPart("clip2") MultipartFile clip2,
-            @Parameter(name = "클립 파일 저장에 필요한 정보 map", description = "user1,user2,meeting_id,keyword")
+            @Parameter(name = "클립 파일 저장에 필요한 정보 map", description = "meeting_id,keyword")
             @RequestParam Map<String, Object> map
     ) {
         log.debug("클립 입력 : {}", map.toString());
@@ -42,7 +42,7 @@ public class ClipController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity("동영상 처리 중 문제 발생 : "+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

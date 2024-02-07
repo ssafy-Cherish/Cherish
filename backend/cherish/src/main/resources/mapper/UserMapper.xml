@@ -27,26 +27,55 @@
         <result column="questionCnt" property="question_cnt" />
     </resultMap>
 
+    <insert id="createCouple" parameterType="coupleDto" >
+        INSERT INTO couple (code, anniversary)
+        VALUES (#{code}, #{anniversary})
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="findByCode" resultMap="couple">
+        SELECT *
+        FROM couple
+        where code = #{code}
+    </select>
 
     <insert id="join" parameterType = "userDto">
         INSERT INTO user
-        (kakao_id, nickname, email, birthday)
+        (kakao_id, nickname, email, birthday, couple_id)
         VALUES
-        (#{kakaoId}, #{nickname}, #{email}, #{birthday})
+        (#{kakaoId}, #{nickname}, #{email}, #{birthday}, #{coupleId})
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
-    <insert id="coupleFirstJoin" parameterType="coupleDto">
-        INSERT INTO couple
-        (name, user1, code, anniversary)
-        VALUES
-        (#{name}, #{id}, #{code}, #{anniversary})
-    </insert>
+    <delete id="deleteUser" parameterType="userDto">
+        DELETE FROM user
+        WHERE id = #{id} and kakao_id = #{kakaoId}
+    </delete>
 
-    <update id="coupleSecondJoin" parameterType="coupleDto">
+    <update id="coupleFirstJoin" parameterType="userDto">
+        UPDATE couple
+        SET user1 = #{id}
+        where id = #{coupleId}
+        and user1 is null
+    </update>
+
+    <update id="coupleSecondJoin" parameterType="userDto">
         UPDATE couple
         SET user2 = #{id}, coupled = true
-        WHERE code = #{code}
+        where id = #{coupleId}
+        and user2 is null
     </update>
+
+    <select id="getUserInfos" parameterType="int" resultType="map">
+        SELECT u.id, u.nickname nickname ,DATE_FORMAT(u.birthday,"%Y-%m-%d") birthday
+        FROM couple c
+        join user u on c.id = u.couple_id
+        where c.id = #{coupleId}
+    </select>
 
     <select id="userInfo" parameterType="long" resultMap="user">
         SELECT *
