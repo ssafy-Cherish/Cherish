@@ -34,12 +34,8 @@ public class ClipController {
     ) {
         log.debug("클립 입력 : {}", map.toString());
         try {
-            int res = clipService.saveClip(clip1, clip2, map);
-            if (res == 1) {
-                return new ResponseEntity(HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity(HttpStatus.OK);
-            }
+            String res = clipService.saveClip(clip1, clip2, map);
+            return new ResponseEntity(res,HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity("동영상 처리 중 문제 발생 : "+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
