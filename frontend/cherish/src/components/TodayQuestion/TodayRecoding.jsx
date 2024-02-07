@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ModalForSave from "../Common/ModalForSave";
-import StartRecord from "../../assets/StartRecord.svg";
-import StopRecord from "../../assets/StopRecord.svg";
+import StartRecord from "../../assets/VideoIcon/StartRecord.svg";
+import StopRecord from "../../assets/VideoIcon/StopRecord.svg";
 
 const constraints = {
   audio: {

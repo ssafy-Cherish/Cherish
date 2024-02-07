@@ -1,4 +1,4 @@
-import DropdownIcon from "../../assets/DropdownIcon.svg";
+import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
 
 const dummy = [
   "2024년 1월",

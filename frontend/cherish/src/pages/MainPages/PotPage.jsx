@@ -1,4 +1,4 @@
-import HeartIcon from "../../assets/HeartIcon.svg";
+import HeartIcon from "../../assets/Common/HeartIcon.svg";
 import PotLv2 from "../../assets/Pot/PotLv2.svg";
 import ModalRoute from "../../components/Common/ModalRoute";
 import { fetchExp } from "../../utils/FetchMain.js";
