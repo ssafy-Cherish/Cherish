@@ -51,7 +51,7 @@ function RightWindow({
       <div className="bg-white mx-4 rounded-t-2xl h-[10%]">
         {/* {이승준이 수정한 코드} */}
         <button
-          className="w-[50%] h-full font-extrabold text-xl"
+          className="w-[33%] h-full font-extrabold text-xl"
           disabled={meetingInfo.rightWindow == 0}
           onClick={() => {
             setMeetingInfo((prevMeetingInfo) => {
@@ -65,7 +65,7 @@ function RightWindow({
         </button>
         {/* {이승준이 수정한 코드} */}
         <button
-          className="w-[50%] h-full font-extrabold text-xl"
+          className="w-[33%] h-full font-extrabold text-xl"
           disabled={meetingInfo.rightWindow == 1}
           onClick={() => {
             setMeetingInfo((prevMeetingInfo) => {

@@ -125,7 +125,7 @@ function STTGPT() {
           }
         }
         
-        newMeetingInfo = useGPT(newMeetingInfo, script);
+        useGPT(newMeetingInfo, script);
 
         return newMeetingInfo;
       });
@@ -134,7 +134,7 @@ function STTGPT() {
 
   // 이승준이 추가한 함수
   function makeScriptAndSend(result) {
-    script = {
+    var script = {
       message: result,
       isLocal: 1,   // 0이면 자신 1이면 상대방 2이면 gpt
       time: new Date(),
@@ -243,7 +243,6 @@ function STTGPT() {
         });
     }
 
-    return newMeetingInfo;
   }
 
   const readyCam = useRef();
@@ -341,7 +340,7 @@ function STTGPT() {
       send({
         event: "access",
         data: JSON.stringify({
-          coupleId: coupleId,
+          coupleId: 1,
         }),
       });
     };
