@@ -1,11 +1,21 @@
-import micOnImg from "../../assets/meeting/mic-on.svg"
-import micOffImg from "../../assets/meeting/mic-off.svg"
-import camOnImg from "../../assets/meeting/cam-on.svg"
-import camOffImg from "../../assets/meeting/cam-off.svg"
+import micImg from "../../assets/meeting/mic.svg";
+import camImg from "../../assets/meeting/cam.svg";
+import barImg from "../../assets/meeting/bar.svg";
 
-function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, setMeetingInfo, listen}) {
+function WaitingBox({
+  meetingInfo,
+  updateLocalVideo,
+  readyCam,
+  setConnection,
+  setMeetingInfo,
+  listen,
+}) {
   return (
-    <div className="h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl">
+    <div
+      className={`h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl ${
+        meetingInfo.isModalOpen ? "" : "hidden"
+      }`}
+    >
       <div className="h-5/6 w-1/2 mt-5 rounded-2xl bg-pink flex flex-col justify-center items-center">
         <div className="h-1/3 w-full flex flex-col justify-center text-center font-extrabold text-xl">
           체리콜을 시작할까요?
@@ -13,7 +23,7 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
         <div className="h-2/3 w-5/6  flex flex-col-reverse justify-center">
           <div className="h-14 bg-white rounded-b-2xl flex flex-row justify-center">
             <button
-              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center"
+              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
               onClick={(event) => {
                 event.preventDefault();
                 const targetVolume =
@@ -22,10 +32,13 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 updateLocalVideo(targetOn, targetVolume);
               }}
             >
-              <img className="w-full" src={meetingInfo.video.local.volume==0?micOffImg:micOnImg} />
+              <img className="h-full absolute" src={micImg} />
+              {meetingInfo.video.local.volume == 0 && (
+                <img className="h-full absolute" src={barImg}></img>
+              )}
             </button>
             <button
-              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center"
+              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
               onClick={(event) => {
                 event.preventDefault();
                 const targetVolume = meetingInfo.video.local.volume;
@@ -33,7 +46,10 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 updateLocalVideo(targetOn, targetVolume);
               }}
             >
-              <img className="w-full" src={meetingInfo.video.local.videoOn?camOnImg:camOffImg}/>
+              <img className="h-full absolute" src={camImg} />
+              {!meetingInfo.video.local.videoOn && (
+                <img className="h-full absolute" src={barImg}></img>
+              )}
             </button>
           </div>
 
@@ -85,6 +101,9 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 newMeetingInfo.isModalOpen = false;
                 return newMeetingInfo;
               });
+
+              readyCam.current.volume = 0;
+
               listen();
             }}
           >
