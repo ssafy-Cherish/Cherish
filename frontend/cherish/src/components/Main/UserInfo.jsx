@@ -3,10 +3,9 @@ import useCoupleStore from "../../stores/useCoupleStore";
 import ProfileIcon from "../../assets/ProfileIcon.svg";
 import DropdownIcon from "../../assets/DropdownIcon.svg";
 import { useState } from "react";
-import { motion } from "framer-motion";
 
 export default function UserInfo() {
-  const { coupleId, anniversary, userInfos } = useCoupleStore();
+  const { anniversary, userInfos } = useCoupleStore();
   const { nickname } = useUserStore();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -20,18 +19,18 @@ export default function UserInfo() {
     setIsOpen((pre) => !pre);
   };
 
-  let keywordClassName = `left-[2%] transition-[height] absolute w-[18rem] duration-500 bg-white my-[65px]  text-[1.5rem] rounded-[40px] shadow-md text-center ${
+  let userInfoClassName = `left-[2%] transition-[height] duration-500 absolute w-[18rem]  bg-white my-[65px]  text-[1.5rem] rounded-[40px] shadow-md text-center ${
     isOpen
-      ? " h-[365px] z-20  flex flex-col rounded-[15px] overflow-y-auto"
+      ? " h-[365px] z-[1]  flex flex-col rounded-[15px] overflow-y-auto"
       : " h-[4vw]"
   }`;
 
   return (
     <>
       <div
-        id="keyword"
+        id="userInfo"
         onClick={handleClickIsOpen}
-        className={keywordClassName}
+        className={userInfoClassName}
       >
         <div
           className={
