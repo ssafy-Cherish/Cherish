@@ -9,13 +9,18 @@ export default {
         beige: "#FEF8EC",
         skyblue: "#E0F4FF",
         subpuple: "#B893F5",
-        "text-black": "#685454",
+        "text-black": "#505050",
         "text-gray": "#9D9D9D",
       },
       gridTemplateColumns: {
         mainLayout: "150px 152px repeat(10, 1fr)",
       },
     },
+    fontFamily: {
+      light : ["GmarketSansTTFMedium"],
+      bold : ["GmarketSansTTFBold"],
+      gamja : ["GamjaFlower-Regular"]
+    }
   },
   plugins: [require("daisyui")],
 };
