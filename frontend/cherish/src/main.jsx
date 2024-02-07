@@ -21,81 +21,79 @@ import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
 import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxPage.jsx";
 
 const router = createBrowserRouter([
-  // 메인 페이지
-  {
-    path: "/",
-    element: <RootLayout />,
-    children: [
-      {
-        path: "",
-        element: <Index />,
-        children: [
-          {
-            path: "pot",
-            element: <PotPage />,
-          },
-          {
-            path: "today",
-            element: <TodayQuestionRecodePage />,
-          },
-          {
-            path: "diary",
-            element: <DiaryLayout />,
-            children: [
-              {
-                path: "month",
-                element: <DiaryMonthlyPage />,
-              },
-              {
-                path: "year",
-                element: <DiaryYearlyPage />,
-              },
-              {
-                path: "day",
-                element: <DiaryDailyPage />,
-              },
-            ],
-          },
-          {
-            path: "cherrybox",
-            element: <CherryBoxPage />,
-          },
-        ],
-      },
-      {
-        path: "cherrycall",
-        element: <CherryCallMainPage />,
-      },
-    ],
-  },
-  {
-    path: "/user",
-    element: <UserLayout />,
-    children: [
-      {
-        index: true,
-        loader: () => redirect("/user/login"),
-      },
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-    ],
-  },
-  {
-    path: "sttgpt",
-    element: <STTandGPTPage />,
-  },
+	// 메인 페이지
+	{
+		path: "/",
+		element: <RootLayout />,
+		children: [
+			{
+				path: "",
+				element: <Index />,
+				children: [
+					{
+						path: "pot",
+						element: <PotPage />,
+					},
+					{
+						path: "today",
+						element: <TodayQuestionRecodePage />,
+					},
+					{
+						path: "diary",
+						element: <DiaryLayout />,
+						children: [
+							{
+								path: "month",
+								element: <DiaryMonthlyPage />,
+							},
+							{
+								path: "year",
+								element: <DiaryYearlyPage />,
+							},
+							{
+								path: "day",
+								element: <DiaryDailyPage />,
+							},
+						],
+					},
+					{
+						path: "cherrybox",
+						element: <CherryBoxPage />,
+					},
+				],
+			},
+			{
+				path: "cherrycall",
+				element: <CherryCallMainPage />,
+			},
+		],
+	},
+	{
+		path: "/user",
+		element: <UserLayout />,
+		children: [
+			{
+				index: true,
+				loader: () => redirect("/user/login"),
+			},
+			{
+				path: "login",
+				element: <Login />,
+			},
+			{
+				path: "signup",
+				element: <Signup />,
+			},
+		],
+	},
+	{
+		path: "sttgpt",
+		element: <STTandGPTPage />,
+	},
 ]);
 
-const queryClient = new QueryClient();
-
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <QueryClientProvider client={queryClient}>
-    <RouterProvider router={router} />
-  </QueryClientProvider>
+	<QueryClientProvider client={queryClient}>
+		<RouterProvider router={router} />
+	</QueryClientProvider>
 );
