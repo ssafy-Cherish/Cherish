@@ -21,7 +21,7 @@ export default function Keyword({
 }) {
   let keywordClassName = `bg-white float-end w-[15vw] py-[0.5vw] text-[1.3vw] mr-[2vw] rounded-[40px] shadow-md text-center ${
     isOpen
-      ? "h-[20vw] z-20 absolute left-[65.5%] flex flex-col rounded-[15px] overflow-y-auto"
+      ? "h-[20vw] z-20 absolute left-[65%] flex flex-col rounded-[15px] overflow-y-auto"
       : undefined
   }`;
 
@@ -32,12 +32,13 @@ export default function Keyword({
         onClick={handleClickIsOpen}
         className={keywordClassName}
       >
-        <div className={isOpen ? "w-[80%] grid grid-cols-4 ml-[1.7rem] border-b-2 border-black" : "w-[80%] grid grid-cols-4 ml-[2rem]"}>
-          <p
-            className="col-span-3 my-auto"
-          >
-            {selectKeyword}
-          </p>
+        <div
+          className={
+            "w-[80%] grid grid-cols-4 ml-[2rem] " +
+            (isOpen ? "border-b-2 border-black" : "")
+          }
+        >
+          <p className="col-span-3 my-auto">{selectKeyword}</p>
           <img
             className="col-span-1 w-[2vw] my-auto"
             src={DropdownIcon}

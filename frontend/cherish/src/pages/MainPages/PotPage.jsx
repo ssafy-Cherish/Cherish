@@ -60,7 +60,7 @@ export default function PotPage() {
           className="col-span-4 flex flex-col items-center mt-[3vw]"
         >
           <div className="h-[70%]">
-            <img className="w-[100%]" src={PotLv2} alt="PotLv1" />
+            <img className="w-[100%] animate-wiggle" src={PotLv2} alt="PotLv1" />
           </div>
           <p className="mt-[4vw]">체리 떡잎 단계</p>
         </div>
