@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import TodayRecoding from "../../components/TodayQuestion/TodayRecoding";
 import ModalRoute from "../../components/Common/ModalRoute";
-import NextIcon from "../../assets/NextIcon.svg";
+import NextIcon from "../../assets/Common/NextIcon.svg";
 import { useState } from "react";
 import TodayQuestionBox from "../../components/TodayQuestion/TodayQuestionBox";
 
