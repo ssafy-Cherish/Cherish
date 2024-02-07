@@ -16,6 +16,7 @@ import Login from "./pages/UserPages/Login";
 import Signup from "./pages/UserPages/Signup";
 import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
 import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxPage.jsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter([
   // 메인 페이지
@@ -63,11 +64,6 @@ const router = createBrowserRouter([
         path: "cherrycall",
         element: <CherryCallMainPage />,
       },
-
-      // {path: "cherrybox", element:},
-      // {path: "question", element:},
-      // {path: "signup", element:}
-      // {path: "login", element:}
     ],
   },
   {
@@ -90,8 +86,12 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </>
 );
