@@ -96,12 +96,16 @@ function STTGPT() {
         newMeetingInfo.scriptHistory.push(script);
 
         // 한 번의 대화가 완성 됐다면 gpt 이용 조건 완료
-        if (newMeetingInfo.scriptHistory.length == 2 && newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].isLocal == false) {
+        if (
+          newMeetingInfo.scriptHistory.length == 2 &&
+          newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].isLocal == false
+        ) {
           const messages = [
-            { role: "system", 
-              content: 
+            {
+              role: "system",
+              content:
                 "You are a helpful assistant who suggests interesting topics between a couple to excites their relationship. \n" +
-                "And the the topics you answer have to be short like 1 or 2 lines. \n" +
+                "And the the topics you answer have to be short like only 1 sentence. \n" +
                 "You also have to return `true` if you have some interesting topics about this conversation or `false` if it's not.\n" +
                 "You also have to return whether the conversation that you've got is worth to save or not by returning `true` if it's worth to save or `false` if it's not.\n" +
                 "You must answer in Korean. \n" +
@@ -109,16 +113,18 @@ function STTGPT() {
                 "```\n" +
                 "true or false depends on if it's worth to save\n" +
                 "true or false depends on if you have interesting topics\n" +
-                "1 or 2 lines of interesting topics about the conversation that you've got.\n" +
+                "1 sentence of interesting topics about the conversation that you've got.\n" +
                 "```\n" +
-                "So the answer must be only 3 or 4 lines.\n" +
-                "You must answer in Korean." },
-            { role: "user", 
-              content: 
+                "So the answer must be only 2 lines of true or false and 1 sentence.\n" +
+                "You must answer in Korean.",
+            },
+            {
+              role: "user",
+              content:
                 // `A : ${newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].message}. \n` +
                 // `B : ${script.message}.` },
-                `A : 저녁 뭐 먹을까?. \n` +
-                `B : 글쎄 좀 새로운거 없나? 한 번 생각해보자.` },
+                `A : 저녁 뭐 먹을까?. \n` + `B : 글쎄 좀 새로운거 없나? 한 번 생각해보자.`,
+            },
           ];
           console.log(messages);
 
@@ -135,7 +141,8 @@ function STTGPT() {
               n: 1,
               messages: messages,
             }),
-          }).then((response) => response.json()) // 응답을 JSON으로 변환
+          })
+            .then((response) => response.json()) // 응답을 JSON으로 변환
             .then((data) => {
               console.log(data);
             })
@@ -319,7 +326,7 @@ function STTGPT() {
 
     // when we receive a message from the other peer, printing it on the console
     dataChannel.onmessage = function (event) {
-      console.log('onmessage');
+      console.log("onmessage");
       console.log(event);
       const msg = JSON.parse(event.data);
       console.log(msg);
@@ -425,7 +432,7 @@ function STTGPT() {
       });
     };
 
-    peerConnection.onconnectionstatechange = function () { };
+    peerConnection.onconnectionstatechange = function () {};
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
