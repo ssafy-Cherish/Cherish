@@ -1,6 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./utils/query.js";
+
 import Index from "./pages/MainPages/Index.jsx";
 import RootLayout from "./pages/RootLayout.jsx";
 import DiaryMonthlyPage from "./pages/DiaryPages/DiaryMonthlyPage.jsx";
@@ -16,7 +19,6 @@ import Login from "./pages/UserPages/Login";
 import Signup from "./pages/UserPages/Signup";
 import STTandGPTPage from "./pages/STTandGPTPages/STTandGPTPage.jsx";
 import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxPage.jsx";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const router = createBrowserRouter([
   // 메인 페이지
@@ -71,6 +73,10 @@ const router = createBrowserRouter([
     element: <UserLayout />,
     children: [
       {
+        index: true,
+        loader: () => redirect("/user/login"),
+      },
+      {
         path: "login",
         element: <Login />,
       },
@@ -89,9 +95,7 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </>
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>
 );
