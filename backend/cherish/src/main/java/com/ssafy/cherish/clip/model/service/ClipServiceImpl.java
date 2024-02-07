@@ -45,6 +45,7 @@ public class ClipServiceImpl implements ClipService {
     @Transactional(rollbackFor = Exception.class)
     public String saveClip(ClipDto clipDto,String[] pathForMerge) throws Exception {
 
+
         //클립 병합
         mergeCoupleClip(pathForMerge[0], pathForMerge[1], pathForMerge[2]);
 
