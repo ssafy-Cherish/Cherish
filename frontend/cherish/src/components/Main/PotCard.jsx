@@ -1,4 +1,4 @@
-import HeartIcon from "../../assets/HeartIcon.svg";
+import HeartIcon from "../../assets/Common/HeartIcon.svg";
 import PotLv1 from "../../assets/Pot/PotLv1.svg";
 
 
