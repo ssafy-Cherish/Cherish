@@ -1,21 +1,9 @@
-import micImg from "../../assets/meeting/mic.svg";
-import camImg from "../../assets/meeting/cam.svg";
-import barImg from "../../assets/meeting/bar.svg";
+// 이승준이 수정한 파일
 
-function WaitingBox({
-  meetingInfo,
-  updateLocalVideo,
-  readyCam,
-  setConnection,
-  setMeetingInfo,
-  listen,
-}) {
+function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, setMeetingInfo, listen}) {
+
   return (
-    <div
-      className={`h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl ${
-        meetingInfo.isModalOpen ? "" : "hidden"
-      }`}
-    >
+    <div className="h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl">
       <div className="h-5/6 w-1/2 mt-5 rounded-2xl bg-pink flex flex-col justify-center items-center">
         <div className="h-1/3 w-full flex flex-col justify-center text-center font-extrabold text-xl">
           체리콜을 시작할까요?
@@ -23,7 +11,7 @@ function WaitingBox({
         <div className="h-2/3 w-5/6  flex flex-col-reverse justify-center">
           <div className="h-14 bg-white rounded-b-2xl flex flex-row justify-center">
             <button
-              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
+              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center"
               onClick={(event) => {
                 event.preventDefault();
                 const targetVolume =
@@ -32,13 +20,10 @@ function WaitingBox({
                 updateLocalVideo(targetOn, targetVolume);
               }}
             >
-              <img className="h-full absolute" src={micImg} />
-              {meetingInfo.video.local.volume == 0 && (
-                <img className="h-full absolute" src={barImg}></img>
-              )}
+              <img className="w-full"/>
             </button>
             <button
-              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
+              className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center"
               onClick={(event) => {
                 event.preventDefault();
                 const targetVolume = meetingInfo.video.local.volume;
@@ -46,10 +31,7 @@ function WaitingBox({
                 updateLocalVideo(targetOn, targetVolume);
               }}
             >
-              <img className="h-full absolute" src={camImg} />
-              {!meetingInfo.video.local.videoOn && (
-                <img className="h-full absolute" src={barImg}></img>
-              )}
+              <img className="w-full"/>
             </button>
           </div>
 
@@ -90,9 +72,6 @@ function WaitingBox({
                 ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
                 : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
             }
-            disabled={
-              meetingInfo.stream.localMediaStream.getTracks().length === 0
-            }
             onClick={() => {
               setConnection();
 
@@ -101,10 +80,8 @@ function WaitingBox({
                 newMeetingInfo.isModalOpen = false;
                 return newMeetingInfo;
               });
-
-              readyCam.current.volume = 0;
-
-              listen();
+              // 이승준이 수정한 코드
+              listen({ interimResults: false, lang: "ko-KR" });
             }}
           >
             입장
