@@ -9,11 +9,14 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +32,10 @@ import java.util.Map;
 public class ClipServiceImpl implements ClipService {
     @Autowired
     private ClipMapper clipMapper;
+
+    @Autowired
+    private  AwsS3Service awsS3Service;
+
     @Value("${custom.path.ffmpeg}")
     private String ffmpegPath;
     @Value("${custom.path.clip}")
@@ -37,7 +44,7 @@ public class ClipServiceImpl implements ClipService {
     @Override
     //파일 입출력이 잘못되었을 경우에도 전체 롤백이 됨
     @Transactional(rollbackFor = Exception.class)
-    public int saveClip(MultipartFile clip1, MultipartFile clip2, Map<String, Object> map) throws Exception {
+    public String saveClip(MultipartFile clip1, MultipartFile clip2, Map<String, Object> map) throws Exception {
         ClipDto clipDto = new ClipDto();
 
         clipDto.setMeetingId(Integer.parseInt((String) map.get("meeting_id")));
@@ -58,15 +65,26 @@ public class ClipServiceImpl implements ClipService {
         //클립 병합
         mergeCoupleClip(pathForMerge[0], pathForMerge[1], pathForMerge[2]);
 
+
+        //TODO : 지금은 임시로 multipartFile로 만드는데 file을 입력받는 awsS3Service.uploadFile 메서드를 받는 방식을 바꿔면 좋을듯
+
+        FileInputStream input = new FileInputStream(new File(pathForMerge[2]));
+        MultipartFile multipartFile = new MockMultipartFile("file",
+                pathForMerge[3], "video/webm", StreamUtils.copyToByteArray(input));
+        String clipURL=awsS3Service.uploadFile(multipartFile);
+        input.close();
         // 임시 파일 삭제
         Files.deleteIfExists(Paths.get(pathForMerge[0]));
         Files.deleteIfExists(Paths.get(pathForMerge[1]));
+        Files.deleteIfExists(Paths.get(pathForMerge[2]));
+
 
         //변경된 filepath clipDto 객체에 넣기
-        clipDto.setFilepath(pathForMerge[2]);
+        clipDto.setFilepath(clipURL);
 
         log.info("saveClip 중 생성된 filepath 채워진 객체 : {}", clipDto.toString());
-        return clipMapper.updateClipPath(clipDto);
+        clipMapper.updateClipPath(clipDto);
+        return clipURL;
     }
 
     String[] setClipDir(ClipDto clipDto) throws Exception {
@@ -85,12 +103,12 @@ public class ClipServiceImpl implements ClipService {
         String leftVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "templeft.webm";
         String rightVideoPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + "tempright.webm";
         String resPath = uploadDir + clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".webm";
+        String resFile=clipDto.getId() + "_" + clipDto.getMeetingId() + "_" + clipDto.getKeyword() + ".webm";
 
-        return new String[]{leftVideoPath, rightVideoPath, resPath};
+        return new String[]{leftVideoPath, rightVideoPath, resPath,resFile};
     }
 
     void mergeCoupleClip(String leftVideoPath, String rightVideoPath, String uploadDir) throws IOException {
-
 
         FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg");
         FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe");
@@ -116,4 +134,6 @@ public class ClipServiceImpl implements ClipService {
     }
 
 }
+
+
 
