@@ -1,4 +1,4 @@
-import VideoStartIcon from "../../assets/VideoStartIcon.svg"
+import VideoStartIcon from "../../assets/VideoIcon/VideoStartIcon.svg"
 
 export default function ShowVideo({handleClickVideoOpen}) {
 
