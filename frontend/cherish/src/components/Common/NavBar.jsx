@@ -1,11 +1,11 @@
-import MainLogo from "../../assets/MainLogo.svg";
-import CherryCallIcon from "../../assets/CherryCallIcon.svg?react";
-import DiaryIcon from "../../assets/DiaryIcon.svg?react";
-import GalleryIcon from "../../assets/GalleryIcon.svg?react";
-import PotIcon from "../../assets/PotIcon.svg?react";
-import QuestionIcon from "../../assets/QuestionIcon.svg?react";
-import DropdownIcon from "../../assets/DropdownIcon.svg";
-import ProfileIcon from "../../assets/ProfileIcon.svg";
+import MainLogo from "../../assets/Main/MainLogo.svg";
+import CherryCallIcon from "../../assets/Main/CherryCallIcon.svg?react";
+import DiaryIcon from "../../assets/Main/DiaryIcon.svg?react";
+import GalleryIcon from "../../assets/Main/GalleryIcon.svg?react";
+import PotIcon from "../../assets/Main/PotIcon.svg?react";
+import QuestionIcon from "../../assets/Main/QuestionIcon.svg?react";
+import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
+import ProfileIcon from "../../assets/Main/ProfileIcon.svg";
 import { Link, NavLink } from "react-router-dom";
 import UserInfo from "../Main/UserInfo";
 
