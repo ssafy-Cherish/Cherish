@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface ClipService {
     // 입력 : 저장할 clip1, clip2, Map(user1,user2,meeting_id,keyword)
-    // 출력 : 저장된 행의 수 (1이 정상)
-    int saveClip(MultipartFile clip1, MultipartFile clip2, Map<String, Object> map) throws Exception;
+    // 출력 : 완성된 클립의 url
+    String saveClip(ClipDto clipDto,String[] pathForMerge) throws Exception;
+
+    void createClip(ClipDto clipDto) throws Exception;
 }
