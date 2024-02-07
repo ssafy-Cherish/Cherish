@@ -64,18 +64,5 @@ public class MemoController {
         }
     }
 
-    @DeleteMapping
-    @Operation(summary = "메모 삭제", description = "날짜와 커플 아이디에 맞는 메모를 삭제한다.")
-    public ResponseEntity<?> deleteMemo (@RequestBody MemoDto memoDto) {
-        log.debug("deleteMemo 호출 : {}", memoDto);
-
-        try {
-            memoService.deleteMemo(memoDto);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-    }
 
 }
