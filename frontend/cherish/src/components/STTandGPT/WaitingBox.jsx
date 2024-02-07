@@ -1,10 +1,5 @@
 // 이승준이 수정한 파일
 
-import micOnImg from "../../assets/meeting/mic-on.svg"
-import micOffImg from "../../assets/meeting/mic-off.svg"
-import camOnImg from "../../assets/meeting/cam-on.svg"
-import camOffImg from "../../assets/meeting/cam-off.svg"
-
 function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, setMeetingInfo, listen}) {
 
   return (
@@ -25,7 +20,7 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 updateLocalVideo(targetOn, targetVolume);
               }}
             >
-              <img className="w-full" src={meetingInfo.video.local.volume==0?micOffImg:micOnImg} />
+              <img className="w-full"/>
             </button>
             <button
               className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center"
@@ -36,7 +31,7 @@ function WaitingBox({meetingInfo, updateLocalVideo, readyCam, setConnection, set
                 updateLocalVideo(targetOn, targetVolume);
               }}
             >
-              <img className="w-full" src={meetingInfo.video.local.videoOn?camOnImg:camOffImg}/>
+              <img className="w-full"/>
             </button>
           </div>
 
