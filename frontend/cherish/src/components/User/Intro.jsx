@@ -1,5 +1,5 @@
-import MainLogo from "../../assets/MainLogo.svg";
-import CoupleImg from "../../assets/CoupleImg1.svg";
+import MainLogo from "../../assets/Main/MainLogo.svg";
+import CoupleImg from "../../assets/Common/CoupleImg1.svg";
 import LoginPot from "../../assets/LoginPot.svg";
 import { motion } from "framer-motion";
 
