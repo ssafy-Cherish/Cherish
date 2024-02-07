@@ -1,6 +1,6 @@
 import { useState } from "react";
-import DropdownIcon from "../../assets/DropdownIcon.svg";
-import LockIcon from "../../assets/LockIcon.svg";
+import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
+import LockIcon from "../../assets/Common/LockIcon.svg";
 import Answer from "./Answer";
 
 export default function Question({ reply }) {

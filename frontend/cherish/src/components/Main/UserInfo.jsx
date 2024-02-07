@@ -1,9 +1,9 @@
 import useUserStore from "../../stores/useUserStore";
 import useCoupleStore from "../../stores/useCoupleStore";
-import ProfileIcon from "../../assets/ProfileIcon.svg";
-import DropdownIcon from "../../assets/DropdownIcon.svg";
+import ProfileIcon from "../../assets/Main/ProfileIcon.svg";
+import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
 import { useState } from "react";
-
+import dayjs from "dayjs";
 export default function UserInfo() {
   const { anniversary, userInfos } = useCoupleStore();
   const { nickname } = useUserStore();
@@ -12,8 +12,8 @@ export default function UserInfo() {
   const userInfo = userInfos.filter((info) => {
     return info.nickname === nickname;
   });
-  const info = userInfo[0].birthday.split("-");
-  const anni = anniversary.split("-");
+  const anni = dayjs(anniversary).format("YYYY년 M월 D일");
+  const info = dayjs(userInfo[0].birthday).format("YYYY년 M월 D일");
 
   const handleClickIsOpen = () => {
     setIsOpen((pre) => !pre);
@@ -41,7 +41,7 @@ export default function UserInfo() {
           <img className="col-span-1" src={ProfileIcon} alt="ProfileIcon" />
           <p className="col-span-3 my-auto text-text-black">{nickname}</p>
           <img
-            className={"col-span-1 w-[2vw] my-auto " + (isOpen && 'rotate-180') }
+            className={"col-span-1 w-[2vw] my-auto " + (isOpen && "rotate-180")}
             src={DropdownIcon}
             alt="DropdownIcon"
           />
@@ -50,14 +50,8 @@ export default function UserInfo() {
           <>
             <div className="my-[48px] text-text-black flex flex-col items-start ml-[15px]">
               <p className="mb-[8px]">애칭 : {nickname}</p>
-              <p className="mb-[8px]">
-                생일 : {info[0]}년 {info[1][0] === "0" ? info[1][1] : info[1]}월{" "}
-                {info[2][0] === "0" ? info[2][1] : info[2]}일
-              </p>
-              <p>
-                만남 : {anni[0]}년 {anni[1][0] === "0" ? anni[1][1] : anni[1]}월{" "}
-                {anni[2][0] === "0" ? anni[2][1] : anni[2]}일
-              </p>
+              <p className="mb-[8px]">생일 : {info}</p>
+              <p>만남 : {anni}</p>
             </div>
             <div className="flex justify-around mt-[32px] text-text-black">
               <button>정보수정</button>
