@@ -1,18 +1,18 @@
 import { useRef, useState, useEffect } from "react";
 import sendImg from "../../assets/SendIcon.svg";
-import { motion } from "framer-motion";
 import "./Meeting.css";
 import { useBeforeUnload } from "react-router-dom";
 import { useSpeechRecognition } from "react-speech-kit";
 ////////
 import userStore from "../../stores/useUserStore";
 import coupleStore from "../../stores/useCoupleStore";
+////////
+import LeftWindow from "./LeftWindow";
+import RightWindow from "./RightWindow";
 
 function Meeting() {
-  const { kakaoId, nickname, userId } = userStore(
-    (state) => state
-  );
-  const {user1, user2, coupleId } = coupleStore()
+  const { kakaoId, nickname, userId } = userStore((state) => state);
+  const { user1, user2, coupleId } = coupleStore();
 
   const [meetingInfo, setMeetingInfo] = useState({
     stream: {
@@ -48,7 +48,7 @@ function Meeting() {
       ],
 
       option: {
-        mimeType: "video/webm; codecs=vp9",
+        mimeType: "video/webm; codecs=vp9,opus",
         audioBitsPerSecond: 128000,
         videoBitsPerSecond: 2500000,
       },
@@ -141,8 +141,8 @@ function Meeting() {
           ideal: 60,
           max: 80,
         },
-        width: 500,
-        height: 300,
+        width: { ideal: 640 },
+        height: { ideal: 720 },
         facingMode: "user",
       },
       audio: {
@@ -155,33 +155,43 @@ function Meeting() {
       stream.getTracks().forEach((track) => {
         meetingInfo.stream.localMediaStream.addTrack(track);
       });
-      updateLocalVideo(true, 1);
+      updateLocalVideo(true, 1, true);
     });
   };
 
-  const updateLocalVideo = function (on, volume) {
-    if (meetingInfo.dataChannel?.readyState === "open") {
-      JSON.stringify({
-        cmd: "responce peer cam state",
-        data: {
-          videoOn: meetingInfo.video.local.videoOn,
-          volume: meetingInfo.video.local.volume,
-        },
-      });
+  const updateLocalVideo = function (on, volume, force) {
+    if (meetingInfo.connect?.peerConnection?.connectionState === "connected") {
+      sendMessage(
+        JSON.stringify({
+          cmd: "response peer cam state",
+          data: {
+            videoOn: on,
+            volume: volume,
+          },
+        })
+      );
     }
 
     if (readyCam.current) {
-      readyCam.current.srcObject = on
-        ? meetingInfo.stream.localMediaStream
-        : new MediaStream();
-      readyCam.current.volume = volume;
+      if (meetingInfo.video.local.videoOn !== on || force) {
+        readyCam.current.srcObject = on
+          ? meetingInfo.stream.localMediaStream
+          : new MediaStream();
+      }
+      if (meetingInfo.video.local.volume != volume || force) {
+        readyCam.current.volume = volume;
+      }
     }
 
     if (localCam.current) {
-      localCam.current.srcObject = on
-        ? meetingInfo.stream.localMediaStream
-        : new MediaStream();
-      localCam.current.volume = 0;
+      if (meetingInfo.video.local.videoOn !== on) {
+        localCam.current.srcObject = on
+          ? meetingInfo.stream.localMediaStream
+          : new MediaStream();
+      }
+      if (meetingInfo.video.local.volume != volume) {
+        localCam.current.volume = 0;
+      }
     }
 
     setMeetingInfo((prevMeetingInfo) => {
@@ -194,10 +204,14 @@ function Meeting() {
 
   const updateRemoteVideo = function (on, volume) {
     if (remoteCam.current) {
-      remoteCam.current.srcObject = on
-        ? meetingInfo.stream.remoteMediaStream
-        : new MediaStream();
+      if (meetingInfo.video.remote.videoOn !== on) {
+        remoteCam.current.srcObject = on
+          ? meetingInfo.stream.remoteMediaStream
+          : new MediaStream();
+      }
+      if(meetingInfo.video.remote.volume != volume){
       remoteCam.current.volume = volume;
+    }
     }
 
     setMeetingInfo((prevMeetingInfo) => {
@@ -209,7 +223,7 @@ function Meeting() {
   };
 
   const setConnection = function () {
-    const conn = new WebSocket(import.meta.env.VITE_APP_SOCKET_URL);
+    const conn = new WebSocket(`${import.meta.env.VITE_APP_SOCKET_URL}`);
 
     conn.onopen = function () {
       console.log("Connected to the signaling server");
@@ -301,7 +315,7 @@ function Meeting() {
         case "request peer cam state":
           sendMessage(
             JSON.stringify({
-              cmd: "responce peer cam state",
+              cmd: "response peer cam state",
               data: {
                 videoOn: meetingInfo.video.local.videoOn,
                 volume: meetingInfo.video.local.volume,
@@ -310,7 +324,7 @@ function Meeting() {
           );
           break;
 
-        case "responce peer cam state":
+        case "response peer cam state":
           updateRemoteVideo(msg.data.videoOn, msg.data.volume);
           break;
 
@@ -385,7 +399,8 @@ function Meeting() {
         );
         updateLocalVideo(
           meetingInfo.video.local.videoOn,
-          meetingInfo.video.local.volume
+          meetingInfo.video.local.volume,
+          false
         );
         recordStart();
       }
@@ -549,7 +564,7 @@ function Meeting() {
       if (meetingInfo.record.recordFlag[idx][0] === true) {
         meetingInfo.record.recordFlag[idx][0] = false;
         const blob = new Blob(meetingInfo.record.recordedChunks[idx][0], {
-          mimeType: "video/webm; codecs=vp9",
+          mimeType: "video/webm; codecs=vp9,opus",
         });
         if (
           meetingInfo.connect.peerConnection.connectionState === "connected"
@@ -575,7 +590,7 @@ function Meeting() {
       if (meetingInfo.record.recordFlag[idx][1] === true) {
         meetingInfo.record.recordFlag[idx][1] = false;
         let blob = new Blob(meetingInfo.record.recordedChunks[idx][1], {
-          mimeType: "video/webm; codecs=vp9",
+          mimeType: "video/webm; codecs=vp9,opus",
         });
         if (
           meetingInfo.connect.peerConnection.connectionState === "connected"
@@ -627,7 +642,7 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const blob = message
+    const blob = message;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.clipHistory.push(blob);
@@ -679,9 +694,9 @@ function Meeting() {
     fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
       method: "post",
       headers: {
-        Accept: "*/*", 
+        Accept: "*/*",
       },
-      body: formData
+      body: formData,
     })
       .then((response) => {
         // sendMessage(
@@ -690,12 +705,11 @@ function Meeting() {
         //     data: response.body,
         //   })
         // );
-
         // setMeetingInfo((prevMeetingInfo) => {
         //   const newMeetingInfo = { ...prevMeetingInfo };
         //   newMeetingInfo.clipHistory.push(
         //     new Blob(response.body, {
-        //       mimeType: "video/webm; codecs=vp9",
+        //       mimeType: "video/webm; codecs=vp9,opus",
         //     })
         //   );
         //   return newMeetingInfo;
@@ -713,19 +727,23 @@ function Meeting() {
   }
 
   useEffect(() => {
-    if (meetingInfo.chattingHistory.length) {
+    if (
+      meetingInfo.chattingHistory.length &&
+      meetingInfo.rightWindowIsChatting
+    ) {
       chattingWindow.current.childNodes[
         meetingInfo.chattingHistory.length - 1
       ].scrollIntoView({
         block: "end",
       });
     }
-  }, [meetingInfo.chattingHistory.length]);
+  }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindowIsChatting]);
 
   useEffect(() => {
     updateLocalVideo(
       meetingInfo.video.local.videoOn,
-      meetingInfo.video.local.volume
+      meetingInfo.video.local.volume,
+      true
     );
   }, [meetingInfo.isModalOpen]);
 
@@ -742,371 +760,31 @@ function Meeting() {
   return (
     <div className="h-full w-full flex flex-row contents-center">
       <div className="w-9/12 flex flex-col justify-center">
-        <div className="h-3/4 m-2 rounded-2xl flex flex-col-reverse">
-          <div className="h-14 bg-pink rounded-b-2xl flex flex-row justify-between">
-            <div className="border-2 m-2 w-1/6"></div>
-            <button
-              className="border-2 m-2 w-14 rounded-2xl"
-              disabled={!meetingInfo.connect.offerReady}
-              onClick={() => {
-                createOffer();
-              }}
-            >
-              통화
-            </button>
-          </div>
-          {!meetingInfo.isModalOpen && (
-            <motion.div
-              className="h-full w-full relative flex flex-col-reverse items-center bg-slate-700 rounded-t-2xl z-50"
-              ref={camContainer}
-            >
-              <video
-                className="h-full bg-slate-700 absolute rounded-t-2xl"
-                id="remoteCam"
-                ref={remoteCam}
-                autoPlay
-                playsInline
-              ></video>
-              {meetingInfo.video.local.videoOn && (
-                <motion.div
-                  className="h-[30%] w-[30%] z-100 relative left-[30%] bottom-[5%] rounded-2xl bg-pink flex flex-col justify-center items-center"
-                  drag
-                  dragConstraints={camContainer}
-                  ref={localCamContainer}
-                  dragMomentum={false}
-                >
-                  <video
-                    ref={localCam}
-                    autoPlay
-                    playsInline
-                    className="h-[90%] w-[90%] absolute "
-                  ></video>
-                </motion.div>
-              )}
-            </motion.div>
-          )}
-          {meetingInfo.isModalOpen && (
-            <div className="h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl">
-              <div className="h-5/6 w-1/2 mt-5 rounded-2xl bg-pink flex flex-col justify-center items-center">
-                <div className="h-1/3 w-full flex flex-col justify-center text-center font-extrabold text-xl">
-                  체리콜을 시작할까요?
-                </div>
-                <div className="h-2/3 w-5/6  flex flex-col-reverse justify-center">
-                  <div className="h-14 bg-white rounded-b-2xl flex flex-row justify-center">
-                    <button
-                      className="w-10 my-2 mx-5 border-2"
-                      onClick={() => {
-                        const targetVolume =
-                          meetingInfo.video.local.volume == 0 ? 0.5 : 0;
-                        const targetOn = meetingInfo.video.local.videoOn;
-                        updateLocalVideo(targetOn, targetVolume);
-                      }}
-                    ></button>
-                    <button
-                      className="w-10 my-2 mx-5 border-2"
-                      onClick={() => {
-                        const targetVolume = meetingInfo.video.local.volume;
-                        const targetOn = !meetingInfo.video.local.videoOn;
-                        updateLocalVideo(targetOn, targetVolume);
-                      }}
-                    ></button>
-                  </div>
-
-                  <div className="h-full rounded-t-2xl bg-slate-700 flex justify-center relative">
-                    <video
-                      id="ready-cam"
-                      ref={readyCam}
-                      autoPlay
-                      playsInline
-                      className="absolute h-full w-full"
-                    ></video>
-                  </div>
-                </div>
-                <div className="h-1/4 w-5/6 flex flex-row justify-between items-center">
-                  <button
-                    className={
-                      meetingInfo.stream.localMediaStream.getTracks().length !==
-                      0
-                        ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
-                        : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
-                    }
-                    disabled={
-                      meetingInfo.stream.localMediaStream.getTracks().length ===
-                      0
-                    }
-                    onClick={(event) => {
-                      event.preventDefault();
-                      meetingInfo.stream.localMediaStream
-                        .getTracks()
-                        .forEach((track) => {
-                          track.stop();
-                        });
-                    }}
-                  >
-                    알림보내기
-                  </button>
-                  <button
-                    className={
-                      meetingInfo.stream.localMediaStream.getTracks().length !==
-                      0
-                        ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
-                        : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
-                    }
-                    disabled={
-                      meetingInfo.stream.localMediaStream.getTracks().length ===
-                      0
-                    }
-                    onClick={() => {
-                      setConnection();
-
-                      setMeetingInfo((prevMeetingInfo) => {
-                        const newMeetingInfo = { ...prevMeetingInfo };
-                        newMeetingInfo.isModalOpen = false;
-                        return newMeetingInfo;
-                      });
-                      listen();
-                    }}
-                  >
-                    입장
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        <LeftWindow
+          meetingInfo={meetingInfo}
+          createOffer={createOffer}
+          updateLocalVideo={updateLocalVideo}
+          readyCam={readyCam}
+          setConnection={setConnection}
+          setMeetingInfo={setMeetingInfo}
+          listen={listen}
+          camContainer={camContainer}
+          remoteCam={remoteCam}
+          localCamContainer={localCamContainer}
+          localCam={localCam}
+          sendMessage={sendMessage}
+        />
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">
-        <div className="bg-pink h-[75%] m-2 rounded-2xl flex flex-col justify-evenly">
-          <div className="bg-white mx-4 rounded-t-2xl h-[10%]">
-            <button
-              className="w-[50%] h-full font-extrabold text-xl"
-              disabled={meetingInfo.rightWindowIsChatting}
-              onClick={() => {
-                setMeetingInfo((prevMeetingInfo) => {
-                  const newMeetingInfo = { ...prevMeetingInfo };
-                  newMeetingInfo.rightWindowIsChatting =
-                    !newMeetingInfo.rightWindowIsChatting;
-                  return newMeetingInfo;
-                });
-              }}
-            >
-              체리톡
-            </button>
-            <button
-              className="w-[50%] h-full font-extrabold text-xl"
-              disabled={!meetingInfo.rightWindowIsChatting}
-              onClick={() => {
-                setMeetingInfo((prevMeetingInfo) => {
-                  const newMeetingInfo = { ...prevMeetingInfo };
-                  newMeetingInfo.rightWindowIsChatting =
-                    !newMeetingInfo.rightWindowIsChatting;
-                  return newMeetingInfo;
-                });
-              }}
-            >
-              클립
-            </button>
-          </div>
-          {meetingInfo.rightWindowIsChatting ? (
-            <div className="h-[80%] flex flex-col justify-between px-4">
-              <div className="relative rounded-b-2xl h-[85%]">
-                <div
-                  className="scroll-box bg-white rounded-b-2xl h-full overflow-y-scroll absolute w-full"
-                  ref={chattingWindow}
-                >
-                  {meetingInfo.chattingHistory.map((elem, idx) => {
-                    if (elem.isLocal) {
-                      return (
-                        <div
-                          key={idx}
-                          className="flex flex-row justify-end pl-8 pr-4 pt-4 w-full"
-                        >
-                          <div
-                            style={{
-                              backgroundColor: "#FEF8EC",
-                              whiteSpace: "pre-line",
-                              wordWrap: "break-word",
-                            }}
-                            className="py-2 pl-4 pr-4 rounded-tl-xl rounded-b-xl drop-shadow max-w-[90%]"
-                          >
-                            {elem.message}
-                          </div>
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <div
-                          key={idx}
-                          className="flex flex-row justify-start pl-4 pr-8 pt-4 w-full"
-                        >
-                          <div
-                            style={{
-                              backgroundColor: "#E0F4FF",
-                              whiteSpace: "pre-line",
-                              wordWrap: "break-word",
-                            }}
-                            className="py-2 pl-4 pr-4 rounded-tr-xl rounded-b-xl drop-shadow max-w-[90%]"
-                          >
-                            {elem.message}
-                          </div>
-                        </div>
-                      );
-                    }
-                  })}
-                </div>
-              </div>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  if (event.target.childNodes[0].value.trim().length !== 0) {
-                    console.log(event.target.childNodes[0].value);
-                    sendMessage(
-                      JSON.stringify({
-                        cmd: "send chatting massage",
-                        data: event.target.childNodes[0].value,
-                      })
-                    );
-
-                    fetch(
-                      `${import.meta.env.VITE_APP_BACKEND_URL}/meeting/chat`,
-                      {
-                        method: "post",
-                        headers: {
-                          Accept: "*/*", // 응답 데이터 타입
-                          "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
-                        },
-                        body: JSON.stringify({
-                          kakaoId: kakaoId,
-                          nickname: nickname,
-                          meetingId: meetingInfo.meetingId,
-                          content: event.target.childNodes[0].value,
-                        }),
-                      }
-                    ).catch((err) => {
-                      console.log(err);
-                    });
-
-                    setMeetingInfo((prevMeetingInfo) => {
-                      const newMeetingInfo = { ...prevMeetingInfo };
-                      newMeetingInfo.chattingHistory = [
-                        ...prevMeetingInfo.chattingHistory,
-                        {
-                          isLocal: true,
-                          message: event.target.childNodes[0].value,
-                        },
-                      ];
-                      return newMeetingInfo;
-                    });
-                  }
-                  event.target.childNodes[0].value = "";
-                }}
-                className="mx-4 rounded-2xl h-[10%] flex flex-row"
-              >
-                <textarea
-                  className="bg-white w-full rounded-2xl"
-                  onKeyUp={(event) => {
-                    if (event.key === "Enter") {
-                      if (!event.shiftKey) {
-                        if (event.target.value.trim().length !== 0) {
-                          event.preventDefault();
-                          console.log(event.target.value);
-                          const msg = event.target.value;
-
-                          sendMessage(
-                            JSON.stringify({
-                              cmd: "send chatting massage",
-                              data: event.target.value,
-                            })
-                          );
-
-                          fetch(
-                            `${
-                              import.meta.env.VITE_APP_BACKEND_URL
-                            }/meeting/chat`,
-                            {
-                              method: "post",
-                              headers: {
-                                Accept: "*/*", // 응답 데이터 타입
-                                "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
-                              },
-                              body: JSON.stringify({
-                                kakaoId: kakaoId,
-                                nickname: nickname,
-                                meetingId: meetingInfo.meetingId,
-                                content: event.target.value,
-                              }),
-                            }
-                          ).catch((err) => {
-                            console.log(err);
-                          });
-
-                          setMeetingInfo((prevMeetingInfo) => {
-                            const newMeetingInfo = { ...prevMeetingInfo };
-                            newMeetingInfo.chattingHistory = [
-                              ...prevMeetingInfo.chattingHistory,
-                              {
-                                isLocal: true,
-                                message: msg,
-                              },
-                            ];
-                            return newMeetingInfo;
-                          });
-                        }
-                        event.target.value = "";
-                      }
-                    }
-                  }}
-                ></textarea>
-                <button className="ml-4 w-12 rounded-2xl flex flex-col justify-center items-center">
-                  <img src={sendImg} className="w-5/6 h-5/6 rounded-2xl" />
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="h-[80%] flex flex-col justify-between">
-              <div className="scroll-box bg-white mx-4 rounded-2xl h-[100%] overflow-y-scroll py-[5%]">
-                {meetingInfo.clipHistory.map((clip, idx) => {
-                  return (
-                    <div
-                      key={idx}
-                      className="flex flex-col items-center h-[20%]"
-                    >
-                      {
-                        /* <div className="flex flex-row justify-evenly">
-                        <div className="w-[50%]">
-                          <video
-                            src={URL.createObjectURL(clip[0])}
-                            onClick={(event) => {
-                              event.preventDefault();
-                              event.target.play();
-                            }}
-                          ></video>
-                        </div>
-                        <div className="w-[50%]">
-                          <video
-                            src={URL.createObjectURL(clip[1])}
-                            onClick={(event) => {
-                              event.preventDefault();
-                              event.target.play();
-                            }}
-                          ></video>
-                        </div>
-                      </div> */
-                        <video
-                          src={URL.createObjectURL(clip)}
-                          onClick={(event) => {
-                            event.preventDefault();
-                            event.target.play();
-                          }}
-                        ></video>
-                      }
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
+        <RightWindow
+          meetingInfo={meetingInfo}
+          setMeetingInfo={setMeetingInfo}
+          chattingWindow={chattingWindow}
+          sendMessage={sendMessage}
+          kakaoId={kakaoId}
+          nickname={nickname}
+          sendImg={sendImg}
+        />
       </div>
     </div>
   );

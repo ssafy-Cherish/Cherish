@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.qna.model.mapper.QnaMapper">
+
+    <resultMap id="question" type="questionDto">
+        <result column="id" property="id" />
+        <result column="content" property="content" />
+    </resultMap>
+
+    <resultMap id="answer" type="answerDto">
+        <result column="id" property="id" />
+        <result column="kakao_id" property="kakaoId" />
+        <result column="nickname" property="nickname" />
+        <result column="couple_id" property="coupleId" />
+        <result column="question_id" property="questionId" />
+        <result column="filepath" property="filepath" />
+        <result column="created_at" property="createdAt" />
+    </resultMap>
+
+    <select id="getQuestionCnt" parameterType="int" resultType="int">
+        SELECT question_cnt
+        FROM couple
+        WHERE id = #{coupleId}
+     </select>
+
+    <select id="getQuestion" parameterType="int" resultMap="question">
+        SELECT *
+        FROM question
+        WHERE id = #{id}
+    </select>
+
+    <select id="chkAnswer" parameterType="map" resultType="int">
+        SELECT count(a.id)
+        FROM answer AS a
+        JOIN couple AS c
+        ON a.couple_id = c.id
+        WHERE a.question_id = #{questionId} AND a.couple_id = #{coupleId}
+    </select>
+
+    <insert id="createAnswer" parameterType="answerDto">
+        INSERT INTO answer
+        (kakao_id, nickname, couple_id, question_id)
+        VALUES
+        (#{kakaoId}, #{nickname}, #{coupleId}, #{questionId})
+    </insert>
+
+    <update id="updateAnswerPath" parameterType="answerDto" >
+        UPDATE answer
+        SET filepath = #{filepath}
+        WHERE kakao_id = #{kakaoId} AND question_id = #{questionId}
+    </update>
+
+    <select id="getAnswer" parameterType="map" resultMap="answer">
+        SELECT *
+        FROM answer
+        WHERE question_id = #{questionId} AND couple_id = #{coupleId}
+    </select>
+
+    <select id="getAnswerList" parameterType="int" resultMap="answer">
+        SELECT *
+        FROM answer
+        WHERE couple_id = #{coupleId}
+        ORDER BY question_id
+    </select>
+
+</mapper>
