@@ -48,7 +48,7 @@ function Meeting() {
       ],
 
       option: {
-        mimeType: "video/webm; codecs=vp9",
+        mimeType: "video/webm; codecs=vp9,opus",
         audioBitsPerSecond: 128000,
         videoBitsPerSecond: 2500000,
       },
@@ -141,8 +141,8 @@ function Meeting() {
           ideal: 60,
           max: 80,
         },
-        width: 500,
-        height: 300,
+        width: {ideal:640},
+        height: {ideal:720},
         facingMode: "user",
       },
       audio: {
@@ -549,7 +549,7 @@ function Meeting() {
       if (meetingInfo.record.recordFlag[idx][0] === true) {
         meetingInfo.record.recordFlag[idx][0] = false;
         const blob = new Blob(meetingInfo.record.recordedChunks[idx][0], {
-          mimeType: "video/webm; codecs=vp9",
+          mimeType: "video/webm; codecs=vp9,opus",
         });
         if (
           meetingInfo.connect.peerConnection.connectionState === "connected"
@@ -575,7 +575,7 @@ function Meeting() {
       if (meetingInfo.record.recordFlag[idx][1] === true) {
         meetingInfo.record.recordFlag[idx][1] = false;
         let blob = new Blob(meetingInfo.record.recordedChunks[idx][1], {
-          mimeType: "video/webm; codecs=vp9",
+          mimeType: "video/webm; codecs=vp9,opus",
         });
         if (
           meetingInfo.connect.peerConnection.connectionState === "connected"
@@ -694,7 +694,7 @@ function Meeting() {
         //   const newMeetingInfo = { ...prevMeetingInfo };
         //   newMeetingInfo.clipHistory.push(
         //     new Blob(response.body, {
-        //       mimeType: "video/webm; codecs=vp9",
+        //       mimeType: "video/webm; codecs=vp9,opus",
         //     })
         //   );
         //   return newMeetingInfo;
