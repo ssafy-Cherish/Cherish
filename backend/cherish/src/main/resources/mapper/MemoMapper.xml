@@ -5,7 +5,7 @@
     <select id="getMemoByDate" parameterType="map" resultType="memoDto">
         SELECT * FROM MEMO
         WHERE COUPLE_ID=#{coupleId}
-        AND DATE(CREATED_AT)=
+        AND date =
         <choose>
             <when test="date!=null">
                 #{date}
@@ -33,4 +33,8 @@
         WHERE couple_id = #{coupleId} AND date = #{date}
     </update>
 
+    <delete id="deleteMemo" parameterType="memoDto">
+        DELETE FROM memo
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </delete>
 </mapper>

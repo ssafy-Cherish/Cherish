@@ -25,7 +25,7 @@
 }
 
 .react-calendar button {
-  margin: 1% 0;
+  margin: 0;
   outline: none;
 }
 
@@ -128,14 +128,13 @@ abbr[title="Sunday"] {
 
 /* 오늘 날짜 css */
 .react-calendar__tile--now {
-  border-radius: 15%;
-  border: 5px solid #fd8680;
+  border-radius: 20%;
+  box-shadow: 0 0 0 5px #fd8680 inset;
 }
 
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-  border-radius: 15%;
-  border: 5px solid #fd8680;
+  box-shadow: 0 0 0 5px #fd8680 inset;
 }
 
 .react-calendar__tile--hasActive {
