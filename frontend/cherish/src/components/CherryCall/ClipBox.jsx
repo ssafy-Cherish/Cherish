@@ -2,7 +2,7 @@ function ClipBox({meetingInfo}) {
   return (
     <div className="h-[80%] flex flex-col justify-between">
       <div className="scroll-box bg-white mx-4 rounded-2xl h-[100%] overflow-y-scroll py-[5%]">
-        {meetingInfo.clipHistory.map((clip, idx) => {
+        {meetingInfo.clipHistory.map((url, idx) => {
           return (
             <div key={idx} className="flex flex-col items-center h-[20%]">
               {
@@ -27,7 +27,7 @@ function ClipBox({meetingInfo}) {
                   </div>
                 </div> */
                 <video
-                  src={URL.createObjectURL(clip)}
+                  src={url}
                   onClick={(event) => {
                     event.preventDefault();
                     event.target.play();
