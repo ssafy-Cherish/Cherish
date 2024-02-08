@@ -688,7 +688,7 @@ function Meeting() {
     let formData = new FormData();
     formData.set("meeting_id", meetingInfo.meetingId);
     formData.set("keyword", "안녕");
-    formData.set("coupleId", coupleId);
+    formData.set("couple_id", coupleId);
     formData.set("clip1", meetingInfo.record.tmpRecord[0], "clip1.webm");
     formData.set("clip2", meetingInfo.record.tmpRecord[1], "clip2.webm");
     
