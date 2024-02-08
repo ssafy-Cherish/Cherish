@@ -57,11 +57,13 @@
         WHERE question_id = #{questionId} AND couple_id = #{coupleId}
     </select>
 
-    <select id="getAnswerList" parameterType="int" resultMap="answer">
-        SELECT *
-        FROM answer
+    <select id="getAnswerList" parameterType="int" resultType="map">
+        SELECT a.id, a.couple_id, a.kakao_id, a.nickname, a.question_id, a.filepath, a.created_at, q.content
+        FROM answer AS a
+        JOIN question AS q
+        ON a.question_id = q.id
         WHERE couple_id = #{coupleId}
-        ORDER BY question_id
+        ORDER BY a.question_id
     </select>
 
 </mapper>

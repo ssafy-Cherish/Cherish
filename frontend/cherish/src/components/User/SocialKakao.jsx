@@ -47,7 +47,8 @@ const SocialKakao = () => {
             couple.user1,
             couple.user2,
             couple.anniversary,
-            resData.userInfos
+            resData.userInfos,
+            resData.questionDto
           );
           navigate("/");
         }
