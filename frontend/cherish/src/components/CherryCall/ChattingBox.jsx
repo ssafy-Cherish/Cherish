@@ -52,6 +52,7 @@ function ChattingBox({meetingInfo, setMeetingInfo, chattingWindow, sendMessage, 
           event.preventDefault();
           if (event.target.childNodes[0].value.trim().length !== 0) {
             console.log(event.target.childNodes[0].value);
+            const msg = event.target.childNodes[0].value;
             sendMessage(
               JSON.stringify({
                 cmd: "send chatting massage",
@@ -81,7 +82,7 @@ function ChattingBox({meetingInfo, setMeetingInfo, chattingWindow, sendMessage, 
                 ...prevMeetingInfo.chattingHistory,
                 {
                   isLocal: true,
-                  message: event.target.childNodes[0].value,
+                  message: msg,
                 },
               ];
               return newMeetingInfo;
