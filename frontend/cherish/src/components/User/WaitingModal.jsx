@@ -2,13 +2,17 @@
 import Modal from "../Diary/Modal";
 import Copy from "../../assets/User/copy.svg";
 import Kakao, { getAccessToken } from "../../utils/Kakao";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { userDeleteFetch } from "../../services/userService";
 
 const WaitingModal = ({ onClose, code, userId }) => {
+	const [copied, setCopied] = useState(false);
+
 	const handleCopyClipBoard = () => {
 		try {
 			navigator.clipboard.writeText(code);
-			alert("클립보드에 복사되었습니다.");
+			setCopied(true);
 		} catch (err) {
 			console.log(err);
 		}
@@ -29,24 +33,8 @@ const WaitingModal = ({ onClose, code, userId }) => {
 	}
 
 	function deleteUser() {
-		async function fetchDelete() {
-			const res = await fetch(
-				`${import.meta.env.VITE_APP_BACKEND_URL}/user/delete/${userId}`,
-				{
-					method: "DELETE",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: getAccessToken(),
-					},
-				}
-			);
-
-			if (!res.ok) {
-				new Error("Delete Error");
-			}
-		}
-		if (confirm("정말 삭제하시겠습니까?")) {
-			fetchDelete();
+		if (confirm("정말 탈퇴하시겠어요?")) {
+			userDeleteFetch(userId);
 			onClose();
 		}
 	}
@@ -73,7 +61,17 @@ const WaitingModal = ({ onClose, code, userId }) => {
 						className="input input-bordered w-full border-solid border-2 border-text-gray text-[1vw]"
 					/>
 					<img src={Copy} className="absolute w-[1.3vw] h-[1.3vw] left-[85%]" />
+					{copied && (
+						<motion.div
+							className="absolute top-[10%]"
+							initial={{ scale: 0, y: 30 }}
+							animate={{ scale: 1, y: 0 }}
+						>
+							복사되었어요!
+						</motion.div>
+					)}
 				</motion.div>
+
 				<div className="w-[80%] flex justify-center py-[2vh]">
 					<button className="btn bg-yellow-200" onClick={selectFriend}>
 						카카오톡으로 초대하기
