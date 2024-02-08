@@ -9,5 +9,5 @@ public interface MemoService {
     void writeMemo (MemoDto memoDto) throws Exception;
     MemoDto getMemo (String date, int coupleId) throws Exception;
     void modifyMemo (MemoDto memoDto) throws Exception;
-
+    void deleteMemo(MemoDto memoDto) throws Exception;
 }
