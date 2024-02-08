@@ -2,16 +2,13 @@ package com.ssafy.cherish.clip.controller;
 
 import com.ssafy.cherish.clip.model.dto.ClipDto;
 import com.ssafy.cherish.clip.model.service.ClipService;
-import com.ssafy.cherish.utils.SocketHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/clip")
@@ -29,19 +25,13 @@ import java.util.concurrent.CompletableFuture;
 public class ClipController {
     @Autowired
     private ClipService clipService;
-    private final SocketHandler socketHandler;
     @Value("${custom.path.clip}")
     private String clipPath;
-
-    @Autowired
-    public ClipController(SocketHandler socketHandler) {
-        this.socketHandler = socketHandler;
-    }
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "클립 저장", description = "키워드가 포함된 두 명의 동영상 저장하기위해 파일 두개 입력받음")
-    public ResponseEntity saveClip(
+    public void saveClip(
             @RequestPart("clip1") MultipartFile clip1,
             @RequestPart("clip2") MultipartFile clip2,
             @Parameter(name = "클립 파일 저장에 필요한 정보 map", description = "meeting_id,couple_id,keyword")
@@ -67,27 +57,12 @@ public class ClipController {
             clip1.transferTo(new File(pathForMerge[0]));
             clip2.transferTo(new File(pathForMerge[1]));
 
-            // 클립 저장 작업을 비동기적으로 처리
-            CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return clipService.saveClip(clipDto,pathForMerge);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("동영상 처리 중 문제 발생 : " + e.getMessage());
-                }
-            });
+            clipService.saveClip(clipDto,pathForMerge,Integer.parseInt(map.get("couple_id").toString()));
 
-            // 비동기 작업이 완료되면 결과를 받아와서 출력
-            future.thenAccept(url -> {
-                log.info("데이터 url : {}",url);
-                socketHandler.sendClipUrl(Integer.parseInt((String) map.get("couple_id")),url);
-            }).join();
 
-            // 클립 저장이 완료되지 않았어도 즉시 응답 반환
-            return ResponseEntity.ok("클립 저장 요청이 성공적으로 접수되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity("동영상 처리 중 문제 발생 : "+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("동영상 처리 중 문제 발생 : "+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     String[] setClipDir(ClipDto clipDto) throws Exception {

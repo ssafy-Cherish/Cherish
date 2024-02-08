@@ -2,6 +2,7 @@ package com.ssafy.cherish.clip.model.service;
 
 import com.ssafy.cherish.clip.model.dto.ClipDto;
 import com.ssafy.cherish.clip.model.mapper.ClipMapper;
+import com.ssafy.cherish.utils.SocketHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -10,6 +11,7 @@ import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
@@ -33,17 +35,22 @@ import java.util.Map;
 public class ClipServiceImpl implements ClipService {
     @Autowired
     private ClipMapper clipMapper;
-
     @Autowired
     private  AwsS3Service awsS3Service;
 
+    private final SocketHandler socketHandler;
+    @Autowired
+    public ClipServiceImpl(SocketHandler socketHandler) {
+        this.socketHandler = socketHandler;
+    }
     @Value("${custom.path.ffmpeg}")
     private String ffmpegPath;
 
     @Override
     //파일 입출력이 잘못되었을 경우에도 전체 롤백이 됨
     @Transactional(rollbackFor = Exception.class)
-    public String saveClip(ClipDto clipDto,String[] pathForMerge) throws Exception {
+    @Async
+    public void saveClip(ClipDto clipDto,String[] pathForMerge,int coupleId) throws Exception {
 
 
         //클립 병합
@@ -68,7 +75,7 @@ public class ClipServiceImpl implements ClipService {
 
         log.info("saveClip 중 생성된 filepath 채워진 객체 : {}", clipDto.toString());
         clipMapper.updateClipPath(clipDto);
-        return clipURL;
+        socketHandler.sendClipUrl(coupleId,clipURL);
     }
 
 
@@ -76,8 +83,8 @@ public class ClipServiceImpl implements ClipService {
 
         FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg");
         FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe");
+        FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
-        //ffmpeg -i left.mp4 -i right.mp4 -filter_complex  -map "[v]" -map "[a]" -ac 2 output2.mp4
         FFmpegBuilder builder = new FFmpegBuilder()
                 .overrideOutputFiles(true)
                 .addInput(leftVideoPath)
@@ -93,7 +100,7 @@ public class ClipServiceImpl implements ClipService {
 
         log.debug("FFmpeg command: {}", builder.build());
 
-        FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+
         executor.createJob(builder).run();
     }
 
