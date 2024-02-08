@@ -1,3 +1,8 @@
-.scroll-box::-webkit-scrollbar{
-    display: none;
+.scroll-box::-webkit-scrollbar {
+  display: none;
+}
+
+video {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
 }

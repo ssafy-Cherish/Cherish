@@ -2,8 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.cherish.clip.model.mapper.VideoMapper">
+
+    <resultMap id="video" type="videoDto">
+        <result column="id" property="id" />
+        <result column="couple_id" property="coupleId" />
+        <result column="yearMonth" property="yearMonth" />
+        <result column="keyword" property="keyword" />
+        <result column="filepath" property="filepath" />
+    </resultMap>
+
     <insert id="saveVideo" parameterType="map">
         INSERT MONTHLYVIDEO (COUPLE_ID,YEARMONTH,KEYWORD,FILEPATH)
         VALUES (#{coupleId},#{yearMonth},#{keyword},#{filepath})
     </insert>
+
+    <select id="getVideoList" parameterType="map" resultMap="video">
+        SELECT filepath, keyword
+        FROM monthlyvideo
+        WHERE yearmonth LIKE CONCAT('%', #{yearMonth}, '%') AND couple_id = #{coupleId}
+        ORDER BY keyword
+    </select>
+
 </mapper>

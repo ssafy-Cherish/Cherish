@@ -1,83 +1,96 @@
-import MainLogo from "../../assets/MainLogo.svg";
-import CherryCallIcon from "../../assets/CherryCallIcon.svg";
-import DiaryIcon from "../../assets/DiaryIcon.svg";
-import GalleryIcon from "../../assets/GalleryIcon.svg";
-import PotIcon from "../../assets/PotIcon.svg";
-import QuestionIcon from "../../assets/QuestionIcon.svg";
-import DropdownIcon from "../../assets/DropdownIcon.svg";
-import ProfileIcon from "../../assets/ProfileIcon.svg";
-import { Link } from "react-router-dom";
+import MainLogo from "../../assets/Main/MainLogo.svg";
+import CherryCallIcon from "../../assets/Main/CherryCallIcon.svg?react";
+import DiaryIcon from "../../assets/Main/DiaryIcon.svg?react";
+import GalleryIcon from "../../assets/Main/GalleryIcon.svg?react";
+import PotIcon from "../../assets/Main/PotIcon.svg?react";
+import QuestionIcon from "../../assets/Main/QuestionIcon.svg?react";
+import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
+import ProfileIcon from "../../assets/Main/ProfileIcon.svg";
+import { Link, NavLink } from "react-router-dom";
+import UserInfo from "../Main/UserInfo";
 
 export default function NavBar() {
+  const navbarcss =
+    "flex justify-start gap-8 mx-[2.4rem] text-text-gray hover:text-cherry hover:fill-cherry fill-text-gray";
+  const navbarcssActive =
+    "flex justify-start gap-8 mx-[2.4rem] text-cherry fill-cherry";
   return (
-    <div className="col-span-2 h-screen bg-beige">
+    <div className="col-span-2 h-screen bg-beige relative">
       <Link to="/">
         <div className="ml-16">
           <img src={MainLogo} alt="MainLogo" />
         </div>
       </Link>
-      <div className="grid gird-rows-6 gap-14 mt-[5.5vw]" id="네브바메인">
-        <button className="mx-auto flex flex-row justify-around items-center bg-white w-[15.6rem] h-[4.3rem] rounded-[36px] shadow-md">
-          <div>
-            <img src={ProfileIcon} alt="ProfileIcon" />
-          </div>
-          <p className="text-[1.5rem]">나희도</p>
-          <div>
-            <img src={DropdownIcon} alt="DropdownIcon" />
-          </div>
-        </button>
-        <div className="flex justify-start gap-8 mx-[2.4rem]">
-          <div>
-            <img src={CherryCallIcon} alt="CherryCallIcon" />
-          </div>
+      <UserInfo />
+      <div
+        className="grid gird-rows-6 gap-[3vw] mt-[192px] bg-beige"
+        id="네브바메인"
+      >
+        <NavLink
+          to="cherrycall"
+          className={({ isActive }) => (isActive ? navbarcssActive : navbarcss)}
+        >
+          <CherryCallIcon />
           <p
-            className="text-neutral-400
-                text-[1.75rem]
+            className="
+                text-[1.7rem]
                 font-bold"
           >
             체리콜
           </p>
-        </div>
-        <div className="flex justify-start gap-8 mx-[2.4rem]">
-          <img src={DiaryIcon} alt="DirayIcon" />
+        </NavLink>
+        <NavLink
+          to="diary"
+          className={({ isActive }) => (isActive ? navbarcssActive : navbarcss)}
+        >
+          <DiaryIcon />
           <p
-            className="text-neutral-400
+            className="
                 text-[1.75rem]
                 font-bold"
           >
             다이어리
           </p>
-        </div>
-        <div className="flex justify-start gap-8 mx-[2.4rem]">
-          <img src={PotIcon} alt="PotIcon" />
+        </NavLink>
+        <NavLink
+          to="pot"
+          className={({ isActive }) => (isActive ? navbarcssActive : navbarcss)}
+        >
+          <PotIcon />
           <p
-            className="text-neutral-400
+            className="
                 text-[1.75rem]
                 font-bold"
           >
             화분
           </p>
-        </div>
-        <div className="flex justify-start gap-8 mx-[2.4rem]">
-          <img src={QuestionIcon} alt="QuestionIcon" />
+        </NavLink>
+        <NavLink
+          to="today"
+          className={({ isActive }) => (isActive ? navbarcssActive : navbarcss)}
+        >
+          <QuestionIcon />
           <p
-            className="text-neutral-400
+            className="
                 text-[1.75rem]
                 font-bold"
           >
             오늘의질문
           </p>
-        </div>
-        <div className="flex justify-start gap-8 mx-[2.4rem]">
-          <img src={GalleryIcon} alt="GalleryIcon" />
+        </NavLink>
+        <NavLink
+          to="cherrybox"
+          className={({ isActive }) => (isActive ? navbarcssActive : navbarcss)}
+        >
+          <GalleryIcon />
           <p
-            className="text-neutral-400
+            className="
                 text-[1.75rem]
                 font-bold"
           >
             체리보관함
           </p>
-        </div>
+        </NavLink>
       </div>
     </div>
   );
