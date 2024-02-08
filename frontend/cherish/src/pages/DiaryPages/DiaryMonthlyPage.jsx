@@ -21,6 +21,7 @@ const DiaryMonthlyPage = () => {
   let year = searchParams.get("year");
   let month = searchParams.get("month");
   const date = new Date(year, month - 1);
+  const nowYear = new dayjs().year();
 
   // 생일
   const birthdays = userInfos.map((item) => dayjs(item.birthday).format("M-D"));
@@ -95,9 +96,12 @@ const DiaryMonthlyPage = () => {
         <div className="grid grid-cols-[10%_80%_10%] w-[15vw] me-auto justify-center items-center">
           <div>
             <motion.button
-              className="text-[3vw] text-[#FD8680] font-bold"
+              className={`text-[3vw] ${
+                year == dayjs(anniversary).year() && month == 1 ? "text-gray-300" : "text-[#FD8680]"
+              } font-bold`}
               onClick={() => moveMonth(-1)}
               whileHover={{ scale: 1.2 }}
+              disabled={year == dayjs(anniversary).year() && month == 1}
             >
               &lt;
             </motion.button>
@@ -118,9 +122,12 @@ const DiaryMonthlyPage = () => {
           </div>
           <div>
             <motion.button
-              className="text-[3vw] text-[#FD8680] font-bold"
+              className={`text-[3vw] ${
+                year == nowYear + 1 && month == 12 ? "text-gray-300" : "text-[#FD8680]"
+              } font-bold`}
               onClick={() => moveMonth(1)}
               whileHover={{ scale: 1.2 }}
+              disabled={year == nowYear + 1 && month == 12}
             >
               &gt;
             </motion.button>
