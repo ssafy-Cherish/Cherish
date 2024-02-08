@@ -119,28 +119,6 @@ const Signup = () => {
               whileHover={{ scale: 1.2 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="label">
-                <span className="label-text">
-                  <span className="text-[1.2vw]">사귀기 시작한 날</span>
-                </span>
-              </div>
-              <input
-                type="date"
-                name="anniversary"
-                id="anniversary"
-                className="input input-bordered w-full border-solid border-2 border-text-gray"
-                max={today.format("YYYY-MM-DD")}
-                disabled={hasCode}
-                required
-              />
-            </motion.label>
-          </div>
-          <div>
-            <motion.label
-              className="form-control w-full"
-              whileHover={{ scale: 1.2 }}
-              transition={{ duration: 0.5 }}
-            >
               <div className="label w-full flex justify-between relative">
                 <div className="text-[1.2vw] flex items-center">
                   체리 코드가 있으신가요?
@@ -177,6 +155,29 @@ const Signup = () => {
               </span>
             </motion.label>
           </div>
+          <div>
+            <motion.label
+              className="form-control w-full"
+              whileHover={{ scale: 1.2 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="label">
+                <span className="label-text">
+                  <span className="text-[1.2vw]">사귀기 시작한 날</span>
+                </span>
+              </div>
+              <input
+                type="date"
+                name="anniversary"
+                id="anniversary"
+                className="input input-bordered w-full border-solid border-2 border-text-gray"
+                max={today.format("YYYY-MM-DD")}
+                disabled={hasCode}
+                required
+              />
+            </motion.label>
+          </div>
+
           <div className="flex items-center">
             <button className="btn bg-cherry text-white w-full hover:bg-white hover:text-cherry">
               가입 완료
