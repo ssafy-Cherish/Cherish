@@ -3,7 +3,7 @@ import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
 import LockIcon from "../../assets/Common/LockIcon.svg";
 import Answer from "./Answer";
 
-export default function Question({ reply }) {
+export default function Question({ reply, handleClickIsQuestionBoxOpen }) {
   const [isOpened, setIsOpened] = useState(false);
   let questioncss = `transition-[height] duration-500 w-[42vw] bg-white mt-[1vw] rounded-[15px] text-[1vw] shadow-md ${
     isOpened && reply ? "h-[25vw] flex flex-col overflow-y-auto" : "h-[4.2vw]"
@@ -14,6 +14,11 @@ export default function Question({ reply }) {
       setIsOpened((pre) => !pre);
     }
   };
+  const handleBackAnswer = () => {
+    if (confirm('오늘의 답변을 작성하지 않았어요! 작성하러 갈까요?')) {
+      handleClickIsQuestionBoxOpen()
+    }
+  }
   return (
     <>
       <div id='question' className={questioncss}>
@@ -23,7 +28,7 @@ export default function Question({ reply }) {
             <p>질문들 솰라솰라 솰라</p>
           </div>
           <button
-            onClick={handleClickQuestionButton}
+            onClick={reply ? handleClickQuestionButton : handleBackAnswer}
             className="m-auto col-span-1 w-full h-full"
           >
             <img
