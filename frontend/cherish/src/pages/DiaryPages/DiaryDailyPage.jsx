@@ -108,7 +108,7 @@ const DiaryDailyPage = () => {
 
   return (
     <>
-      <NavModal z={1} modalcss="h-[90vh] w-[70vw]" isX={false} nav="/">
+      <NavModal z={1} modalcss="h-[90vh] w-[70vw] bg-transparent" isX={false} nav="/">
         <div
           className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[50vw] items-center"
           ref={scope}

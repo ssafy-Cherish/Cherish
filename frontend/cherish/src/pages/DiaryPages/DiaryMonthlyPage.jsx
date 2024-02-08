@@ -87,7 +87,7 @@ const DiaryMonthlyPage = () => {
 
   return (
     // Diary 재사용 모달
-    <Modal z={1} modalcss="h-[90vh] w-[70vw]" isX={false} nav="/">
+    <Modal z={1} modalcss="h-[90vh] w-[70vw] bg-transparent" isX={false} nav="/">
       <div
         className="flex flex-col  absolute h-[40vw] ml-[12vw] mt-[2vw] w-[45vw] items-center"
         ref={scope}
