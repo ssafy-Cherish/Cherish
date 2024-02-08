@@ -1,5 +1,7 @@
 package com.ssafy.cherish.user.controller;
 
+import com.ssafy.cherish.qna.model.dto.QuestionDto;
+import com.ssafy.cherish.qna.model.service.QnaService;
 import com.ssafy.cherish.user.model.dto.CoupleDto;
 import com.ssafy.cherish.user.model.dto.UserDto;
 import com.ssafy.cherish.user.model.service.UserService;
@@ -24,6 +26,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private QnaService qnaService;
 
 //    @Autowired
 //    private JWTUtil jwtUtil;
@@ -66,12 +71,14 @@ public class UserController {
                 UserDto userDto = userService.userInfo(kakaoId);
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
                 List<Map<String, String>> userInfos = userService.getUserInfos(userDto.getCoupleId());
+                QuestionDto questionDto = qnaService.getQuestion(userDto.getCoupleId());
                 resultMap.put("kakao_id", kakaoId);
                 resultMap.put("user_id", userDto.getId());
                 resultMap.put("nickname", userDto.getNickname());
                 resultMap.put("userInfos", userInfos);
                 resultMap.put("coupleDto", coupleDto);
                 resultMap.put("verified", true);
+                resultMap.put("questionDto", questionDto);
                 status = HttpStatus.OK;
 
                 return new ResponseEntity<Map<String, Object>>(resultMap, status);

@@ -32,8 +32,8 @@ public class QnaController {
         HttpStatus status;
 
         try {
-            int id = qnaService.getQuestionCnt(coupleId);
-            QuestionDto questionDto = qnaService.getQuestion(id);
+
+            QuestionDto questionDto = qnaService.getQuestion(coupleId);
 
             resultMap.put("qustionDto", questionDto);
             status = HttpStatus.OK;
