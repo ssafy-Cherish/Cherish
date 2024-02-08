@@ -26,4 +26,9 @@ public class MemoServiceImpl implements MemoService {
         memoMapper.modifyMemo(memoDto);
     }
 
+    @Override
+    public void deleteMemo(MemoDto memoDto) throws Exception {
+        memoMapper.deleteMemo(memoDto);
+    }
+
 }

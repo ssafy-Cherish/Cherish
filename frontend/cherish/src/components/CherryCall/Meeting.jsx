@@ -141,8 +141,8 @@ function Meeting() {
           ideal: 60,
           max: 80,
         },
-        width: {ideal:640},
-        height: {ideal:720},
+        width: { ideal: 640 },
+        height: { ideal: 720 },
         facingMode: "user",
       },
       audio: {
@@ -155,33 +155,43 @@ function Meeting() {
       stream.getTracks().forEach((track) => {
         meetingInfo.stream.localMediaStream.addTrack(track);
       });
-      updateLocalVideo(true, 1);
+      updateLocalVideo(true, 1, true);
     });
   };
 
-  const updateLocalVideo = function (on, volume) {
-    if (meetingInfo.dataChannel?.readyState === "open") {
-      JSON.stringify({
-        cmd: "responce peer cam state",
-        data: {
-          videoOn: meetingInfo.video.local.videoOn,
-          volume: meetingInfo.video.local.volume,
-        },
-      });
+  const updateLocalVideo = function (on, volume, force) {
+    if (meetingInfo.connect?.peerConnection?.connectionState === "connected") {
+      sendMessage(
+        JSON.stringify({
+          cmd: "response peer cam state",
+          data: {
+            videoOn: on,
+            volume: volume,
+          },
+        })
+      );
     }
 
     if (readyCam.current) {
-      readyCam.current.srcObject = on
-        ? meetingInfo.stream.localMediaStream
-        : new MediaStream();
-      readyCam.current.volume = volume;
+      if (meetingInfo.video.local.videoOn !== on || force) {
+        readyCam.current.srcObject = on
+          ? meetingInfo.stream.localMediaStream
+          : new MediaStream();
+      }
+      if (meetingInfo.video.local.volume != volume || force) {
+        readyCam.current.volume = volume;
+      }
     }
 
     if (localCam.current) {
-      localCam.current.srcObject = on
-        ? meetingInfo.stream.localMediaStream
-        : new MediaStream();
-      localCam.current.volume = 0;
+      if (meetingInfo.video.local.videoOn !== on) {
+        localCam.current.srcObject = on
+          ? meetingInfo.stream.localMediaStream
+          : new MediaStream();
+      }
+      if (meetingInfo.video.local.volume != volume) {
+        localCam.current.volume = 0;
+      }
     }
 
     setMeetingInfo((prevMeetingInfo) => {
@@ -194,10 +204,14 @@ function Meeting() {
 
   const updateRemoteVideo = function (on, volume) {
     if (remoteCam.current) {
-      remoteCam.current.srcObject = on
-        ? meetingInfo.stream.remoteMediaStream
-        : new MediaStream();
+      if (meetingInfo.video.remote.videoOn !== on) {
+        remoteCam.current.srcObject = on
+          ? meetingInfo.stream.remoteMediaStream
+          : new MediaStream();
+      }
+      if(meetingInfo.video.remote.volume != volume){
       remoteCam.current.volume = volume;
+    }
     }
 
     setMeetingInfo((prevMeetingInfo) => {
@@ -301,7 +315,7 @@ function Meeting() {
         case "request peer cam state":
           sendMessage(
             JSON.stringify({
-              cmd: "responce peer cam state",
+              cmd: "response peer cam state",
               data: {
                 videoOn: meetingInfo.video.local.videoOn,
                 volume: meetingInfo.video.local.volume,
@@ -310,7 +324,7 @@ function Meeting() {
           );
           break;
 
-        case "responce peer cam state":
+        case "response peer cam state":
           updateRemoteVideo(msg.data.videoOn, msg.data.volume);
           break;
 
@@ -385,7 +399,8 @@ function Meeting() {
         );
         updateLocalVideo(
           meetingInfo.video.local.videoOn,
-          meetingInfo.video.local.volume
+          meetingInfo.video.local.volume,
+          false
         );
         recordStart();
       }
@@ -673,9 +688,10 @@ function Meeting() {
     let formData = new FormData();
     formData.set("meeting_id", meetingInfo.meetingId);
     formData.set("keyword", "안녕");
+    formData.set("couple_id", coupleId);
     formData.set("clip1", meetingInfo.record.tmpRecord[0], "clip1.webm");
     formData.set("clip2", meetingInfo.record.tmpRecord[1], "clip2.webm");
-
+    
     fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
       method: "post",
       headers: {
@@ -712,19 +728,23 @@ function Meeting() {
   }
 
   useEffect(() => {
-    if (meetingInfo.chattingHistory.length) {
+    if (
+      meetingInfo.chattingHistory.length &&
+      meetingInfo.rightWindowIsChatting
+    ) {
       chattingWindow.current.childNodes[
         meetingInfo.chattingHistory.length - 1
       ].scrollIntoView({
         block: "end",
       });
     }
-  }, [meetingInfo.chattingHistory.length]);
+  }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindowIsChatting]);
 
   useEffect(() => {
     updateLocalVideo(
       meetingInfo.video.local.videoOn,
-      meetingInfo.video.local.volume
+      meetingInfo.video.local.volume,
+      true
     );
   }, [meetingInfo.isModalOpen]);
 
@@ -753,6 +773,7 @@ function Meeting() {
           remoteCam={remoteCam}
           localCamContainer={localCamContainer}
           localCam={localCam}
+          sendMessage={sendMessage}
         />
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">

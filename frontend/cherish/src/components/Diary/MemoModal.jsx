@@ -2,26 +2,35 @@
 import { useState } from "react";
 import "../../components/Diary/DiaryDailyPage.css";
 import Modal from "./Modal";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "../../utils/query";
+import { updateMemoFetch } from "../../services/diaryService";
 
-const MemoModal = ({ onClose, memo, setMemo }) => {
+const MemoModal = ({ onClose, coupleId, date, memo, handleMemoData }) => {
 	const [isWriting, setIsWriting] = useState();
-	const [content, setContent] = useState(memo.content);
+	const [content, setContent] = useState(memo);
 
 	function changeContent(event) {
 		setContent(event.target.value);
 	}
 
 	function cancelContent() {
-		setContent(memo.content);
+		setContent(memo);
 		setIsWriting(false);
 	}
 
 	function saveContent() {
-		// TODO : 업데이트 쿼리 날려야 함, 또는 memoId가 없다면 insert
-
-		setMemo((prev) => ({ ...prev, content: content }));
+		mutate({ coupleId, content, date });
+		handleMemoData(content);
 		setIsWriting(false);
 	}
+
+	const { mutate } = useMutation({
+		mutationFn: updateMemoFetch,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["memo", date] });
+		},
+	});
 
 	return (
 		<Modal
@@ -52,7 +61,7 @@ const MemoModal = ({ onClose, memo, setMemo }) => {
 							}}
 							className="rounded-xl drop-shadow-xl h-full p-[1vw] border-solid border-2 border-text-gray"
 						>
-							{memo.content}
+							{memo}
 						</div>
 					)}
 				</div>
