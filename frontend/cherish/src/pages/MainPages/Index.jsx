@@ -5,13 +5,21 @@ import { Outlet, Link } from "react-router-dom";
 import PotCard from "../../components/Main/PotCard";
 import TodayQuestionCard from "../../components/Main/TodayQuestionCard";
 import DiaryCard from "../../components/Main/DiaryCard";
+import dayjs from "dayjs";
+import useCoupleStore from "../../stores/useCoupleStore";
 
 export default function Index() {
+  const { anniversary } = useCoupleStore();
+  const today = dayjs();
+  const anni = dayjs(anniversary);
+  const rs = today.diff(anni, "day", true);
+  const dday = Math.floor(rs) + 1;
+
   return (
     <div className="mt-[4vw]">
       <div className="flex justify-between">
-        <p className="text-[2.5vw]">
-          우리 만난지 <span className="text-cherry">99</span>일 째!
+        <p className="text-[2.5vw] text-text-gray font-bold">
+          우리 만난지 <span className="text-cherry">{dday}</span>일 째!
         </p>
         <Link to="today" id="today">
           <TodayQuestionCard />
@@ -27,7 +35,7 @@ export default function Index() {
           id="Pot"
           className="bg-pink col-span-3 grid grid-cols-5 rounded-[20px] shadow-md"
         >
-          <PotCard />
+          <PotCard dday={dday} />
         </Link>
         <Link
           to="diary"
@@ -40,13 +48,13 @@ export default function Index() {
           id="CherryCall"
           className="bg-beige col-span-2 flex flex-col items-center justify-around rounded-[20px] shadow-md"
         >
-          <p className="text-[1.2vw] mt-[1vw]">
+          <p className="text-[1.2vw] mt-[1vw] font-bold text-text-gray">
             <span className="text-cherry">체리콜</span>로 화분을 키워요!
           </p>
           <div>
             <img src={CoupleImg1} alt="CoupleImg1" />
           </div>
-          <p className="text-[1.2vw] mb-[1.8vw]">체리콜</p>
+          <p className="text-[1.2vw] mb-[1.8vw] text-text-black">체리콜</p>
         </div>
         <div id="Memo" className="col-span-2 relative">
           <div className="w-[17vw]">

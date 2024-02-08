@@ -62,3 +62,11 @@ body {
 #keyword::-webkit-scrollbar {
   display: none;
 }
+
+#userInfo::-webkit-scrollbar {
+  display: none;
+}
+
+#question::-webkit-scrollbar {
+  display: none;
+}

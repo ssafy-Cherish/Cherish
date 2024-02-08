@@ -1,7 +1,7 @@
 import HeartIcon from "../../assets/Common/HeartIcon.svg";
 import PotLv2 from "../../assets/Pot/PotLv2.svg";
 import ModalRoute from "../../components/Common/ModalRoute";
-import { fetchExp } from "../../utils/FetchMain.js";
+import { fetchExp } from "../../services/PotService.js";
 import PotTimeLine from "../../components/Main/PotTimeLine.jsx";
 import { useQuery } from "@tanstack/react-query";
 
