@@ -25,7 +25,7 @@ public class VideoController {
     private VideoService videoService;
 
     @GetMapping("/getVideo")
-    @Operation(summary = "월별 비디오 리스트", description = "coupleId와 keyword를 받아 월별 비디로 리스트를 반환")
+    @Operation(summary = "월별 비디오 리스트", description = "coupleId와 yearMonth를 받아 월별 비디로 리스트를 반환")
     public ResponseEntity<?> getVideoList(@RequestParam("coupleId") int coupleId, @RequestParam("yearMonth") String yearMonth) {
         log.debug("getAnswerList 호출 : {}, {}", coupleId, yearMonth);
         Map<String, Object> resultMap = new HashMap<String, Object>();
