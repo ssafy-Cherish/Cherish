@@ -59,6 +59,8 @@ public class ClipController {
 
             clipService.saveClip(clipDto,pathForMerge,Integer.parseInt(map.get("couple_id").toString()));
 
+            log.debug("service.saveClip 실행완료");
+
 
         } catch (Exception e) {
             e.printStackTrace();
