@@ -33,8 +33,7 @@ public class SocketHandler extends TextWebSocketHandler {
     // 연결이 성공한 클라이언트가 웹소켓을 통해 메세지를 부르면 호출되는 메소드
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws InterruptedException, IOException {
-        log.debug("웹소켓 메세지 처리, message : {}", message.getPayload());
-        log.debug("message : {}", message);
+        log.debug("웹소켓 메세지 처리, message : {}", message);
 
         try {
             // 클라이언트로부터 받은 메세지를 맵으로 변환
