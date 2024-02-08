@@ -25,13 +25,14 @@ public class QnaServiceImpl implements QnaService {
     @Value("${custom.path.answer}")
     private String answerPath;
 
-    @Override
-    public int getQuestionCnt(int coupleId) throws Exception {
-        return qnaMapper.getQuestionCnt(coupleId);
-    }
+//    @Override
+//    public int getQuestionCnt(int coupleId) throws Exception {
+//        return qnaMapper.getQuestionCnt(coupleId);
+//    }
 
     @Override
-    public QuestionDto getQuestion(int questionId) throws Exception {
+    public QuestionDto getQuestion(int coupleId) throws Exception {
+        int questionId = qnaMapper.getQuestionCnt(coupleId);
         return qnaMapper.getQuestion(questionId);
     }
 
@@ -71,7 +72,7 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public List<AnswerDto> getAnswerList(int coupleId) throws Exception {
+    public List<Map<String, Object>> getAnswerList(int coupleId) throws Exception {
         return qnaMapper.getAnswerList(coupleId);
     }
 

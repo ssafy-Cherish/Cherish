@@ -32,8 +32,8 @@ public class QnaController {
         HttpStatus status;
 
         try {
-            int id = qnaService.getQuestionCnt(coupleId);
-            QuestionDto questionDto = qnaService.getQuestion(id);
+
+            QuestionDto questionDto = qnaService.getQuestion(coupleId);
 
             resultMap.put("qustionDto", questionDto);
             status = HttpStatus.OK;
@@ -74,32 +74,32 @@ public class QnaController {
 
     }
 
-    @GetMapping("/getAnswer")
-    @Operation(summary = "오늘의 질문의 답변 가져옴", description = "커플아이디와 질문번호에 맞는 answerDto를 가져온다.")
-    public ResponseEntity<?> getAnswer (@RequestParam("questionId") int questionId, @RequestParam("coupleId") int coupleId) {
-        log.debug("getAnswer 호출 : {}, {}", questionId, coupleId);
-        Map<String, Object> map = new HashMap<String, Object>();
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        HttpStatus status;
-
-        try {
-            map.put("questionId", questionId);
-            map.put("coupleId", coupleId);
-
-            AnswerDto answerDto = qnaService.getAnswer(map);
-            resultMap.put("answerDto", answerDto);
-            status = HttpStatus.OK;
-
-            return new ResponseEntity<Map<String, Object>>(resultMap, status);
-        } catch (Exception e) {
-            log.error("getAnswer 에러 : {}", e.getMessage());
-            resultMap.put("getAnswer 에러", e.getMessage());
-
-            status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<Map<String, Object>>(resultMap, status);
-        }
-
-    }
+//    @GetMapping("/getAnswer")
+//    @Operation(summary = "오늘의 질문의 답변 가져옴", description = "커플아이디와 질문번호에 맞는 answerDto를 가져온다.")
+//    public ResponseEntity<?> getAnswer (@RequestParam("questionId") int questionId, @RequestParam("coupleId") int coupleId) {
+//        log.debug("getAnswer 호출 : {}, {}", questionId, coupleId);
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        Map<String, Object> resultMap = new HashMap<String, Object>();
+//        HttpStatus status;
+//
+//        try {
+//            map.put("questionId", questionId);
+//            map.put("coupleId", coupleId);
+//
+//            AnswerDto answerDto = qnaService.getAnswer(map);
+//            resultMap.put("answerDto", answerDto);
+//            status = HttpStatus.OK;
+//
+//            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+//        } catch (Exception e) {
+//            log.error("getAnswer 에러 : {}", e.getMessage());
+//            resultMap.put("getAnswer 에러", e.getMessage());
+//
+//            status = HttpStatus.BAD_REQUEST;
+//            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+//        }
+//
+//    }
 
     @GetMapping("/getAnswerList")
     @Operation(summary = "오늘의 질문 답변 list 가져옴", description = "couple_id를 받아 해당 커플이 답변한 answerDto을 list로 가져온다")
@@ -109,7 +109,7 @@ public class QnaController {
         HttpStatus status;
 
         try {
-            List<AnswerDto> list = qnaService.getAnswerList(coupleId);
+            List<Map<String, Object>> list = qnaService.getAnswerList(coupleId);
             resultMap.put("answerDto List", list);
             status = HttpStatus.OK;
 

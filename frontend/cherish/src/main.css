@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
   font-family: "GmarketSansTTFMedium";
   src: url("./fonts/GmarketSansTTFMedium.ttf");
@@ -70,3 +69,4 @@ body {
 #question::-webkit-scrollbar {
   display: none;
 }
+

@@ -10,11 +10,11 @@ import java.util.Map;
 
 public interface QnaService {
 
-    int getQuestionCnt (int coupleId) throws Exception;
+//    int getQuestionCnt (int coupleId) throws Exception;
     QuestionDto getQuestion (int questionId) throws Exception;
     int saveAnswer (MultipartFile answer, Map<String, Object> map) throws Exception;
     boolean chkAnswer (Map<String, Object> map) throws Exception;
     AnswerDto getAnswer (Map<String, Object> map) throws Exception;
-    List<AnswerDto> getAnswerList (int coupleId) throws Exception;
+    List<Map<String, Object>> getAnswerList (int coupleId) throws Exception;
 
 }
