@@ -29,7 +29,7 @@ function WaitingBox({
                 const targetVolume =
                   meetingInfo.video.local.volume == 0 ? 0.5 : 0;
                 const targetOn = meetingInfo.video.local.videoOn;
-                updateLocalVideo(targetOn, targetVolume);
+                updateLocalVideo(targetOn, targetVolume, 0);
               }}
             >
               <img className="h-full absolute" src={micImg} />
@@ -43,7 +43,7 @@ function WaitingBox({
                 event.preventDefault();
                 const targetVolume = meetingInfo.video.local.volume;
                 const targetOn = !meetingInfo.video.local.videoOn;
-                updateLocalVideo(targetOn, targetVolume);
+                updateLocalVideo(targetOn, targetVolume, 0);
               }}
             >
               <img className="h-full absolute" src={camImg} />
@@ -102,7 +102,7 @@ function WaitingBox({
                 return newMeetingInfo;
               });
 
-              readyCam.current.volume = 0;
+              updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
 
               listen();
             }}
