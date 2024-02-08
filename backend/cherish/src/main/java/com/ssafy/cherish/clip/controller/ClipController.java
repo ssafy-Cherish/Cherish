@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +32,7 @@ public class ClipController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "클립 저장", description = "키워드가 포함된 두 명의 동영상 저장하기위해 파일 두개 입력받음")
-    public void saveClip(
+    public ResponseEntity saveClip(
             @RequestPart("clip1") MultipartFile clip1,
             @RequestPart("clip2") MultipartFile clip2,
             @Parameter(name = "클립 파일 저장에 필요한 정보 map", description = "meeting_id,couple_id,keyword")
@@ -60,11 +61,12 @@ public class ClipController {
             clipService.saveClip(clipDto,pathForMerge,Integer.parseInt(map.get("couple_id").toString()));
 
             log.debug("service.saveClip 실행완료");
-
+            return new ResponseEntity(HttpStatus.CREATED);
 
         } catch (Exception e) {
             e.printStackTrace();
             log.error("동영상 처리 중 문제 발생 : "+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     String[] setClipDir(ClipDto clipDto) throws Exception {
