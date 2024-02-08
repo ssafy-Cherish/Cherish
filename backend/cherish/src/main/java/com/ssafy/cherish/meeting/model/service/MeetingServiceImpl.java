@@ -51,8 +51,6 @@ public class MeetingServiceImpl implements MeetingService {
 
         res.put("meeting", list);
 
-        res.put("memo", memoMapper.getMemoByDate(map));
-
         return res;
     }
 }

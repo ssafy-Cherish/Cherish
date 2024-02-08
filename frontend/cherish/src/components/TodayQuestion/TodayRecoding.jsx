@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import ModalForSave from "../Common/ModalForSave";
-import StartRecord from "../../assets/StartRecord.svg";
-import StopRecord from "../../assets/StopRecord.svg";
+import StartRecord from "../../assets/VideoIcon/StartRecord.svg";
+import StopRecord from "../../assets/VideoIcon/StopRecord.svg";
 
 const constraints = {
   audio: {
     echoCancellation: { exact: true },
   },
   video: {
-    width: 1280,
-    height: 720,
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
   },
 };
 
@@ -40,7 +40,7 @@ export default function TodayRecoding() {
 
     // 1.MediaStream을 매개변수로 MediaRecorder 생성자를 호출
     mediaRecorder.current = new MediaRecorder(mediaStream, {
-      mimeType: "video/webm; codecs=vp9",
+      mimeType: "video/webm; codecs=vp9, opus",
     });
 
     // 2. 전달받는 데이터를 처리하는 이벤트 핸들러 등록

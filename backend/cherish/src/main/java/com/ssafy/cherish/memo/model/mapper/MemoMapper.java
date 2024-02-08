@@ -21,5 +21,6 @@ public interface MemoMapper {
     // 메모 수정하기
     void modifyMemo (MemoDto memoDto) throws SQLException;
 
-
+    // 메모 삭제하기
+    void deleteMemo(MemoDto memoDto);
 }

@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
-import CloseIcon from "../../assets/CloseIcon.svg";
+import CloseIcon from "../../assets/Common/CloseIcon.svg";
 const Modal = ({ z, onClose, children, dialogCss, isX }) => {
 	const backdropStyle = {
 		position: "fixed",
