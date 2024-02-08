@@ -19,10 +19,10 @@ export default function Keyword({
   isOpen,
   handleClickIsOpen,
 }) {
-  let keywordClassName = `bg-white float-end w-[15vw] py-[0.5vw] text-[1.3vw] mr-[2vw] rounded-[40px] shadow-md text-center ${
+  let keywordClassName = `absolute z-20 left-[65%] transition-[height] duration-500 bg-white float-end w-[15vw] py-[0.5vw] text-[1.3vw] mr-[2vw] rounded-[40px] shadow-md text-center ${
     isOpen
-      ? "h-[20vw] z-20 absolute left-[65%] flex flex-col rounded-[15px] overflow-y-auto"
-      : undefined
+      ? "h-[20vw] flex flex-col rounded-[15px] overflow-y-auto"
+      : "h-[3vw]"
   }`;
 
   return (
