@@ -139,8 +139,8 @@ function Meeting() {
     const constraints = {
       video: {
         frameRate: {
-          ideal: 60,
-          max: 80,
+          ideal: 30,
+          max: 35,
         },
         width: { ideal: 640 },
         height: { ideal: 720 },
