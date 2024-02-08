@@ -256,6 +256,11 @@ function Meeting() {
         case "candidate":
           handleCandidate(data);
           break;
+
+        case "getClipURL":
+          handleNewClip(data);
+          break;
+
         default:
           break;
       }
@@ -330,10 +335,6 @@ function Meeting() {
 
         case "send chatting massage":
           handleRemoteChatting(msg.data);
-          break;
-
-        case "send new clip":
-          handleNewClip(msg.data);
           break;
 
         default:
@@ -644,10 +645,10 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const blob = message;
+    const url = message;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.clipHistory.push(blob);
+      newMeetingInfo.clipHistory.push(url);
       return newMeetingInfo;
     });
   }
