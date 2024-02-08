@@ -124,7 +124,7 @@ function STTGPT() {
             ][1] = true;
           }
         }
-        
+
         useGPT(newMeetingInfo, script);
 
         return newMeetingInfo;
@@ -264,8 +264,8 @@ function STTGPT() {
           ideal: 60,
           max: 80,
         },
-        width: {ideal:640},
-        height: {ideal:720},
+        width: { ideal: 640 },
+        height: { ideal: 720 },
         facingMode: "user",
       },
       audio: {
@@ -545,7 +545,7 @@ function STTGPT() {
       });
     };
 
-    peerConnection.onconnectionstatechange = function () {};
+    peerConnection.onconnectionstatechange = function () { };
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
