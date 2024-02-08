@@ -4,9 +4,12 @@ import ModalRoute from "../../components/Common/ModalRoute";
 import NextIcon from "../../assets/Common/NextIcon.svg";
 import { useState } from "react";
 import TodayQuestionBox from "../../components/TodayQuestion/TodayQuestionBox";
+import useCoupleStore from "../../stores/useCoupleStore";
+
 
 export default function TodayQuestionRecodePage() {
   const [isQuestionBoxOpen, setIsQuestionBoxopen] = useState(false);
+  const {question} = useCoupleStore()
   const date = dayjs();
   const year = date.get("y");
   const month = date.get("M") + 1;
@@ -29,12 +32,12 @@ export default function TodayQuestionRecodePage() {
           onClick={handleClickIsQuestionBoxOpen}
           className="bg-white h-[3vw] w-[42vw] mt-[0.5vw] rounded-[35px] text-[1.3vw] shadow-md text-center leading-[3vw]"
         >
-          오늘의 질문란
+          {isQuestionBoxOpen ? "오늘의 질문에 답변하기 " : question.content}
           <div className="float-right">
             <img src={NextIcon} alt="" />
           </div>
         </button>
-        {isQuestionBoxOpen ? <TodayQuestionBox /> : <TodayRecoding />}
+        {isQuestionBoxOpen ? <TodayQuestionBox handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} /> : <TodayRecoding />}
       </div>
     </ModalRoute>
   );
