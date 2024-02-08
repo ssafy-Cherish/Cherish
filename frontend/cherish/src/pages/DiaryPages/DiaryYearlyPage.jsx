@@ -15,6 +15,8 @@ import Month9 from "../../assets/diary/Month/Month9.svg";
 import Month10 from "../../assets/diary/Month/Month10.svg";
 import Month11 from "../../assets/diary/Month/Month11.svg";
 import Month12 from "../../assets/diary/Month/Month12.svg";
+import dayjs from "dayjs";
+import useCoupleStore from "../../stores/useCoupleStore";
 
 const MonthArr = [
   Month1,
@@ -36,7 +38,9 @@ const DiaryYearlyPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [scope, animate] = useAnimate();
   let year = searchParams.get("year");
-  if (!year) year = new Date().getFullYear();
+  const nowYear = new dayjs().year();
+
+  const { annivarsary } = useCoupleStore();
 
   function moveYear(move) {
     animate("#year", { y: [0, -5, 5, 0] }, { duration: 0.2 });
@@ -57,11 +61,23 @@ const DiaryYearlyPage = () => {
         ref={scope}
       >
         <div className="text-[2vw] text-red-400 mb-[2vw] ">
-          <button onClick={() => moveYear(-1)}>&lt;</button>
+          <button
+            onClick={() => moveYear(-1)}
+            disabled={year == dayjs(annivarsary).year()}
+            className={`${year == dayjs(annivarsary).year() ? "text-gray-400" : ""}`}
+          >
+            &lt;-
+          </button>
           <div id="year" className="inline-block text-[2vw]">
             &nbsp;{year}&nbsp;
           </div>
-          <button onClick={() => moveYear(1)}>&gt;</button>
+          <button
+            onClick={() => moveYear(1)}
+            disabled={nowYear + 1 == year}
+            className={`${nowYear + 1 == year ? "text-gray-400" : ""}`}
+          >
+            -&gt;
+          </button>
         </div>
         <div className="grid grid-rows-4 grid-cols-3 w-[35vw] h-[40vw]">
           {MonthArr.map((src, i) => (
