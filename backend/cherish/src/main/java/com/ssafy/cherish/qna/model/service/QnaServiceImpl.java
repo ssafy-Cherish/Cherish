@@ -71,7 +71,7 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public List<AnswerDto> getAnswerList(int coupleId) throws Exception {
+    public List<Map<String, Object>> getAnswerList(int coupleId) throws Exception {
         return qnaMapper.getAnswerList(coupleId);
     }
 
