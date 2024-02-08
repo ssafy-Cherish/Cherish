@@ -357,6 +357,27 @@ public class UserController {
         }
     }
 
+    @GetMapping("/code")
+    @Operation(summary = "커플 코드 확인", description="사용자에게 올바른 코드인지 확인시켜줌")
+    public ResponseEntity<?> checkByCode(@RequestParam String code) {
+        log.debug("checkByCode 호출 : {}", code);
+        HttpStatus status = HttpStatus.OK;
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        try {
+            CoupleDto couple = userService.findByCode(code);
+            if(couple != null && (couple.getUser1() == null || couple.getUser2() == null))
+                resultMap.put("success", true);
+            else
+                resultMap.put("success", false);
+
+        } catch (Exception e) {
+            status = HttpStatus.BAD_REQUEST;
+            resultMap.put("msg", "코드 확인에 실패했습니다.");
+        }
+
+        return new ResponseEntity<>(resultMap, status);
+    }
 
     // 인증코드 생성 함수
     public String createCode() throws Exception {
@@ -397,6 +418,8 @@ public class UserController {
 
         return code;
     }
+
+
 
 }
 
