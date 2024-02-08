@@ -1,4 +1,4 @@
-import MainBookmarkIcon from "../../assets/MainBookmarkIcon.svg";
+import MainBookmarkIcon from "../../assets/Main/MainBookmarkIcon.svg";
 
 export default function TodayQuestionCard() {
   return (

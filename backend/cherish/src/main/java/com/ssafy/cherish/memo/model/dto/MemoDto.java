@@ -13,6 +13,6 @@ public class MemoDto {
     private int id;
     private int coupleId;
     private String content;
-    private String createAt;
+    private String createdAt;
     private String date;
 }

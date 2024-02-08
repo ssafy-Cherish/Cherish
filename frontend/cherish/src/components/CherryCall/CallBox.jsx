@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 function CallBox({meetingInfo, camContainer, remoteCam, localCamContainer, localCam}){
     return(
         <motion.div
-          className="h-full w-full relative flex flex-col-reverse items-center bg-slate-700 rounded-t-2xl z-50"
+          className={`h-full w-full relative flex flex-col-reverse items-center bg-slate-700 rounded-t-2xl z-50 ${!meetingInfo.isModalOpen ? "" : "hidden"}`}
           ref={camContainer}
         >
           <video
@@ -13,9 +13,9 @@ function CallBox({meetingInfo, camContainer, remoteCam, localCamContainer, local
             autoPlay
             playsInline
           ></video>
-          {meetingInfo.video.local.videoOn && (
+          
             <motion.div
-              className="h-[30%] w-[30%] z-100 relative left-[30%] bottom-[5%] rounded-2xl bg-pink flex flex-col justify-center items-center"
+              className={`h-[30%] w-[30%] z-100 relative left-[30%] bottom-[5%] rounded-2xl bg-pink flex flex-col justify-center items-center ${meetingInfo.video.local.videoOn?"":"hidden"}`}
               drag
               dragConstraints={camContainer}
               ref={localCamContainer}
@@ -28,7 +28,7 @@ function CallBox({meetingInfo, camContainer, remoteCam, localCamContainer, local
                 className="h-[90%] w-[90%] absolute "
               ></video>
             </motion.div>
-          )}
+          
         </motion.div>
     )
 }
