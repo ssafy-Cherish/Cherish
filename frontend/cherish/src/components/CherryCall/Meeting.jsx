@@ -28,6 +28,7 @@ function Meeting() {
       remote: {
         videoOn: false,
         volume: 0.0,
+        volumeFactor: 1.0,
       },
     },
 
@@ -155,11 +156,11 @@ function Meeting() {
       stream.getTracks().forEach((track) => {
         meetingInfo.stream.localMediaStream.addTrack(track);
       });
-      updateLocalVideo(true, 1, true);
+      updateLocalVideo(true, 1, 0);
     });
   };
 
-  const updateLocalVideo = function (on, volume, force) {
+  const updateLocalVideo = function (on, volume, target) {
     if (meetingInfo.connect?.peerConnection?.connectionState === "connected") {
       sendMessage(
         JSON.stringify({
@@ -172,26 +173,22 @@ function Meeting() {
       );
     }
 
-    if (readyCam.current) {
-      if (meetingInfo.video.local.videoOn !== on || force) {
+    if (target === 0) {
+      if (meetingInfo.video.local.videoOn !== on || !readyCam.current.srcObject) {
         readyCam.current.srcObject = on
           ? meetingInfo.stream.localMediaStream
           : new MediaStream();
       }
-      if (meetingInfo.video.local.volume != volume || force) {
-        readyCam.current.volume = volume;
-      }
-    }
-
-    if (localCam.current) {
-      if (meetingInfo.video.local.videoOn !== on) {
+      readyCam.current.volume = volume;
+      localCam.current.volume = 0;
+    } else {
+      if (meetingInfo.video.local.videoOn !== on || !localCam.current.srcObject) {
         localCam.current.srcObject = on
           ? meetingInfo.stream.localMediaStream
           : new MediaStream();
       }
-      if (meetingInfo.video.local.volume != volume) {
-        localCam.current.volume = 0;
-      }
+      readyCam.current.volume = 0;
+      localCam.current.volume = 0;
     }
 
     setMeetingInfo((prevMeetingInfo) => {
@@ -202,22 +199,25 @@ function Meeting() {
     });
   };
 
-  const updateRemoteVideo = function (on, volume) {
+  const updateRemoteVideo = function (on, volume, volumeFactor) {
     if (remoteCam.current) {
       if (meetingInfo.video.remote.videoOn !== on) {
         remoteCam.current.srcObject = on
           ? meetingInfo.stream.remoteMediaStream
           : new MediaStream();
       }
-      if(meetingInfo.video.remote.volume != volume){
-      remoteCam.current.volume = volume;
+      if (meetingInfo.video.remote.volume != volume || meetingInfo.video.remote.volumeFactor != volumeFactor) {
+        remoteCam.current.volume = volume*volumeFactor;
+      }
     }
-    }
+
+    console.log(volumeFactor)
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.video.remote.videoOn = on;
       newMeetingInfo.video.remote.volume = volume;
+      newMeetingInfo.video.remote.volumeFactor = volumeFactor;
       return newMeetingInfo;
     });
   };
@@ -325,7 +325,7 @@ function Meeting() {
           break;
 
         case "response peer cam state":
-          updateRemoteVideo(msg.data.videoOn, msg.data.volume);
+          updateRemoteVideo(msg.data.videoOn, msg.data.volume, meetingInfo.video.remote.volumeFactor);
           break;
 
         case "send chatting massage":
@@ -400,20 +400,22 @@ function Meeting() {
         updateLocalVideo(
           meetingInfo.video.local.videoOn,
           meetingInfo.video.local.volume,
-          false
+          1
         );
         recordStart();
       }
-      sendMessage(
-        JSON.stringify({
-          cmd: "request peer cam state",
-        })
-      );
+      
       setMeetingInfo((prevMeetingInfo) => {
         const newMeetingInfo = { ...prevMeetingInfo };
         newMeetingInfo.record.canRecog = true;
         return newMeetingInfo;
       });
+
+      sendMessage(
+        JSON.stringify({
+          cmd: "request peer cam state",
+        })
+      );
     };
 
     peerConnection.onconnectionstatechange = function () {};
@@ -652,28 +654,9 @@ function Meeting() {
 
   //////
 
-  console.log(meetingInfo, listening);
+  
 
-  // if (readyCam.current) {
-  //   readyCam.current.srcObject = meetingInfo.video.local.videoOn
-  //     ? meetingInfo.stream.localMediaStream
-  //     : new MediaStream();
-  //   readyCam.current.volume = meetingInfo.video.local.volume;
-  // }
-
-  // if (localCam.current) {
-  //   localCam.current.srcObject = meetingInfo.video.local.videoOn
-  //     ? meetingInfo.stream.localMediaStream
-  //     : new MediaStream();
-  //   localCam.current.volume = meetingInfo.video.local.volume;
-  // }
-
-  // if (remoteCam.current) {
-  //   remoteCam.current.srcObject = meetingInfo.video.remote.videoOn
-  //     ? meetingInfo.stream.remoteMediaStream
-  //     : new MediaStream();
-  //   remoteCam.current.volume = meetingInfo.video.remote.volume;
-  // }
+  
 
   if (!meetingInfo.init) {
     getLocalMediaStream();
@@ -691,7 +674,7 @@ function Meeting() {
     formData.set("couple_id", coupleId);
     formData.set("clip1", meetingInfo.record.tmpRecord[0], "clip1.webm");
     formData.set("clip2", meetingInfo.record.tmpRecord[1], "clip2.webm");
-    
+
     fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
       method: "post",
       headers: {
@@ -740,13 +723,12 @@ function Meeting() {
     }
   }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindowIsChatting]);
 
-  useEffect(() => {
-    updateLocalVideo(
-      meetingInfo.video.local.videoOn,
-      meetingInfo.video.local.volume,
-      true
-    );
-  }, [meetingInfo.isModalOpen]);
+  // useEffect(() => {
+  //   updateLocalVideo(
+  //     meetingInfo.video.local.videoOn,
+  //     meetingInfo.video.local.volume,
+  //   );
+  // }, [meetingInfo.isModalOpen]);
 
   useBeforeUnload(() => {
     meetingInfo.connect.dataChannel.close();
@@ -774,6 +756,7 @@ function Meeting() {
           localCamContainer={localCamContainer}
           localCam={localCam}
           sendMessage={sendMessage}
+          updateRemoteVideo={updateRemoteVideo}
         />
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">
