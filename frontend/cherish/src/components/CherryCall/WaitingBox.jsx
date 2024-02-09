@@ -26,10 +26,9 @@ function WaitingBox({
               className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
               onClick={(event) => {
                 event.preventDefault();
-                const targetVolume =
-                  meetingInfo.video.local.volume == 0 ? 0.5 : 0;
+                const targetVolume = meetingInfo.video.local.volume == 0 ? 0.5 : 0;
                 const targetOn = meetingInfo.video.local.videoOn;
-                updateLocalVideo(targetOn, targetVolume);
+                updateLocalVideo(targetOn, targetVolume, 0);
               }}
             >
               <img className="h-full absolute" src={micImg} />
@@ -43,7 +42,7 @@ function WaitingBox({
                 event.preventDefault();
                 const targetVolume = meetingInfo.video.local.volume;
                 const targetOn = !meetingInfo.video.local.videoOn;
-                updateLocalVideo(targetOn, targetVolume);
+                updateLocalVideo(targetOn, targetVolume, 0);
               }}
             >
               <img className="h-full absolute" src={camImg} />
@@ -70,16 +69,12 @@ function WaitingBox({
                 ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
                 : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
             }
-            disabled={
-              meetingInfo.stream.localMediaStream.getTracks().length === 0
-            }
+            disabled={meetingInfo.stream.localMediaStream.getTracks().length === 0}
             onClick={(event) => {
               event.preventDefault();
-              meetingInfo.stream.localMediaStream
-                .getTracks()
-                .forEach((track) => {
-                  track.stop();
-                });
+              meetingInfo.stream.localMediaStream.getTracks().forEach((track) => {
+                track.stop();
+              });
             }}
           >
             알림보내기
@@ -90,9 +85,7 @@ function WaitingBox({
                 ? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
                 : "px-5 h-14 bg-zinc-400 rounded-2xl font-extrabold text-xl"
             }
-            disabled={
-              meetingInfo.stream.localMediaStream.getTracks().length === 0
-            }
+            disabled={meetingInfo.stream.localMediaStream.getTracks().length === 0}
             onClick={() => {
               setConnection();
 
@@ -102,9 +95,11 @@ function WaitingBox({
                 return newMeetingInfo;
               });
 
-              readyCam.current.volume = 0;
+              updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
 
-              listen();
+              // 이승준이 수정한 코드
+              // 음성인식을 한국어로 설정하고 결과를 말하는게 끝나면 한 꺼번에 받아오는 방식으로 변경
+              listen({ interimResults: false, lang: "ko-KR" });
             }}
           >
             입장

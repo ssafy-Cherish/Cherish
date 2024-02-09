@@ -116,12 +116,8 @@ function STTGPT() {
                 return newTmpMeetingInfo;
               });
             }, 1500);
-            newMeetingInfo.record.recordFlag[
-              prevMeetingInfo.record.nowIdx
-            ][0] = true;
-            newMeetingInfo.record.recordFlag[
-              prevMeetingInfo.record.nowIdx
-            ][1] = true;
+            newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][0] = true;
+            newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][1] = true;
           }
         }
 
@@ -136,7 +132,7 @@ function STTGPT() {
   function makeScriptAndSend(result) {
     var script = {
       message: result,
-      isLocal: 1,   // 0이면 자신 1이면 상대방 2이면 gpt
+      isLocal: 1, // 0이면 자신 1이면 상대방 2이면 gpt
       time: new Date(),
     };
     sendMessage(
@@ -151,7 +147,6 @@ function STTGPT() {
   }
   // 이승준이 추가한 함수
   function useGPT(newMeetingInfo, script) {
-
     newMeetingInfo.scriptHistory.push(script);
 
     // 한 번의 대화가 완성 됐다면 gpt 이용 조건 완료
@@ -225,7 +220,7 @@ function STTGPT() {
                 message: output[2],
                 isLocal: 2,
                 time: new Date(),
-                lastIndex: lastIndex
+                lastIndex: lastIndex,
               };
               sendMessage(
                 JSON.stringify({
@@ -242,7 +237,6 @@ function STTGPT() {
           console.error(error); // 오류 처리
         });
     }
-
   }
 
   const readyCam = useRef();
@@ -294,16 +288,12 @@ function STTGPT() {
     }
 
     if (readyCam.current) {
-      readyCam.current.srcObject = on
-        ? meetingInfo.stream.localMediaStream
-        : new MediaStream();
+      readyCam.current.srcObject = on ? meetingInfo.stream.localMediaStream : new MediaStream();
       readyCam.current.volume = volume;
     }
 
     if (localCam.current) {
-      localCam.current.srcObject = on
-        ? meetingInfo.stream.localMediaStream
-        : new MediaStream();
+      localCam.current.srcObject = on ? meetingInfo.stream.localMediaStream : new MediaStream();
       localCam.current.volume = 0;
     }
 
@@ -317,9 +307,7 @@ function STTGPT() {
 
   const updateRemoteVideo = function (on, volume) {
     if (remoteCam.current) {
-      remoteCam.current.srcObject = on
-        ? meetingInfo.stream.remoteMediaStream
-        : new MediaStream();
+      remoteCam.current.srcObject = on ? meetingInfo.stream.remoteMediaStream : new MediaStream();
       remoteCam.current.volume = volume;
     }
 
@@ -449,7 +437,7 @@ function STTGPT() {
         // 이승준이 추가한 코드
         case "script":
           setMeetingInfo((prevMeetingInfo) => {
-            console.log('got script');
+            console.log("got script");
             const newMeetingInfo = { ...prevMeetingInfo };
             newMeetingInfo.scriptHistory.push(msg.data);
             return newMeetingInfo;
@@ -459,7 +447,7 @@ function STTGPT() {
         // 이승준이 추가한 코드
         case "gptScript":
           setMeetingInfo((prevMeetingInfo) => {
-            console.log('got gptScript');
+            console.log("got gptScript");
             const newMeetingInfo = { ...prevMeetingInfo };
             newMeetingInfo.scriptHistory.splice(msg.data.lastIndex, 0, msg.data);
             return newMeetingInfo;
@@ -496,10 +484,7 @@ function STTGPT() {
         newMeetingInfo.video.remote.videoOn = false;
         newMeetingInfo.video.remote.volume = 0;
 
-        updateRemoteVideo(
-          newMeetingInfo.video.remote.videoOn,
-          newMeetingInfo.video.remote.volume
-        );
+        updateRemoteVideo(newMeetingInfo.video.remote.videoOn, newMeetingInfo.video.remote.volume);
         newMeetingInfo.connect.offerReady = false;
         return newMeetingInfo;
       });
@@ -527,10 +512,7 @@ function STTGPT() {
           meetingInfo.stream.localMediaStream,
           meetingInfo.stream.remoteMediaStream
         );
-        updateLocalVideo(
-          meetingInfo.video.local.videoOn,
-          meetingInfo.video.local.volume
-        );
+        updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume);
         recordStart();
       }
       sendMessage(
@@ -545,7 +527,7 @@ function STTGPT() {
       });
     };
 
-    peerConnection.onconnectionstatechange = function () { };
+    peerConnection.onconnectionstatechange = function () {};
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
@@ -591,9 +573,7 @@ function STTGPT() {
   };
 
   const handleOffer = function (offer) {
-    meetingInfo.connect.peerConnection.setRemoteDescription(
-      new RTCSessionDescription(offer)
-    );
+    meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
     // create and send an answer to an offer
     meetingInfo.connect.peerConnection.createAnswer(
@@ -617,16 +597,12 @@ function STTGPT() {
   };
 
   const handleAnswer = function (answer) {
-    meetingInfo.connect.peerConnection.setRemoteDescription(
-      new RTCSessionDescription(answer)
-    );
+    meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
     console.log("connection established successfully!!");
   };
 
   const handleCandidate = function (candidate) {
-    meetingInfo.connect.peerConnection.addIceCandidate(
-      new RTCIceCandidate(candidate)
-    );
+    meetingInfo.connect.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   };
 
   const send = function (message) {
@@ -638,24 +614,14 @@ function STTGPT() {
   };
 
   const setMediaRecorder = function (idx, local, remote) {
-    meetingInfo.record.mediaRecorder[idx][0] = new MediaRecorder(
-      local,
-      meetingInfo.record.option
-    );
-    meetingInfo.record.mediaRecorder[idx][1] = new MediaRecorder(
-      remote,
-      meetingInfo.record.option
-    );
-    meetingInfo.record.mediaRecorder[idx][0].ondataavailable = function (
-      event
-    ) {
+    meetingInfo.record.mediaRecorder[idx][0] = new MediaRecorder(local, meetingInfo.record.option);
+    meetingInfo.record.mediaRecorder[idx][1] = new MediaRecorder(remote, meetingInfo.record.option);
+    meetingInfo.record.mediaRecorder[idx][0].ondataavailable = function (event) {
       if (event.data.size > 0) {
         meetingInfo.record.recordedChunks[idx][0].push(event.data);
       }
     };
-    meetingInfo.record.mediaRecorder[idx][1].ondataavailable = function (
-      event
-    ) {
+    meetingInfo.record.mediaRecorder[idx][1].ondataavailable = function (event) {
       if (event.data.size > 0) {
         meetingInfo.record.recordedChunks[idx][1].push(event.data);
       }
@@ -669,9 +635,7 @@ function STTGPT() {
       }, 1000);
 
       setTimeout(() => {
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][0].stop();
         }
       }, 10000);
@@ -680,9 +644,7 @@ function STTGPT() {
       meetingInfo.record.recordedChunks[idx][1] = [];
 
       setTimeout(() => {
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][1].stop();
         }
       }, 10000);
@@ -695,9 +657,7 @@ function STTGPT() {
         const blob = new Blob(meetingInfo.record.recordedChunks[idx][0], {
           mimeType: "video/webm; codecs=vp9,opus",
         });
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][0].start(1000);
         }
 
@@ -708,9 +668,7 @@ function STTGPT() {
           return newMeetingInfo;
         });
       } else {
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][0].start(1000);
         }
       }
@@ -721,9 +679,7 @@ function STTGPT() {
         let blob = new Blob(meetingInfo.record.recordedChunks[idx][1], {
           mimeType: "video/webm; codecs=vp9,opus",
         });
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][1].start(1000);
         }
         setMeetingInfo((prevMeetingInfo) => {
@@ -734,9 +690,7 @@ function STTGPT() {
         });
       } else {
         if (meetingInfo.record.mediaRecorder[idx][1]) {
-          if (
-            meetingInfo.connect.peerConnection.connectionState === "connected"
-          ) {
+          if (meetingInfo.connect.peerConnection.connectionState === "connected") {
             meetingInfo.record.mediaRecorder[idx][1]?.start(1000);
           }
         }
@@ -761,10 +715,7 @@ function STTGPT() {
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = {
         ...prevMeetingInfo,
-        chattingHistory: [
-          ...prevMeetingInfo.chattingHistory,
-          { isLocal: false, message: message },
-        ],
+        chattingHistory: [...prevMeetingInfo.chattingHistory, { isLocal: false, message: message }],
       };
       return newMeetingInfo;
     });
@@ -832,19 +783,14 @@ function STTGPT() {
 
   useEffect(() => {
     if (meetingInfo.chattingHistory.length) {
-      chattingWindow.current.childNodes[
-        meetingInfo.chattingHistory.length - 1
-      ].scrollIntoView({
+      chattingWindow.current.childNodes[meetingInfo.chattingHistory.length - 1].scrollIntoView({
         block: "end",
       });
     }
   }, [meetingInfo.chattingHistory.length]);
 
   useEffect(() => {
-    updateLocalVideo(
-      meetingInfo.video.local.videoOn,
-      meetingInfo.video.local.volume
-    );
+    updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume);
   }, [meetingInfo.isModalOpen]);
 
   useBeforeUnload(() => {
