@@ -11,6 +11,11 @@ import java.util.Map;
 public interface ExpMapper {
     // 경험치 기록 생성 (따로 id나 행 수 반환하지 않음)
     public void createExpHistory(ExpHistoryDto expHistoryDto) throws SQLException;
+
     // 커플의 한달 내 경험치 기록
     public List<ExpHistoryDto> getExpHistory(int coupleId) throws SQLException;
+
+    // 경험치 양 가져오기
+    int getExpLevel (int coupleId) throws SQLException;
+
 }
