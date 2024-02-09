@@ -4,12 +4,15 @@ import ProfileIcon from "../../assets/Main/ProfileIcon.svg";
 import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
 import { useState } from "react";
 import dayjs from "dayjs";
-import Kakao from "./../../utils/Kakao";
 import { useNavigate } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import ModifyModal from "./ModifyModal";
+
 export default function UserInfo() {
 	const { anniversary, userInfos, reset: coupleReset } = useCoupleStore();
 	const { userId, reset: userReset } = useUserStore();
 	const [isOpen, setIsOpen] = useState(false);
+	const [openModifyModal, setOpenModifyModal] = useState(false);
 	const navigate = useNavigate();
 
 	const myInfo = userInfos.filter((info) => {
@@ -29,11 +32,10 @@ export default function UserInfo() {
 	};
 
 	function logout() {
-		localStorage.removeItem("user-store");
-		localStorage.removeItem("couple-store");
-		Kakao.Auth.logout();
 		coupleReset();
 		userReset();
+		localStorage.removeItem("user-store");
+		localStorage.removeItem("couple-store");
 		navigate("/");
 	}
 
@@ -69,11 +71,17 @@ export default function UserInfo() {
 							<p>만남 : {anni}</p>
 						</div>
 						<div className="flex justify-around mt-[32px] text-text-black">
-							<button>정보수정</button>
+							<button onClick={() => setOpenModifyModal(true)}>정보수정</button>
 							<button onClick={logout}>로그아웃</button>
 						</div>
 					</>
 				)}
+
+				<AnimatePresence>
+					{openModifyModal && (
+						<ModifyModal onClose={() => setOpenModifyModal(false)}></ModifyModal>
+					)}
+				</AnimatePresence>
 			</div>
 		</>
 	);

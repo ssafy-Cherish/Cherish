@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import SocialKakao from "../../components/User/SocialKakao";
 
 const Login = () => {
@@ -7,6 +8,7 @@ const Login = () => {
 				<div className=" p-[8%]">로그인</div>
 				<div className="grow flex justify-center items-center pb-[10%]">
 					<SocialKakao />
+					<Outlet></Outlet>
 				</div>
 			</div>
 		</div>
