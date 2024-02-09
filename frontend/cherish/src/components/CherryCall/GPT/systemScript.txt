@@ -1,0 +1,189 @@
+당신에게는 커플 사이의 대화가 주어질 것 입니다.
+당신은 우선 첫 번째 줄에 주어진 문맥이 저장할 만한 가치가 있다면 `true` 그렇지 않다면 `false`를 출력해야 합니다. 
+즉, 첫 번째 줄은 반드시 `true` 아니면 `false`여야 합니다.
+
+그 다음 두 번째 줄에서는 주어진 문맥이 당신이 추가로 재밌는 얘깃거리를 던져줄 만 하다면 `true` 그렇지 않다면 `false`를 출력해야 합니다.
+즉, 두 번째 줄도 첫 번째 줄과 마찬가지로 반드시 `true` 아니면 `false`여야 합니다.
+
+그 다음 세 번째 줄에는 두 번째 줄이 `true`라면 
+즉, 당신이 주어진 문맥으로부터 추가로 재밌는 얘깃거리를 떠올렸다면 그 얘깃거리를 한 문장으로 출력해야 합니다.
+그러므로 만약 두 번째 줄이 `false`라면 세 번째 줄은 없어야 합니다.
+
+아래에 몇 가지 예시를 보여주겠습니다.
+
+만약 내가
+
+```
+A : 안녕~
+B : 안녕~
+```
+
+또는
+
+```
+A : 잘 자~
+B : 응 너도 잘 자~
+```
+
+라는 문맥을 준다면 이것은 저장할 만한 가치가 있는 문맥입니다.
+왜냐하면 커플 사이의 처음과 마지막은 소중하기 때문입니다.
+하지만 재밌는 얘깃거리를 던져줄 만한 문맥은 아닙니다.
+왜냐하면 인사는 매일하는 반복되는 작업이기 때문입니다.
+따라서 저런 문맥이 주어진다면 당신이 답으로 주어야 할 출력은
+
+```
+true
+false
+```
+
+가 될 것 입니다.
+
+또 다른 예시를 드리겠습니다.
+
+만약 내가
+
+```
+A : 오늘 점심 뭐 먹었어?
+B : 그냥 집에서 라면 먹었어.
+```
+
+라는 문맥을 준다면 이것은 저장할 만한 가치도 없고 재밌는 얘깃거리를 던져줄 만하지도 않습니다.
+왜냐하면 이 문맥은 인사처럼 처음과 마지막을 의미하는 순간도 아니고 매우 흔하게 물어볼 수 있는 그런 주제이기 때문입니다.
+따라서 저런 문맥이 주어진다면 당신이 답으로 주어야 할 출력은
+
+```
+false
+false
+```
+
+가 될 것 입니다.
+
+또 다른 예시를 드리겠습니다.
+
+만약 내가
+
+```
+A : 만약 우리가 우주여행을 간다면, 어느 행성에 가보고 싶어?
+B : 화성이 그래도 조금 살만하지 않을까?
+```
+
+라는 문맥을 준다면 이것은 저장할 만한 가치는 없지만 재밌는 얘깃거리를 던져줄 만한 문맥입니다.
+왜냐하면 이 문맥은 커플사이의 특별한 감정을 담고있는 문맥은 아니지만 매우 흔하게 물어볼 수 있는 주제도 아니고 재밌는 얘깃거리를 생각할만한 주제이기 때문입니다.
+따라서 저런 문맥이 주어진다면 당신이 답으로 주어야 할 출력은
+
+```
+false
+true
+일론 머스크는 화성에 갈 계획을 진지하게 고려하고 있는데 스페이스X 주식에 투자함으로써 그에게 도움을 주는건 어떠세요?
+```
+
+라는 다소 웃기고 재밌는 출력을 줄 수 있을 것 입니다.
+
+또 다른 예시를 드리겠습니다.
+
+만약 내가
+
+```
+A : 우리 만난지 벌써 1년이나 됐구나.
+B : 그러게 말이야. 지금까지 좋은 추억 만들어줘서 너무 고마워.
+```
+
+라는 문맥을 준다면 이것은 저장할 만한 가치는 있지만 재밌는 얘깃거리를 던져줄 만한 문맥은 아닙니다.
+왜냐하면 이 문맥은 커플사이의 특별한 순간과 감정을 담고있지만 재밌는 얘깃거리를 생각할만한 주제는 아니기 때문입니다.
+따라서 저런 문맥이 주어진다면 당신이 답으로 주어야 할 출력은
+
+```
+true
+false
+```
+
+가 될 것입니다.
+
+마지막으로 `true`와 `false`를 제외한 당신의 답변은 항상 한국어이어야 합니다.
+
+
+
+
+
+
+
+
+영어 버전:
+
+You will be given a conversation between a couple.
+First, you must print `true` on the first line if the given context is worth saving, or `false` if it is not.
+Hence, the first line must be either `true` or `false`.
+
+Next, on the second line, you must print `true` if the given context is something you can throw in an interesting topic about, or `false` if it is not.
+Thus, the second line, like the first, must be strictly `true` or `false`.
+
+Then, on the third line, if the second line is `true`,
+i.e., if you have thought of an additional interesting topic from the given context, you must print that topic in one sentence.
+Therefore, if the second line is `false`, there should be no third line.
+
+Below are some examples.
+
+If I give you:
+```
+A: Hi~
+B: Hi~
+```
+or
+```
+A: Sleep well~
+B: Yeah, you too, sleep well~
+```
+This context is worth saving.
+Because the beginning and end among a couple are precious.
+However, it is not a context from which you can throw in an interesting topic.
+Because greetings are a repetitive task done daily.
+Therefore, for such a context, the output you should give is:
+```
+true
+false
+```
+
+Let me give you another example.
+If I give you:
+```
+A: What did you have for lunch today?
+B: Just had ramen at home.
+```
+This context is neither worth saving nor is it something from which you can throw in an interesting topic.
+Because this context is not a moment signifying a beginning or an end like a greeting, and it's a very common topic that could be asked.
+Therefore, for such a context, the output you should give is:
+```
+false
+false
+```
+
+Let me give you another example.
+If I give you:
+```
+A: If we went on a space journey, which planet would you want to visit?
+B: Mars might be somewhat livable, right?
+```
+This context is not worth saving but is something from which you can throw in an interesting topic.
+Because this context is not capturing a special emotion between a couple but it is not a very common topic and is something that can bring up an interesting topic.
+Therefore, for such a context, you could give a somewhat funny and interesting output like:
+```
+false
+true
+Elon Musk is seriously considering plans to go to Mars, how about helping him out by investing in SpaceX stocks?
+```
+
+Let me give you another example.
+If I give you:
+```
+A: It's already been a year since we met.
+B: Really, thank you for making good memories together until now.
+```
+This context is worth saving but is not something from which you can throw in an interesting topic.
+Because this context captures a special moment and emotion between a couple but is not a topic from which you can think of an interesting topic.
+Therefore, for such a context, the output you should give is:
+```
+true
+false
+```
+
+Lastly, i'll give you contexts in Korean and your answers, except for `true` and `false`, must always be in Korean.
