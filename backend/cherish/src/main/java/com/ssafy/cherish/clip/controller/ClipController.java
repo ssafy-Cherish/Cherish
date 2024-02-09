@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -65,6 +67,30 @@ public class ClipController {
             log.error("동영상 처리 중 문제 발생 : "+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/getCilpCnt")
+    @Operation(summary = "총 클립 개수 보여주기", description = "coupleId를 입력하면 해당 커플이 가지고 있는 클립의 총 개수를 반환")
+    public ResponseEntity<?> clipCnt (@RequestParam("coupleId") int coupleId) {
+        log.debug("clipCnt 호출 : {}", coupleId);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            int cnt = clipService.clipCnt(coupleId);
+            resultMap.put("clipCnt", cnt);
+            status = HttpStatus.OK;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        } catch (Exception e) {
+            log.error("clipCnt 에러 : {}", e.getMessage());
+            resultMap.put("clipCnt 에러", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        }
+
+    }
+
     String[] setClipDir(ClipDto clipDto) throws Exception {
         // 클립 저장 경로 설정
         String uploadDir = clipPath + clipDto.getMeetingId() + File.separator;
