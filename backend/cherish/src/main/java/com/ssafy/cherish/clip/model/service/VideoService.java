@@ -10,4 +10,6 @@ public interface VideoService {
 
     List<VideoDto> getVideoList (Map<String, Object> map) throws Exception;
 
+    List<String> getYearMonth (int coupleId) throws Exception;
+
 }
