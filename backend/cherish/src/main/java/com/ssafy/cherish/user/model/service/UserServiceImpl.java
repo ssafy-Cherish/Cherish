@@ -88,6 +88,16 @@ public class UserServiceImpl implements UserService {
         return userMapper.deleteUser(userDto);
     }
 
+    @Override
+    public void setCoupleDeletedAt(int id) {
+        userMapper.setCoupleDeletedAt(id);
+    }
+
+    @Override
+    public void initCoupleDeletedAt(int id) {
+        userMapper.initCoupleDeletedAt(id);
+    }
+
 
     // 이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.
 //    @Override

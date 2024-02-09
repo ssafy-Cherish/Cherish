@@ -113,6 +113,17 @@
         WHERE code = #{code}
     </select>
 
+    <update id="initCoupleDeletedAt">
+        UPDATE couple
+        SET deleted_at = null
+        where id = #{id}
+    </update>
+
+    <update id="setCoupleDeletedAt">
+        UPDATE couple
+        SET deleted_at = now()
+        where id = #{id}
+    </update>
 
 <!--    이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.-->
 <!--    <select id="login" parameterType="long" resultMap="user">-->
