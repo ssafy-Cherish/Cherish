@@ -63,7 +63,7 @@
         JOIN question AS q
         ON a.question_id = q.id
         WHERE couple_id = #{coupleId}
-        ORDER BY a.question_id
+        ORDER BY a.created_at DESC
     </select>
 
 </mapper>
