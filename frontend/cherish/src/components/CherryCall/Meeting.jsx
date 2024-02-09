@@ -74,7 +74,10 @@ function Meeting() {
 
     clipHistory: [],
 
-    rightWindowIsChatting: true,
+    // 0:채팅, 1:클립, 2:대본
+    rightWindow: 0,
+    // 대본 저장 배열
+    scriptHistory: [],
 
     init: false,
 
@@ -86,6 +89,7 @@ function Meeting() {
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       console.log(result);
+
       setMeetingInfo((prevMeetingInfo) => {
         const newMeetingInfo = { ...prevMeetingInfo };
         if (prevMeetingInfo.record.recogString != result) {
@@ -108,18 +112,125 @@ function Meeting() {
                 return newTmpMeetingInfo;
               });
             }, 1500);
-            newMeetingInfo.record.recordFlag[
-              prevMeetingInfo.record.nowIdx
-            ][0] = true;
-            newMeetingInfo.record.recordFlag[
-              prevMeetingInfo.record.nowIdx
-            ][1] = true;
+            newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][0] = true;
+            newMeetingInfo.record.recordFlag[prevMeetingInfo.record.nowIdx][1] = true;
           }
         }
+
+        useGPT(newMeetingInfo, result);
+
         return newMeetingInfo;
       });
     },
   });
+
+  // 이승준이 추가한 함수
+  function useGPT(newMeetingInfo, result) {
+    // 스크립트 생성 후 상대방에게 전송
+    var script = {
+      message: result,
+      isLocal: 1, // 0이면 자신 1이면 상대방 2이면 gpt
+      time: new Date(),
+    };
+    sendMessage(
+      JSON.stringify({
+        cmd: "script",
+        data: script,
+      })
+    );
+    script.isLocal = 0;
+
+    newMeetingInfo.scriptHistory.push(script);
+
+    // 한 번의 대화가 완성 됐다면 gpt 이용 조건 완료
+    if (
+      newMeetingInfo.scriptHistory.length == 2 &&
+      newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].isLocal == 1
+    ) {
+      console.log("use gpt");
+      const lastIndex = newMeetingInfo.scriptHistory.length;
+
+      const messages = [
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant who suggests interesting topics between a couple to excites their relationship. \n" +
+            "And the the topics you answer have to be short like only 1 sentence. \n" +
+            "You also have to return `true` if you have some interesting topics about this conversation or `false` if it's not.\n" +
+            "You also have to return whether the conversation that you've got is worth to save or not by returning `true` if it's worth to save or `false` if it's not.\n" +
+            "You must answer in Korean. \n" +
+            "So you have to follow the answer template like below. \n" +
+            "```\n" +
+            "true or false depends on if it's worth to save\n" +
+            "true or false depends on if you have interesting topics\n" +
+            "1 sentence of interesting topics about the conversation that you've got.\n" +
+            "```\n" +
+            "So the answer must be only 2 lines of true or false and 1 sentence.\n" +
+            "You must answer in Korean.",
+        },
+        {
+          role: "user",
+          content:
+            // `A : ${newMeetingInfo.scriptHistory[newMeetingInfo.scriptHistory.length - 2].message}. \n` +
+            // `B : ${script.message}.` },
+            `A : 저녁 뭐 먹을까?. \n` + `B : 글쎄 좀 새로운거 없나? 한 번 생각해보자.`,
+        },
+      ];
+      console.log(messages);
+
+      fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST", // HTTP 메소드를 POST로 설정
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_APP_GPT_API_KEY}`, // API 키를 포함한 인증 헤더
+          "Content-Type": "application/json", // 콘텐츠 타입을 application/json으로 지정
+        },
+        body: JSON.stringify({
+          // 요청 바디에 JSON 데이터를 문자열로 변환하여 전달
+          model: "gpt-3.5-turbo",
+          temperature: 0.5,
+          n: 1,
+          messages: messages,
+        }),
+      })
+        .then((response) => response.json()) // 응답을 JSON으로 변환
+        .then((data) => {
+          console.log(data);
+          const output = data.choices[0].message.content.split("\n");
+          console.log(output);
+          output[0] = JSON.parse(output[0]);
+          console.log(output[0]);
+          if (output[0] == true) {
+            // 클립 저장 로직 구현
+          }
+          output[1] = JSON.parse(output[1]);
+          console.log(output[1]);
+          if (output[1] == true) {
+            // gpt 제안문 대본에 추가하는 기능 구현
+            setMeetingInfo((prevMeetingInfo) => {
+              console.log("gpt 대본 추가");
+              const newMeetingInfo = { ...prevMeetingInfo };
+              var gptScript = {
+                message: output[2],
+                isLocal: 2,
+                time: new Date(),
+                lastIndex: lastIndex,
+              };
+              sendMessage(
+                JSON.stringify({
+                  cmd: "gptScript",
+                  data: gptScript,
+                })
+              );
+              newMeetingInfo.scriptHistory.splice(lastIndex, 0, gptScript);
+              return newMeetingInfo;
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(error); // 오류 처리
+        });
+    }
+  }
   //////
 
   const readyCam = useRef();
@@ -175,17 +286,13 @@ function Meeting() {
 
     if (target === 0) {
       if (meetingInfo.video.local.videoOn !== on || !readyCam.current.srcObject) {
-        readyCam.current.srcObject = on
-          ? meetingInfo.stream.localMediaStream
-          : new MediaStream();
+        readyCam.current.srcObject = on ? meetingInfo.stream.localMediaStream : new MediaStream();
       }
       readyCam.current.volume = volume;
       localCam.current.volume = 0;
     } else {
       if (meetingInfo.video.local.videoOn !== on || !localCam.current.srcObject) {
-        localCam.current.srcObject = on
-          ? meetingInfo.stream.localMediaStream
-          : new MediaStream();
+        localCam.current.srcObject = on ? meetingInfo.stream.localMediaStream : new MediaStream();
       }
       readyCam.current.volume = 0;
       localCam.current.volume = 0;
@@ -202,16 +309,17 @@ function Meeting() {
   const updateRemoteVideo = function (on, volume, volumeFactor) {
     if (remoteCam.current) {
       if (meetingInfo.video.remote.videoOn !== on) {
-        remoteCam.current.srcObject = on
-          ? meetingInfo.stream.remoteMediaStream
-          : new MediaStream();
+        remoteCam.current.srcObject = on ? meetingInfo.stream.remoteMediaStream : new MediaStream();
       }
-      if (meetingInfo.video.remote.volume != volume || meetingInfo.video.remote.volumeFactor != volumeFactor) {
-        remoteCam.current.volume = volume*volumeFactor;
+      if (
+        meetingInfo.video.remote.volume != volume ||
+        meetingInfo.video.remote.volumeFactor != volumeFactor
+      ) {
+        remoteCam.current.volume = volume * volumeFactor;
       }
     }
 
-    console.log(volumeFactor)
+    console.log(volumeFactor);
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
@@ -330,11 +438,35 @@ function Meeting() {
           break;
 
         case "response peer cam state":
-          updateRemoteVideo(msg.data.videoOn, msg.data.volume, meetingInfo.video.remote.volumeFactor);
+          updateRemoteVideo(
+            msg.data.videoOn,
+            msg.data.volume,
+            meetingInfo.video.remote.volumeFactor
+          );
           break;
 
         case "send chatting massage":
           handleRemoteChatting(msg.data);
+          break;
+
+        // 상대방으로 부터 멘트를 받았을때 자신의 대본배열에 상대방의 멘트를 추가
+        case "script":
+          setMeetingInfo((prevMeetingInfo) => {
+            console.log("got script");
+            const newMeetingInfo = { ...prevMeetingInfo };
+            newMeetingInfo.scriptHistory.push(msg.data);
+            return newMeetingInfo;
+          });
+          break;
+
+        // GPT의 멘트를 받았을 때 그 멘트를 생성시킨 대화바로 뒤에 GPT의 멘트를 추가
+        case "gptScript":
+          setMeetingInfo((prevMeetingInfo) => {
+            console.log("got gptScript");
+            const newMeetingInfo = { ...prevMeetingInfo };
+            newMeetingInfo.scriptHistory.splice(msg.data.lastIndex, 0, msg.data);
+            return newMeetingInfo;
+          });
           break;
 
         default:
@@ -367,10 +499,7 @@ function Meeting() {
         newMeetingInfo.video.remote.videoOn = false;
         newMeetingInfo.video.remote.volume = 0;
 
-        updateRemoteVideo(
-          newMeetingInfo.video.remote.videoOn,
-          newMeetingInfo.video.remote.volume
-        );
+        updateRemoteVideo(newMeetingInfo.video.remote.videoOn, newMeetingInfo.video.remote.volume);
         newMeetingInfo.connect.offerReady = false;
         return newMeetingInfo;
       });
@@ -398,14 +527,10 @@ function Meeting() {
           meetingInfo.stream.localMediaStream,
           meetingInfo.stream.remoteMediaStream
         );
-        updateLocalVideo(
-          meetingInfo.video.local.videoOn,
-          meetingInfo.video.local.volume,
-          1
-        );
+        updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
         recordStart();
       }
-      
+
       setMeetingInfo((prevMeetingInfo) => {
         const newMeetingInfo = { ...prevMeetingInfo };
         newMeetingInfo.record.canRecog = true;
@@ -465,9 +590,7 @@ function Meeting() {
   };
 
   const handleOffer = function (offer) {
-    meetingInfo.connect.peerConnection.setRemoteDescription(
-      new RTCSessionDescription(offer)
-    );
+    meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
     // create and send an answer to an offer
     meetingInfo.connect.peerConnection.createAnswer(
@@ -491,16 +614,12 @@ function Meeting() {
   };
 
   const handleAnswer = function (answer) {
-    meetingInfo.connect.peerConnection.setRemoteDescription(
-      new RTCSessionDescription(answer)
-    );
+    meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
     console.log("connection established successfully!!");
   };
 
   const handleCandidate = function (candidate) {
-    meetingInfo.connect.peerConnection.addIceCandidate(
-      new RTCIceCandidate(candidate)
-    );
+    meetingInfo.connect.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   };
 
   const send = function (message) {
@@ -512,24 +631,14 @@ function Meeting() {
   };
 
   const setMediaRecorder = function (idx, local, remote) {
-    meetingInfo.record.mediaRecorder[idx][0] = new MediaRecorder(
-      local,
-      meetingInfo.record.option
-    );
-    meetingInfo.record.mediaRecorder[idx][1] = new MediaRecorder(
-      remote,
-      meetingInfo.record.option
-    );
-    meetingInfo.record.mediaRecorder[idx][0].ondataavailable = function (
-      event
-    ) {
+    meetingInfo.record.mediaRecorder[idx][0] = new MediaRecorder(local, meetingInfo.record.option);
+    meetingInfo.record.mediaRecorder[idx][1] = new MediaRecorder(remote, meetingInfo.record.option);
+    meetingInfo.record.mediaRecorder[idx][0].ondataavailable = function (event) {
       if (event.data.size > 0) {
         meetingInfo.record.recordedChunks[idx][0].push(event.data);
       }
     };
-    meetingInfo.record.mediaRecorder[idx][1].ondataavailable = function (
-      event
-    ) {
+    meetingInfo.record.mediaRecorder[idx][1].ondataavailable = function (event) {
       if (event.data.size > 0) {
         meetingInfo.record.recordedChunks[idx][1].push(event.data);
       }
@@ -543,9 +652,7 @@ function Meeting() {
       }, 1000);
 
       setTimeout(() => {
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][0].stop();
         }
       }, 10000);
@@ -554,9 +661,7 @@ function Meeting() {
       meetingInfo.record.recordedChunks[idx][1] = [];
 
       setTimeout(() => {
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][1].stop();
         }
       }, 10000);
@@ -569,9 +674,7 @@ function Meeting() {
         const blob = new Blob(meetingInfo.record.recordedChunks[idx][0], {
           mimeType: "video/webm; codecs=vp9,opus",
         });
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][0].start(1000);
         }
 
@@ -582,9 +685,7 @@ function Meeting() {
           return newMeetingInfo;
         });
       } else {
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][0].start(1000);
         }
       }
@@ -595,9 +696,7 @@ function Meeting() {
         let blob = new Blob(meetingInfo.record.recordedChunks[idx][1], {
           mimeType: "video/webm; codecs=vp9,opus",
         });
-        if (
-          meetingInfo.connect.peerConnection.connectionState === "connected"
-        ) {
+        if (meetingInfo.connect.peerConnection.connectionState === "connected") {
           meetingInfo.record.mediaRecorder[idx][1].start(1000);
         }
         setMeetingInfo((prevMeetingInfo) => {
@@ -608,9 +707,7 @@ function Meeting() {
         });
       } else {
         if (meetingInfo.record.mediaRecorder[idx][1]) {
-          if (
-            meetingInfo.connect.peerConnection.connectionState === "connected"
-          ) {
+          if (meetingInfo.connect.peerConnection.connectionState === "connected") {
             meetingInfo.record.mediaRecorder[idx][1]?.start(1000);
           }
         }
@@ -635,10 +732,7 @@ function Meeting() {
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = {
         ...prevMeetingInfo,
-        chattingHistory: [
-          ...prevMeetingInfo.chattingHistory,
-          { isLocal: false, message: message },
-        ],
+        chattingHistory: [...prevMeetingInfo.chattingHistory, { isLocal: false, message: message }],
       };
       return newMeetingInfo;
     });
@@ -654,10 +748,6 @@ function Meeting() {
   }
 
   //////
-
-  
-
-  
 
   if (!meetingInfo.init) {
     getLocalMediaStream();
@@ -712,13 +802,8 @@ function Meeting() {
   }
 
   useEffect(() => {
-    if (
-      meetingInfo.chattingHistory.length &&
-      meetingInfo.rightWindowIsChatting
-    ) {
-      chattingWindow.current.childNodes[
-        meetingInfo.chattingHistory.length - 1
-      ].scrollIntoView({
+    if (meetingInfo.chattingHistory.length && meetingInfo.rightWindowIsChatting) {
+      chattingWindow.current.childNodes[meetingInfo.chattingHistory.length - 1].scrollIntoView({
         block: "end",
       });
     }
