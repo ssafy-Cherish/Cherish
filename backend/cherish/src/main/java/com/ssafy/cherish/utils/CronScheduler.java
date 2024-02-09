@@ -49,16 +49,16 @@ public class CronScheduler {
     @Value("${custom.path.monthly-video}")
     private String monthlyVideoPath;
 
-     @Scheduled(cron = "1 * * * * *") // 20초마다 실행 (테스트용)
-//    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
+//     @Scheduled(cron = "1 * * * * *") // 1분마다 실행 (테스트용)
+    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
         //지난달
-        //String yearMonth = String.format("%d-%02d-01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
+        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
          // 이번달
-        String yearMonth = String.format("%d-%02d-01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
+//        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
 
         try {
 
@@ -71,7 +71,7 @@ public class CronScheduler {
             }
             Map<String, StringBuilder> map=new HashMap<>();
             for (ClipVo clip : clipList) {
-               String clipInfo = clip.getKeyword() + "_" + clip.getCoupleId();
+               String clipInfo = clip.getCoupleId() + "_" + clip.getKeyword();
                if(!map.containsKey(clipInfo))
                {
                   map.put(clipInfo,new StringBuilder());
@@ -85,7 +85,7 @@ public class CronScheduler {
                 String clipInfo = entry.getKey();
                 StringBuilder builder=entry.getValue();
                 log.debug("text res : {}",builder);
-                String monthFileName = monthlyVideoPath + "clipInfo" + ".txt";
+                String monthFileName = monthlyVideoPath + clipInfo+"_"+yearMonth+"_video"+".txt";
                 writeFile(monthFileName, builder.toString());
 
                 // 병합된 동영상 정보를 monthlyVideo 테이블에 입력
@@ -98,8 +98,8 @@ public class CronScheduler {
                     log.error("something went wrong during processing monthly video");
                     continue;
                 }
-                video.put("keyword", clipInfo.substring(0,clipInfo.indexOf('_')));
-                video.put("coupleId", Integer.parseInt(clipInfo.substring(clipInfo.indexOf('_')+1)));
+                video.put("keyword", clipInfo.substring(clipInfo.indexOf('_')+1));
+                video.put("coupleId", Integer.parseInt(clipInfo.substring(0,clipInfo.indexOf('_'))));
                 video.put("yearMonth", yearMonth);
                 video.put("filepath", filepath);
                 videoMapper.saveVideo(video);
@@ -124,7 +124,6 @@ public class CronScheduler {
                 .addExtraArgs("-safe", "0")
                 .addExtraArgs("-protocol_whitelist","\"file,http,https,tcp,tls\"")
                 .addOutput(outputFile)
-                .addExtraArgs("-c","copy")
                 .addExtraArgs("-s","1280x720")
                 .done();
 
@@ -134,7 +133,7 @@ public class CronScheduler {
         executor.createJob(builder).run();
 
         //s3에 결과 파일 올리기
-        String originalFileName=outputFile.substring(clipListFile.lastIndexOf(File.separator));
+        String originalFileName=outputFile.substring(clipListFile.lastIndexOf(File.separator)+1);
         FileInputStream input = new FileInputStream(new File(outputFile));
         MultipartFile multipartFile = new MockMultipartFile("file",
                 originalFileName, "video/webm", StreamUtils.copyToByteArray(input));
