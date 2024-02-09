@@ -72,9 +72,7 @@ public class UserController {
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
                 List<Map<String, String>> userInfos = userService.getUserInfos(userDto.getCoupleId());
                 QuestionDto questionDto = qnaService.getQuestion(userDto.getCoupleId());
-                resultMap.put("kakao_id", kakaoId);
-                resultMap.put("user_id", userDto.getId());
-                resultMap.put("nickname", userDto.getNickname());
+                resultMap.put("userDto", userDto);
                 resultMap.put("userInfos", userInfos);
                 resultMap.put("coupleDto", coupleDto);
                 resultMap.put("verified", true);
@@ -226,6 +224,9 @@ public class UserController {
                 userService.coupleSecondJoin(userDto);
             }
 
+            if(coupleDto.getUser1() == null && coupleDto.getUser2() == null)
+                userService.initCoupleDeletedAt(coupleDto.getId());
+
         } catch (Exception e) {
             log.error("회원가입 에러 : {}", e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -260,9 +261,9 @@ public class UserController {
         return new ResponseEntity<>(status);
     }
 
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/delete/{userId}/{coupleId}")
     @Operation(summary = "유저 정보 삭제", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
-    public  ResponseEntity<?> deleteUser (@PathVariable Integer userId, HttpServletRequest req) {
+    public  ResponseEntity<?> deleteUser (@PathVariable int userId, @PathVariable int coupleId, HttpServletRequest req) {
 
         String accessToken = req.getHeader(AUTHORIZATION);
         HttpStatus status = HttpStatus.OK;
@@ -286,9 +287,12 @@ public class UserController {
 
             int value = userService.deleteUser(userDto);
 
-            if(value == 0)
+            if(value == 1) {
+                userService.setCoupleDeletedAt(coupleId);
+            }
+            else {
                 status = HttpStatus.BAD_REQUEST;
-
+            }
 
 
         }catch (Exception e) {

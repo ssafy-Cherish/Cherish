@@ -26,14 +26,17 @@ export async function kakaoLoginFetch() {
 	return resData;
 }
 
-export async function userDeleteFetch(userId) {
-	const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/user/delete/${userId}`, {
-		method: "DELETE",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: getAccessToken(),
-		},
-	});
+export async function userDeleteFetch(userId, coupleId) {
+	const res = await fetch(
+		`${import.meta.env.VITE_APP_BACKEND_URL}/user/delete/${userId}/${coupleId}`,
+		{
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: getAccessToken(),
+			},
+		}
+	);
 
 	const resData = await res.json();
 

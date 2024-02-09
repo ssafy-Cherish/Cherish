@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { userDeleteFetch } from "../../services/userService";
 
-const WaitingModal = ({ onClose, code, userId }) => {
+const WaitingModal = ({ onClose, code, userId, coupleId }) => {
 	const [copied, setCopied] = useState(false);
 
 	const handleCopyClipBoard = () => {
@@ -34,7 +34,7 @@ const WaitingModal = ({ onClose, code, userId }) => {
 
 	function deleteUser() {
 		if (confirm("정말 탈퇴하시겠어요?")) {
-			userDeleteFetch(userId);
+			userDeleteFetch(userId, coupleId);
 			onClose();
 		}
 	}

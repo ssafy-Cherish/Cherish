@@ -19,8 +19,8 @@ const SocialKakao = () => {
 	const { setCoupleInfo } = useCoupleStore();
 
 	const [userId, setUserId] = useState(undefined);
+	const [coupleId, setCoupleId] = useState(undefined);
 	const [coupleCode, setCoupleCode] = useState("");
-	const [preventClick, setPreventClick] = useState(false);
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const code = searchParams.get("code");
@@ -30,13 +30,15 @@ const SocialKakao = () => {
 		onSuccess: (data) => {
 			if (data.verified) {
 				console.log(data);
-				if (!data.coupleDto.coupled) {
-					setCoupleCode(data.coupleDto.code);
-					setUserId(data.user_id);
+				const user = data.userDto;
+				const couple = data.coupleDto;
+				if (!couple.coupled) {
+					setCoupleCode(couple.code);
+					setCoupleId(couple.id);
+					setUserId(user.id);
 					setOpenWaitingModal(true);
 				} else {
-					setUserInfo(data.kakao_id, data.nickname, data.user_id);
-					const couple = data.coupleDto;
+					setUserInfo(user.kakaoId, user.nickname, user.id, user.email, user.birthday);
 
 					setCoupleInfo(
 						couple.id,
@@ -56,14 +58,14 @@ const SocialKakao = () => {
 	});
 
 	function handleKakaoLogin() {
-		if (preventClick) return;
-		setPreventClick(true);
+		// Kakao.Auth.authorize({
+		// 	redirectUri: `${import.meta.env.VITE_APP_KAKAO_REDIRECT_URI}`,
+		// });
 
 		Kakao.Auth.loginForm({
 			success(data) {
 				console.log(data);
 				kakaoLogin();
-				setPreventClick(false);
 			},
 			fail(err) {
 				console.log(err);
@@ -85,6 +87,7 @@ const SocialKakao = () => {
 						onClose={() => setOpenWaitingModal(false)}
 						code={coupleCode}
 						userId={userId}
+						coupleId={coupleId}
 					/>
 				)}
 			</AnimatePresence>
