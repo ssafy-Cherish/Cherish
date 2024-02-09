@@ -35,4 +35,14 @@
         ORDER BY M.COUPLE_ID,C.KEYWORD,C.CREATED_AT;
     </select>
 
+    <select id="clipCnt" parameterType="int" resultType="int">
+        SELECT COUNT(c.id)
+        FROM clip as c
+        JOIN meeting as m
+        ON c.meeting_id = m.id
+        JOIN couple as cou
+        ON m.couple_id = cou.id
+        WHERE cou.id = #{coupleId}
+    </select>
+
 </mapper>

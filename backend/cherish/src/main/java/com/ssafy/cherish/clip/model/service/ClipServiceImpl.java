@@ -108,6 +108,11 @@ public class ClipServiceImpl implements ClipService {
     public void createClip(ClipDto clipDto) throws Exception {
         clipMapper.createClip(clipDto);
     }
+
+    @Override
+    public int clipCnt(int coupleId) throws Exception {
+        return clipMapper.clipCnt(coupleId);
+    }
 }
 
 
