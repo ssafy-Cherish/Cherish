@@ -51,5 +51,28 @@ public class VideoController {
 
     }
 
+    @GetMapping("getYearMonth")
+    @Operation(summary = "coupleId를 입력받아 년, 월을 받음", description = "coupleId를 입력하면 년, 월을 돌려줌")
+    public ResponseEntity<?> getYearMonth(int coupleId) {
+        log.debug("getYearMonth 호출 : {}", coupleId);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            List<String> yearMonthList = videoService.getYearMonth(coupleId);
+            resultMap.put("yearMonth", yearMonthList);
+            status = HttpStatus.OK;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        } catch (Exception e) {
+            log.error("getYearMonth 에러 : {}", e.getMessage());
+            resultMap.put("getYearMonth 에러", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        }
+
+    }
+
 
 }
