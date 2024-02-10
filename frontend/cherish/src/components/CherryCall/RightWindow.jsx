@@ -1,8 +1,9 @@
 import ChattingBox from "./ChattingBox";
 import ClipBox from "./ClipBox";
 
-// 이승준이 추가한 코드, 대본 박스 추가
+// 대본 박스 추가
 import ScriptBox from "./GPT/ScriptBox";
+import "./Meeting.css";
 
 function RightWindow({
   meetingInfo,
@@ -13,7 +14,7 @@ function RightWindow({
   nickname,
   sendImg,
 }) {
-  // 이승준이 추가한 코드, 항목이 3개가 되었기 때문에 switch 문으로 변경
+  // 항목이 3개가 되었기 때문에 switch 문으로 변경
   function rightWindow() {
     switch (meetingInfo.rightWindow) {
       case 0: // 채팅
@@ -38,7 +39,7 @@ function RightWindow({
   }
 
   return (
-    <div className="bg-pink h-[75%] m-2 rounded-2xl flex flex-col justify-evenly">
+    <div className="bg-pink h-[75%] m-2 rounded-2xl flex flex-col justify-evenly relative">
       <div className="bg-white mx-4 rounded-t-2xl h-[10%]">
         <button
           className={`w-[33%] h-full font-extrabold text-xl ${
@@ -74,7 +75,7 @@ function RightWindow({
         <button
           className={`w-[33%] h-full font-extrabold text-xl ${
             meetingInfo.rightWindow == 2 ? "text-cherry" : ""
-          }`}
+          } ${meetingInfo.showMessage && "blink-effect"}`}
           disabled={meetingInfo.rightWindow == 2}
           onClick={() => {
             setMeetingInfo((prevMeetingInfo) => {
@@ -86,6 +87,20 @@ function RightWindow({
         >
           체리톡
         </button>
+        {meetingInfo.showMessage && (
+          <div className="absolute bottom-full right-12 translate-y-10">
+            <div
+              style={{
+                backgroundColor: "#fcdeeb",
+                whiteSpace: "pre-line",
+                wordWrap: "break-word",
+              }}
+              className="py-2 pl-4 pr-4 rounded-t-xl rounded-bl-xl drop-shadow max-w-[90%]"
+            >
+              {meetingInfo.showMessageContent}
+            </div>
+          </div>
+        )}
       </div>
       {/* switch 문으로 변경 */}
       {rightWindow()}
