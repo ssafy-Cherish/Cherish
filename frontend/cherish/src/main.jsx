@@ -18,6 +18,7 @@ import UserLayout from "./pages/UserPages/UserLayout";
 import Login from "./pages/UserPages/Login";
 import Signup from "./pages/UserPages/Signup";
 import CherryBoxPage from "./pages/CherryBoxPages/CherryBoxPage.jsx";
+import KakaoRedirect from "./pages/UserPages/KakaoRedirect.jsx";
 
 const router = createBrowserRouter([
   // 메인 페이지

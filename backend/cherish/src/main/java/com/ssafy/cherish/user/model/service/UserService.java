@@ -28,6 +28,10 @@ public interface UserService {
 
     int deleteUser(UserDto userDto);
 
+    void setCoupleDeletedAt(int id);
+
+    void initCoupleDeletedAt(int id);
+
     // 이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.
 //    UserDto login (long kakaoId) throws Exception;
 //    void saveToken (long kakaoId, String accessToken) throws Exception;

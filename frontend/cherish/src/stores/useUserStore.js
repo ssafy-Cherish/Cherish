@@ -5,17 +5,21 @@ const initalState = {
 	kakaoId: null,
 	nickname: null,
 	userId: null,
+	email: null,
+	birthday: null,
 };
 
 const useUserStore = create(
 	persist(
 		devtools((set) => ({
 			...initalState,
-			setUserInfo: (kakaoId, nickname, userId) => {
+			setUserInfo: (kakaoId, nickname, userId, email, birthday) => {
 				set(() => ({
 					kakaoId,
 					nickname,
 					userId,
+					email,
+					birthday,
 				}));
 			},
 			reset: () => {
