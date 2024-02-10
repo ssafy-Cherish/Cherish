@@ -11,4 +11,6 @@ public interface ClipService {
     void saveClip(ClipDto clipDto,String[] pathForMerge,int coupleId) throws Exception;
 
     void createClip(ClipDto clipDto) throws Exception;
+
+    int clipCnt (int coupleId) throws Exception;
 }

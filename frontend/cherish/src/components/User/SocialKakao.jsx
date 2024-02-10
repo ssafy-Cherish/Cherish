@@ -7,115 +7,92 @@ import { AnimatePresence } from "framer-motion";
 import KakaoLogin from "../../assets/User/kakao_login_large_wide.png";
 import useUserStore from "../../stores/useUserStore";
 import useCoupleStore from "../../stores/useCoupleStore";
+import { useSearchParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { kakaoLoginFetch } from "../../services/userService";
 
 const SocialKakao = () => {
-  const navigate = useNavigate();
-  const [openWaitingModal, setOpenWaitingModal] = useState(false);
+	const navigate = useNavigate();
+	const [openWaitingModal, setOpenWaitingModal] = useState(false);
 
-  const { setUserInfo } = useUserStore();
-  const { setCoupleInfo } = useCoupleStore();
+	const { setUserInfo } = useUserStore();
+	const { setCoupleInfo } = useCoupleStore();
 
-  const [userId, setUserId] = useState(undefined);
-  const [coupleCode, setCoupleCode] = useState("");
-  const [preventClick, setPreventClick] = useState(false);
+	const [userId, setUserId] = useState(undefined);
+	const [coupleId, setCoupleId] = useState(undefined);
+	const [coupleCode, setCoupleCode] = useState("");
 
-  function handleKakaoLogin() {
-    async function fetchKakaoLogin() {
-      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/user/login`, {
-        headers: {
-          Authorization: Kakao.Auth.getAccessToken(),
-        },
-      });
-      const resData = await response.json();
-      if (!response.ok) {
-        throw Error("login fetch Error");
-      }
+	const [searchParams, setSearchParams] = useSearchParams();
+	const code = searchParams.get("code");
 
-      if (resData.verified) {
-        console.log(resData);
-        if (!resData.coupleDto.coupled) {
-          setCoupleCode(resData.coupleDto.code);
-          setUserId(resData.user_id);
-          setOpenWaitingModal(true);
-        } else {
-          setUserInfo(resData.kakao_id, resData.nickname, resData.user_id);
-          const couple = resData.coupleDto;
+	const { mutate: kakaoLogin } = useMutation({
+		mutationFn: kakaoLoginFetch,
+		onSuccess: (data) => {
+			if (data.verified) {
+				console.log(data);
+				const user = data.userDto;
+				const couple = data.coupleDto;
+				if (!couple.coupled) {
+					setCoupleCode(couple.code);
+					setCoupleId(couple.id);
+					setUserId(user.id);
+					setOpenWaitingModal(true);
+				} else {
+					setUserInfo(user.kakaoId, user.nickname, user.id, user.email, user.birthday);
 
-          setCoupleInfo(
-            couple.id,
-            couple.code,
-            couple.user1,
-            couple.user2,
-            couple.anniversary,
-            resData.userInfos,
-            resData.questionDto
-          );
-          navigate("/");
-        }
-      } else {
-        navigate("/user/signup");
-      }
+					setCoupleInfo(
+						couple.id,
+						couple.code,
+						couple.user1,
+						couple.user2,
+						couple.anniversary,
+						data.userInfos,
+						data.questionDto
+					);
+					navigate("/");
+				}
+			} else {
+				navigate(`/user/signup${code ? `?code=${code}` : ""}`);
+			}
+		},
+	});
 
-      return resData;
-    }
+	function handleKakaoLogin() {
+		// Kakao.Auth.authorize({
+		// 	redirectUri: `${import.meta.env.VITE_APP_KAKAO_REDIRECT_URI}`,
+		// });
 
-    if (preventClick) return;
-    setPreventClick(true);
+		Kakao.Auth.loginForm({
+			success(data) {
+				console.log(data);
+				kakaoLogin();
+			},
+			fail(err) {
+				console.log(err);
+				return;
+			},
+		});
+	}
 
-    Kakao.Auth.login({
-      success(data) {
-        console.log(data);
-        fetchKakaoLogin();
-
-        setPreventClick(false);
-      },
-      fail(err) {
-        console.log(err);
-        return;
-      },
-    });
-  }
-  function handleKakaoLogout() {
-    if (!Kakao.Auth.getAccessToken()) {
-      alert("로그인중이 아닙니다.");
-      return;
-    }
-    Kakao.Auth.logout(() => {
-      alert("로그아웃");
-    });
-  }
-
-  function unlinkUser() {
-    if (!Kakao.Auth.getAccessToken()) {
-      alert("로그인중이 아닙니다.");
-      return;
-    }
-
-    Kakao.API.request({
-      url: "/v1/user/unlink",
-      success(res) {
-        console.log(res);
-      },
-      fail(err) {
-        console.log(err);
-      },
-    });
-  }
-
-  return (
-    <>
-      <img src={KakaoLogin} onClick={handleKakaoLogin} className="w-[80%] hover:cursor-pointer" />
-      <AnimatePresence>
-        {openWaitingModal && (
-          <WaitingModal
-            onClose={() => setOpenWaitingModal(false)}
-            code={coupleCode}
-            userId={userId}
-          />
-        )}
-      </AnimatePresence>
-    </>
-  );
+	return (
+		<>
+			<img
+				src={KakaoLogin}
+				onClick={handleKakaoLogin}
+				className="w-[80%] hover:cursor-pointer"
+			/>
+			<AnimatePresence>
+				{openWaitingModal && (
+					<WaitingModal
+						onClose={() => setOpenWaitingModal(false)}
+						code={coupleCode}
+						userId={userId}
+						coupleId={coupleId}
+					/>
+				)}
+			</AnimatePresence>
+		</>
+	);
 };
 
 export default SocialKakao;

@@ -44,4 +44,9 @@ public class ExpServiceImpl implements ExpService {
         return map;
     }
 
+    @Override
+    public int getExpLevel(int coupleId) throws Exception {
+        return expMapper.getExpLevel(coupleId);
+    }
+
 }
