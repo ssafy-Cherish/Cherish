@@ -72,9 +72,7 @@ public class UserController {
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
                 List<Map<String, String>> userInfos = userService.getUserInfos(userDto.getCoupleId());
                 QuestionDto questionDto = qnaService.getQuestion(userDto.getCoupleId());
-                resultMap.put("kakao_id", kakaoId);
-                resultMap.put("user_id", userDto.getId());
-                resultMap.put("nickname", userDto.getNickname());
+                resultMap.put("userDto", userDto);
                 resultMap.put("userInfos", userInfos);
                 resultMap.put("coupleDto", coupleDto);
                 resultMap.put("verified", true);
@@ -226,6 +224,9 @@ public class UserController {
                 userService.coupleSecondJoin(userDto);
             }
 
+            if(coupleDto.getUser1() == null && coupleDto.getUser2() == null)
+                userService.initCoupleDeletedAt(coupleDto.getId());
+
         } catch (Exception e) {
             log.error("회원가입 에러 : {}", e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -260,9 +261,9 @@ public class UserController {
         return new ResponseEntity<>(status);
     }
 
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/delete/{userId}/{coupleId}")
     @Operation(summary = "유저 정보 삭제", description="user 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
-    public  ResponseEntity<?> deleteUser (@PathVariable Integer userId, HttpServletRequest req) {
+    public  ResponseEntity<?> deleteUser (@PathVariable int userId, @PathVariable int coupleId, HttpServletRequest req) {
 
         String accessToken = req.getHeader(AUTHORIZATION);
         HttpStatus status = HttpStatus.OK;
@@ -286,9 +287,12 @@ public class UserController {
 
             int value = userService.deleteUser(userDto);
 
-            if(value == 0)
+            if(value == 1) {
+                userService.setCoupleDeletedAt(coupleId);
+            }
+            else {
                 status = HttpStatus.BAD_REQUEST;
-
+            }
 
 
         }catch (Exception e) {
@@ -357,6 +361,27 @@ public class UserController {
         }
     }
 
+    @GetMapping("/code")
+    @Operation(summary = "커플 코드 확인", description="사용자에게 올바른 코드인지 확인시켜줌")
+    public ResponseEntity<?> checkByCode(@RequestParam String code) {
+        log.debug("checkByCode 호출 : {}", code);
+        HttpStatus status = HttpStatus.OK;
+        HashMap<String, Object> resultMap = new HashMap<>();
+
+        try {
+            CoupleDto couple = userService.findByCode(code);
+            if(couple != null && (couple.getUser1() == null || couple.getUser2() == null))
+                resultMap.put("success", true);
+            else
+                resultMap.put("success", false);
+
+        } catch (Exception e) {
+            status = HttpStatus.BAD_REQUEST;
+            resultMap.put("msg", "코드 확인에 실패했습니다.");
+        }
+
+        return new ResponseEntity<>(resultMap, status);
+    }
 
     // 인증코드 생성 함수
     public String createCode() throws Exception {
@@ -397,6 +422,8 @@ public class UserController {
 
         return code;
     }
+
+
 
 }
 
