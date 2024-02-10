@@ -97,7 +97,7 @@
 
     <update id="modifyUser" parameterType="userDto">
         UPDATE user
-        SET nickname = #{nickname}
+        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
         WHERE id = #{id}
     </update>
 
