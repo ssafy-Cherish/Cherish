@@ -48,6 +48,9 @@ function Meeting() {
     rightWindow: 0,
     // 대본 저장 배열
     scriptHistory: [],
+    // 말풍선과 반짝임 효과
+    showMessage: false,
+    showMessageContent: "",
 
     init: false,
 
@@ -91,9 +94,8 @@ function Meeting() {
       const scriptHistory = newMeetingInfo.scriptHistory;
       scriptHistory.push(script);
 
-      const lastIndex = scriptHistory.length - 1;
       let partnerScript = null;
-      for (let i = lastIndex - 1; i >= 0; i--)
+      for (let i = scriptHistory.length - 1; i >= 0; i--)
         // 스크립트가 상대방인 경우에만 즉, gpt의 멘트인 경우는 건너 뛰기 위해
         if (scriptHistory[i].isLocal == 1) partnerScript = scriptHistory[i];
 
@@ -137,28 +139,36 @@ function Meeting() {
             console.log("gpt return");
             console.log(data);
             const output = data.choices[0].message.content.split("\n");
+            output[0] = output[0].split(":");
+            output[1] = output[1].split(":");
             console.log(output);
 
-            recordStopAndStart(newMeetingInfo, JSON.parse(output[0]), partnerScript);
+            recordStopAndStart(
+              newMeetingInfo,
+              JSON.parse(output[0][0]),
+              partnerScript,
+              output[0][1]
+            );
 
-            if (JSON.parse(output[1]) == true) {
+            if (JSON.parse(output[1][0]) == true) {
               // gpt 제안문 대본에 추가하는 기능 구현
               setMeetingInfo((prevMeetingInfo) => {
                 const newMeetingInfo2 = { ...prevMeetingInfo };
                 console.log("gpt 대본 추가");
                 var gptScript = {
-                  message: output[2],
+                  message: output[1][1],
                   isLocal: 2,
                   time: new Date(),
-                  lastIndex: lastIndex,
+                  lastIndex: scriptHistory.length,
                 };
+                playGPTScript(gptScript);
                 sendMessage(
                   JSON.stringify({
                     cmd: "gptScript",
                     data: gptScript,
                   })
                 );
-                newMeetingInfo2.scriptHistory.splice(lastIndex, 0, gptScript);
+                newMeetingInfo2.scriptHistory.splice(scriptHistory.length, 0, gptScript);
                 return newMeetingInfo2;
               });
             }
@@ -171,6 +181,43 @@ function Meeting() {
 
       return newMeetingInfo;
     });
+  }
+  // TTS
+  function playGPTScript(gptScript) {
+    fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_APP_GPT_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "tts-1",
+        input: gptScript.message,
+        voice: "nova",
+      }),
+    })
+      .then((response) => response.blob()) // 응답을 Blob 객체로 변환
+      .then((blob) => {
+        const url = URL.createObjectURL(blob); // Blob 객체로부터 URL 생성
+        const audio = new Audio(url); // URL을 사용하여 오디오 객체 생성
+        audio.addEventListener("ended", function () {
+          setMeetingInfo((prevMeetingInfo) => {
+            const newMeetingInfo = { ...prevMeetingInfo };
+            newMeetingInfo.showMessage = false;
+            newMeetingInfo.showMessageContent = "";
+            return newMeetingInfo;
+          });
+        });
+        //audio.volume = 0.5; // 0에서 1사이 설정가능
+        audio.play(); // 오디오 재생
+        setMeetingInfo((prevMeetingInfo) => {
+          const newMeetingInfo = { ...prevMeetingInfo };
+          newMeetingInfo.showMessage = true;
+          newMeetingInfo.showMessageContent = gptScript.message;
+          return newMeetingInfo;
+        });
+      })
+      .catch((error) => console.error("오류 발생:", error));
   }
   //////
 
@@ -190,12 +237,9 @@ function Meeting() {
   const getLocalMediaStream = function () {
     const constraints = {
       video: {
-        frameRate: {
-          ideal: 30,
-          max: 35,
-        },
-        width: { ideal: 640 },
-        height: { ideal: 720 },
+        frameRate: 24,
+        width: 320,
+        height: 360,
         facingMode: "user",
       },
       audio: {
@@ -402,6 +446,7 @@ function Meeting() {
 
         // GPT의 멘트를 받았을 때 그 멘트를 생성시킨 대화바로 뒤에 GPT의 멘트를 추가
         case "gptScript":
+          playGPTScript(msg.data);
           setMeetingInfo((prevMeetingInfo) => {
             console.log("got gptScript");
             const newMeetingInfo = { ...prevMeetingInfo };
@@ -548,9 +593,9 @@ function Meeting() {
   let intervalId = null;
   // 처음 시작할 때와 자신의 발언이 끝날때마다 녹화를 다시 시작
   // 이전 대화가 저장할만 하다면 저장 작업도 수행
-  function recordStopAndStart(newMeetingInfo, save, partnerScript) {
+  function recordStopAndStart(newMeetingInfo, save, partnerScript, keyword) {
     if (record.length > 0) {
-      if (save == true) saveAndSendClip(newMeetingInfo, partnerScript);
+      if (save == true) saveAndSendClip(newMeetingInfo, partnerScript, keyword);
 
       // 모든 녹화 중지
       for (let i = 0; i < record.length; i++) {
@@ -564,31 +609,26 @@ function Meeting() {
     record = [];
 
     // 녹화 시작과 일정 주기마다 녹화 추가 생성
+    // 주기 10초로 조정 렉 너무 걸림
     newRecordPushAndRemove();
-    intervalId = setInterval(newRecordPushAndRemove, 5000);
+    intervalId = setInterval(newRecordPushAndRemove, 10000);
   }
   // 클립 저장 후 전송
-  function saveAndSendClip(newMeetingInfo, partnerScript) {
+  function saveAndSendClip(newMeetingInfo, partnerScript, keyword) {
     const scriptHistory = newMeetingInfo.scriptHistory;
 
     // 마지막 스크립트 인덱스
     const last = scriptHistory.length - 1;
 
-    // 저장할 대화의 한글 문자 수
-    let len = scriptHistory[last].message.length + partnerScript.message.length;
-
     // 저장할 대화의 소요시간을 대략적으로 계산
     // 문자 3개당 1초가 소요된다고 가정 (조정 가능)
-    // 나중에 계산시 편의를 위해 미리초 단위로 변환
-    const talkLength = (len / 3) * 1000;
-
-    // 현재 시간
-    const now = new Date();
+    // 미리초 단위
+    const talkLength = (partnerScript.message.length / 3) * 1000;
 
     // 가장 일찍 녹화를 시작한 시점 즉 이전에 내가 말했던 시점부터
     // 내가 현재 말한 시점까지 가장 대화길이에 알맞는 구간을 선택
     for (let i = 0; i < record.length; i++) {
-      if (i == record.length - 1 || now - record[i + 1].startTime < talkLength) {
+      if (i == record.length - 1 || partnerScript.time - record[i + 1].startTime < talkLength) {
         const blobLocal = new Blob(record[i].recordedChunks[0], {
           mimeType: recordOption.mimeType,
         });
@@ -598,10 +638,11 @@ function Meeting() {
 
         let formData = new FormData();
         formData.set("meeting_id", meetingId);
-        formData.set("keyword", "안녕");
+        formData.set("keyword", keyword);
         formData.set("couple_id", coupleId);
         formData.set("clip1", user1 === userId ? blobLocal : blobRemote, "clip1.webm");
         formData.set("clip2", user1 === userId ? blobRemote : blobLocal, "clip2.webm");
+        console.log(formData);
 
         fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
           method: "post",
@@ -639,12 +680,13 @@ function Meeting() {
   function newRecordPushAndRemove() {
     if (meetingInfo.connect.peerConnection.connectionState !== "connected") return;
 
-    // 5초 * 6 즉 30초 까지의 영상만 저장 (길이 조정 가능)
-    if (record.length >= 6) {
+    // 10초 * 3 즉 30초 까지의 영상만 저장 (길이 조정 가능)
+    if (record.length >= 3) {
       record[0].mediaRecorder[0].stop();
       record[0].mediaRecorder[1].stop();
       record.shift();
     }
+    console.log("record size : " + record.length);
 
     record.push(makeNewRecord());
 
@@ -662,8 +704,8 @@ function Meeting() {
   function makeNewRecord() {
     const local = new MediaRecorder(meetingInfo.stream.localMediaStream, recordOption);
     const remote = new MediaRecorder(meetingInfo.stream.remoteMediaStream, recordOption);
-    local.start(1000);
-    remote.start(1000);
+    local.start(500);
+    remote.start(500);
 
     return {
       mediaRecorder: [local, remote],
