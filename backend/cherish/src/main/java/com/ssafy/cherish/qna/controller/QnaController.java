@@ -4,6 +4,7 @@ import com.ssafy.cherish.qna.model.dto.AnswerDto;
 import com.ssafy.cherish.qna.model.dto.QuestionDto;
 import com.ssafy.cherish.qna.model.service.QnaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,9 @@ public class QnaController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "오늘의 질문 답변 등록하기", description = "오늘의 질문에 대한 대답 영상을 db에 저장한다.")
-    public ResponseEntity<?> saveAnswer(@RequestPart("answer") MultipartFile answer, @RequestParam Map<String, Object> map) {
+    public ResponseEntity<?> saveAnswer(@RequestPart("answer") MultipartFile answer,
+                                        @Parameter(name = "오늘의 질문 파일 저장에 필요한 정보 map", description = "kakaoId, nickname, coupleId, questionId")
+                                        @RequestParam Map<String, Object> map) {
         log.debug("saveAnswer 호출 : {}", map.toString());
         HttpStatus status;
 
