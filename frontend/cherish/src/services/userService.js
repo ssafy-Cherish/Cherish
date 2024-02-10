@@ -26,7 +26,7 @@ export async function kakaoLoginFetch() {
 	return resData;
 }
 
-export async function userDeleteFetch(userId, coupleId) {
+export async function userDeleteFetch({ userId, coupleId }) {
 	const res = await fetch(
 		`${import.meta.env.VITE_APP_BACKEND_URL}/user/delete/${userId}/${coupleId}`,
 		{
@@ -38,11 +38,27 @@ export async function userDeleteFetch(userId, coupleId) {
 		}
 	);
 
-	const resData = await res.json();
-
 	if (!res.ok) {
 		new Error("userDelete Fetch Error");
 	}
 
-	return resData;
+	return res;
+}
+
+export async function userModifyFetch({ formData }) {
+	console.log(formData);
+	const res = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/user/modifyUser`, {
+		method: "PUT",
+		headers: {
+			Authorization: Kakao.Auth.getAccessToken(),
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(formData),
+	});
+
+	if (!res.ok) {
+		throw new Error("user Modify Fetch Error");
+	}
+
+	return res;
 }

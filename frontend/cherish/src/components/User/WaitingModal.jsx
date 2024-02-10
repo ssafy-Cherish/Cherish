@@ -34,7 +34,7 @@ const WaitingModal = ({ onClose, code, userId, coupleId }) => {
 
 	function deleteUser() {
 		if (confirm("정말 탈퇴하시겠어요?")) {
-			userDeleteFetch(userId, coupleId);
+			userDeleteFetch({ userId, coupleId });
 			onClose();
 		}
 	}

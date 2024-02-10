@@ -10,25 +10,25 @@ import ModifyModal from "./ModifyModal";
 
 export default function UserInfo() {
 	const { anniversary, userInfos, reset: coupleReset } = useCoupleStore();
-	const { userId, reset: userReset } = useUserStore();
+	const { userId, birthday, nickname, reset: userReset } = useUserStore();
 	const [isOpen, setIsOpen] = useState(false);
 	const [openModifyModal, setOpenModifyModal] = useState(false);
 	const navigate = useNavigate();
-
-	const myInfo = userInfos.filter((info) => {
-		return info.id === userId;
-	})[0];
 
 	const cherryInfo = userInfos.filter((info) => {
 		return info.id !== userId;
 	})[0];
 
 	const anni = dayjs(anniversary).format("YYYY년 M월 D일");
-	const myBirth = dayjs(myInfo.birthday).format("YYYY년 M월 D일");
+	const myBirth = dayjs(birthday).format("YYYY년 M월 D일");
 	const cherryBirth = dayjs(cherryInfo.birthday).format("YYYY년 M월 D일");
 
 	const handleClickIsOpen = () => {
 		setIsOpen((pre) => !pre);
+	};
+
+	const CloseModifyModal = () => {
+		setOpenModifyModal(false);
 	};
 
 	function logout() {
@@ -55,7 +55,7 @@ export default function UserInfo() {
 					onClick={handleClickIsOpen}
 				>
 					<img className="col-span-1" src={ProfileIcon} alt="ProfileIcon" />
-					<p className="col-span-3 my-auto text-text-black">{myInfo.nickname}</p>
+					<p className="col-span-3 my-auto text-text-black">{nickname}</p>
 					<img
 						className={"col-span-1 w-[2vw] my-auto " + (isOpen && "rotate-180")}
 						src={DropdownIcon}
@@ -65,22 +65,20 @@ export default function UserInfo() {
 				{isOpen && (
 					<>
 						<div className="my-[48px] text-text-black flex flex-col items-start ml-[15px] text-[80%]">
-							<p className="mb-[8px]">체리씨 : {cherryInfo.nickname}</p>
 							<p className="mb-[8px]">내 생일 : {myBirth}</p>
-							<p className="mb-[8px]">체리 생일 : {cherryBirth}</p>
-							<p>만남 : {anni}</p>
+							<p className="mb-[8px]">만남 : {anni}</p>
+							<p className="mb-[8px] text-cherry">체리씨 : {cherryInfo.nickname}</p>
+							<p className=" text-cherry">체리 생일 : {cherryBirth}</p>
 						</div>
 						<div className="flex justify-around mt-[32px] text-text-black">
-							<button onClick={() => setOpenModifyModal(true)}>정보수정</button>
+							<button onClick={() => setOpenModifyModal(true)}>내정보</button>
 							<button onClick={logout}>로그아웃</button>
 						</div>
 					</>
 				)}
 
 				<AnimatePresence>
-					{openModifyModal && (
-						<ModifyModal onClose={() => setOpenModifyModal(false)}></ModifyModal>
-					)}
+					{openModifyModal && <ModifyModal onClose={CloseModifyModal}></ModifyModal>}
 				</AnimatePresence>
 			</div>
 		</>
