@@ -15,4 +15,10 @@
         ORDER BY CREATED_AT DESC, EXP DESC;
     </select>
 
+    <select id="getExpLevel" parameterType="int" resultType="int">
+        SELECT exp
+        FROM couple
+        WHERE id = #{coupleId}
+    </select>
+
 </mapper>
