@@ -144,6 +144,7 @@ function Meeting() {
             if (JSON.parse(output[1]) == true) {
               // gpt 제안문 대본에 추가하는 기능 구현
               setMeetingInfo((prevMeetingInfo) => {
+                const newMeetingInfo2 = { ...prevMeetingInfo };
                 console.log("gpt 대본 추가");
                 var gptScript = {
                   message: output[2],
@@ -157,8 +158,8 @@ function Meeting() {
                     data: gptScript,
                   })
                 );
-                prevMeetingInfo.scriptHistory.splice(lastIndex, 0, gptScript);
-                return prevMeetingInfo;
+                newMeetingInfo2.scriptHistory.splice(lastIndex, 0, gptScript);
+                return newMeetingInfo2;
               });
             }
           })
@@ -564,9 +565,7 @@ function Meeting() {
 
     // 녹화 시작과 일정 주기마다 녹화 추가 생성
     newRecordPushAndRemove();
-    intervalId = setInterval(() => {
-      setMeetingInfo(newRecordPushAndRemove);
-    }, 5000);
+    intervalId = setInterval(newRecordPushAndRemove, 5000);
   }
   // 클립 저장 후 전송
   function saveAndSendClip(newMeetingInfo, partnerScript) {
