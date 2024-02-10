@@ -15,6 +15,7 @@ const Signup = () => {
 	const today = dayjs();
 
 	const [searchParams, setSearchParams] = useSearchParams();
+	const [disabledSingup, setDisabledSignup] = useState(false);
 
 	const code = searchParams.get("code");
 
@@ -28,7 +29,6 @@ const Signup = () => {
 	const { mutate } = useMutation({
 		mutationFn: checkByCode,
 		onSuccess: (data) => {
-			console.log(data);
 			setCodeChecked(data.success);
 		},
 	});
@@ -46,6 +46,7 @@ const Signup = () => {
 		console.log(JSON.stringify(data));
 
 		async function fetchJoin() {
+			setDisabledSignup(true);
 			const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/user/join`, {
 				method: "POST",
 				headers: {
@@ -55,6 +56,7 @@ const Signup = () => {
 				body: JSON.stringify(data),
 			});
 
+			setDisabledSignup(false);
 			if (!response.ok) {
 				throw Error("join fetch Error");
 			} else {
@@ -208,7 +210,7 @@ const Signup = () => {
 					<div className="flex items-center">
 						<button
 							className="btn bg-cherry text-white w-full hover:bg-white hover:text-cherry"
-							disabled={hasCode && !codeChecked}
+							disabled={(hasCode && !codeChecked) || disabledSingup}
 						>
 							가입 완료
 						</button>
