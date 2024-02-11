@@ -7,6 +7,7 @@ import TodayQuestionCard from "../../components/Main/TodayQuestionCard";
 import DiaryCard from "../../components/Main/DiaryCard";
 import dayjs from "dayjs";
 import useCoupleStore from "../../stores/useCoupleStore";
+import MainMemo from "../../components/Main/MainMemo";
 
 export default function Index() {
   const { anniversary } = useCoupleStore();
@@ -56,21 +57,8 @@ export default function Index() {
           </div>
           <p className="text-[1.2vw] mb-[1.8vw] text-text-black">체리콜</p>
         </div>
-        <div id="Memo" className="col-span-2 relative">
-          <div className="w-[17vw]">
-            <div className="absolute mt-[4.5vw] ml-[4.5vw]">
-              <p className="text-[1vw] text-center">
-                <span>Memo</span>
-                <br />
-                <br /> 세줄세줄세줄세줄
-                <br />
-                세줄세줄세줄세줄
-                <br />
-                세줄세줄세줄세줄
-              </p>
-            </div>
-            <img className="w-full" src={MemoImg} alt="MemoImg" />
-          </div>
+        <div id="Memo" className="col-span-2">
+          <MainMemo />
         </div>
       </div>
       <Outlet />
