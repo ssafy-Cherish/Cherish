@@ -1,55 +1,60 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>WebRTC 테스트</title>
     <!--Bootstrap only for styling-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"
+    />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <!--Bootstrap only for styling-->
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div class="container">
-        <h1>WebRTC 테스트</h1>
+      <h1>WebRTC 테스트</h1>
 
-        <!--WebRTC related code-->
-        <button type="button" class="btn btn-primary" onclick='createOffer()'>Offer 생성</button>
-        <input id="messageInput" type="text" class="form-control" placeholder="message">
-        <button type="button" class="btn btn-primary" onclick='sendMessage()'>보내기</button>
-        <input id="messageInput2" type="text" class="form-control" placeholder="message">
-        <button type="button" class="btn btn-primary" onclick='sendMessageToServer()'>서버로 보내기</button>
-        <!--WebRTC related code-->
-        <br>
-        <br>
-        <h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
-        <!-- 내 웹캠 화면을 보여주는 video html -->
-        <video id="camera" autoplay playsinline controls></video>
-        <video id="peer" autoplay playsinline controls></video>
-        <button type="button" class="btn btn-primary" onclick='record()'>녹화</button>
-        <button type="button" class="btn btn-primary" onclick='recordStop()'>중지</button>
-        <video id="record" autoplay playsinline controls width="100px" height="100px"></video>
+      <!--WebRTC related code-->
+      <button type="button" class="btn btn-primary" onclick="createOffer()">Offer 생성</button>
+      <input id="messageInput" type="text" class="form-control" placeholder="message" />
+      <button type="button" class="btn btn-primary" onclick="sendMessage()">보내기</button>
+      <input id="messageInput2" type="text" class="form-control" placeholder="message" />
+      <button type="button" class="btn btn-primary" onclick="sendMessageToServer()">
+        서버로 보내기
+      </button>
+      <!--WebRTC related code-->
+      <br />
+      <br />
+      <h1>offer 생성시 반대쪽 peer에 비디오 출력</h1>
+      <!-- 내 웹캠 화면을 보여주는 video html -->
+      <video id="camera" autoplay playsinline controls></video>
+      <video id="peer" autoplay playsinline controls></video>
+      <button type="button" class="btn btn-primary" onclick="record()">녹화</button>
+      <button type="button" class="btn btn-primary" onclick="recordStop()">중지</button>
+      <video id="record" autoplay playsinline controls width="100px" height="100px"></video>
+      <video id="record2" autoplay playsinline controls width="100px" height="100px"></video>
+      <input id="messageInput3" type="text" class="form-control" placeholder="gpt api" />
+      <button type="button" class="btn btn-primary" onclick="tts()">GPT TTS</button>
 
-
-<!--        카카오 로그인 테스트-->
-        <h1>Kakao Login Test</h1>
-<!--        <span th:if="${userId==null}">-->
-		<a href="https://kauth.kakao.com/oauth/authorize?client_id=21f6f4f1f1f7333717bc3f2c5748e012&redirect_uri=http://localhost:8080/user/login&response_type=code">
-			<img src = "image/kakao_login_medium_narrow.png">
-		</a>
-<!--	</span>-->
-<!--        <span th:if="${userId!=null}">-->
-<!--		<form name="logout" action="http://localhost:8080/logout">-->
-<!--			<input type="submit" value="로그아웃">-->
-<!--		</form>-->
-<!--	</span>-->
-
+      <!--        카카오 로그인 테스트-->
+      <h1>Kakao Login Test</h1>
+      <!--        <span th:if="${userId==null}">-->
+      <a
+        href="https://kauth.kakao.com/oauth/authorize?client_id=21f6f4f1f1f7333717bc3f2c5748e012&redirect_uri=http://localhost:8080/user/login&response_type=code"
+      >
+        <img src="image/kakao_login_medium_narrow.png" />
+      </a>
+      <!--	</span>-->
+      <!--        <span th:if="${userId!=null}">-->
+      <!--		<form name="logout" action="http://localhost:8080/logout">-->
+      <!--			<input type="submit" value="로그아웃">-->
+      <!--		</form>-->
+      <!--	</span>-->
     </div>
 
     <script src="client.js"></script>
-</body>
-
+  </body>
 </html>
