@@ -61,3 +61,20 @@ export async function getMemoFetch(coupleId, date) {
 
 	return resData;
 }
+
+export async function changePinFetch(data) {
+	const res = await fetch(
+		`${import.meta.env.VITE_APP_BACKEND_URL}/clip/pin/${data.clipId}/${data.mode}`,
+		{
+			method: "PUT",
+		}
+	);
+
+	const resData = await res.json();
+
+	if (!res.ok) {
+		throw new Error("Change Pin Fetch Error");
+	}
+
+	return resData;
+}

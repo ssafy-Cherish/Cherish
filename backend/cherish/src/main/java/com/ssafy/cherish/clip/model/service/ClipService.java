@@ -13,4 +13,6 @@ public interface ClipService {
     void createClip(ClipDto clipDto) throws Exception;
 
     int clipCnt (int coupleId) throws Exception;
+
+    int changePin(int clipId, boolean mode);
 }
