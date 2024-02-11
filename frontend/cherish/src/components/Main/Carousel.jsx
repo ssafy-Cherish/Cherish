@@ -1,8 +1,8 @@
 import React from "react";
 import Slider from "react-slick";
-import "./CarouselSlick.css"
-import "./CarouselSlickTheme.css"
-import test from "../../assets/test.png"
+import "./CarouselSlick.css";
+import "./CarouselSlickTheme.css";
+import test from "../../assets/test.png";
 
 export default function Carousel() {
   const settings = {
@@ -12,23 +12,22 @@ export default function Carousel() {
     slidesToScroll: 1,
     autoplay: true,
     speed: 5000,
-    autoplaySpeed: 100,
+    autoplaySpeed: 500,
     cssEase: "linear",
-    pauseOnHover: true
-    
   };
+  
 
   return (
     <div className="border-2 rounded-[20px] px-[1.2vw] shadow-md">
-      <Slider {...settings}>
-        <div>
-        <img src={test} alt="" />
+      <Slider  {...settings}>
+        <div className="border-[7px] border-cherry rounded-[20px]">
+          <img className="rounded-[12px]" src={test} alt="" />
         </div>
         <div>
           <img src={test} alt="" />
         </div>
         <div>
-        <img src={test} alt="" />
+          <img src={test} alt="" />
         </div>
         <div>
           <h3>4</h3>

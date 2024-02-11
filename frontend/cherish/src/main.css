@@ -65,3 +65,8 @@ body {
 #userInfo::-webkit-scrollbar {
   display: none;
 }
+
+#question::-webkit-scrollbar {
+  display: none;
+}
+
