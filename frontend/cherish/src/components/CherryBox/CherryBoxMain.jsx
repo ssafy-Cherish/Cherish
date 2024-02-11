@@ -1,4 +1,5 @@
 import Keyword from "./Keyword";
+import VideoList from "./VideoList";
 
 export default function CherryBoxMain({
   handleSelectKeyword,
@@ -26,33 +27,19 @@ export default function CherryBoxMain({
         isOpen={isOpen}
         handleClickIsOpen={handleClickIsOpen}
       />
+
       <div
         id="cherrybox"
         className="mt-[6vw] flex flex-row gap-5 flex-wrap h-[22vw] rounded-[15px] overflow-y-auto"
       >
-        <div
-          onClick={handleClickVideoOpen}
-          className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"
-        >
-          <p className="text-[1.5vw]">
-            우리들의 "<span className="text-cherry">사랑해</span>"
-          </p>
-        </div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center">
-          <p className="text-[1.5vw]">
-            우리들의 "<span className="text-cherry">사랑해</span>"
-          </p>
-        </div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center">
-          <p className="text-[1.5vw]">
-            우리들의 "<span className="text-cherry">사랑해</span>"
-          </p>
-        </div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px]"></div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px]"></div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px]"></div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px]"></div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px]"></div>
+        {selectKeyword === "날짜 선택" ? (
+          <div className="text-[2vw] font-bold m-auto"><span className="text-cherry">날짜</span>를 선택하세요</div>
+        ) : (
+          <VideoList
+            selectKeyword={selectKeyword}
+            handleClickVideoOpen={handleClickVideoOpen}
+          />
+        )}
       </div>
     </div>
   );
