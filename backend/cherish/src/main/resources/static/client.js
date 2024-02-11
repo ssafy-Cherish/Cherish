@@ -3,6 +3,7 @@ var peer = document.getElementById("peer");
 
 var mediaRecorder;
 var recordedChunks = [];
+var recordedChunks2 = [];
 
 window.onload = function () {
     // 사용자 카메라 연결
@@ -30,17 +31,14 @@ window.onload = function () {
             mediaRecorder.ondataavailable = function (event) {
                 if (event.data.size > 0) {
                     console.log("mediaRecorder.ondataavailable");
-                    console.log(mediaRecorder.ondataavailable);
+
                     recordedChunks.push(event.data);
+
+                    if (recordedChunks.length > 1)
+                        recordedChunks2.push(event.data);
                 }
             };
             mediaRecorder.onstop = function(event) {
-                console.log(recordedChunks);
-                recordedChunks.pop();
-                recordedChunks.pop();
-                recordedChunks.pop();
-                recordedChunks.pop();
-                recordedChunks.pop();
                 console.log(recordedChunks);
                 let blob = new Blob(recordedChunks, {
                   type: "video/webm"
@@ -51,6 +49,16 @@ window.onload = function () {
                 let video = document.getElementById("record");
                 video.src = url;
                 video.play();
+
+                console.log(recordedChunks2);
+                let blob2 = new Blob(recordedChunks2, {
+                  type: "video/mpeg"
+                });
+                let url2 = URL.createObjectURL(blob2);
+
+                let video2 = document.getElementById("record2");
+                video2.src = url2;
+                video2.play();
             };
         })
         .catch(function (err) { /* handle the error */ });
@@ -91,6 +99,7 @@ var peerConnection;
 var dataChannel;
 var input = document.getElementById("messageInput");
 var input2 = document.getElementById("messageInput2");
+var input3 = document.getElementById("messageInput3");
 
 function sendMessageToServer() {
     var str = JSON.stringify({
@@ -206,7 +215,10 @@ function sendMessage() {
 function record() {
     console.log("녹화 시작");
     // 녹화 시작
-    mediaRecorder.start(1000);
+    mediaRecorder.start();
+    setTimeout(() => {
+        mediaRecorder.requestData();
+    }, 2500);
 }
 
 function recordStop() {
@@ -214,4 +226,24 @@ function recordStop() {
     mediaRecorder.stop();
 }
 
-//test
+function tts() {
+    fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${input3.value}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "tts-1",
+        input: "안녕하세요 나는 GPT 입니다. 아무말이나 해보겠습니다.",
+        voice: "nova",
+      }),
+    })
+      .then((response) => response.blob()) // 응답을 Blob 객체로 변환
+      .then((blob) => {
+        const url = URL.createObjectURL(blob); // Blob 객체로부터 URL 생성
+        const audio = new Audio(url); // URL을 사용하여 오디오 객체 생성
+        audio.play(); // 오디오 재생
+      })
+      .catch((error) => console.error("오류 발생:", error));
+}
