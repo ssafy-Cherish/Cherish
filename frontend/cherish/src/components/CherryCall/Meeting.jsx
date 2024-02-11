@@ -330,7 +330,6 @@ function Meeting() {
     };
 
     conn.onmessage = function (msg) {
-      console.log("Got message");
       var content = JSON.parse(msg.data);
       var data = content.data;
       switch (content.event) {
@@ -394,6 +393,11 @@ function Meeting() {
           data: event.candidate,
         });
       }
+    };
+
+    peerConnection.oniceconnectionstatechange = function (event) {
+      console.log("oniceconnectionstatechange");
+      console.log(event);
     };
 
     // creating data channel
