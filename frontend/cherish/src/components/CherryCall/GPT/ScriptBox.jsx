@@ -1,6 +1,5 @@
 function ScriptBox({ meetingInfo }) {
   function scriptType(elem, idx) {
-    console.log("function scriptType");
     switch (elem.isLocal) {
       case 0: // 자신
         return (
@@ -56,7 +55,6 @@ function ScriptBox({ meetingInfo }) {
     <div className="h-[80%] flex flex-col justify-between">
       <div className="scroll-box bg-white mx-4 rounded-2xl h-[100%] overflow-y-scroll py-[5%]">
         {meetingInfo.scriptHistory.map((elem, idx) => {
-          console.log("function scriptType start");
           return scriptType(elem, idx);
         })}
       </div>
