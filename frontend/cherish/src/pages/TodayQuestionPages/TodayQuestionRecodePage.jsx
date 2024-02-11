@@ -5,9 +5,11 @@ import NextIcon from "../../assets/Common/NextIcon.svg";
 import { useState } from "react";
 import TodayQuestionBox from "../../components/TodayQuestion/TodayQuestionBox";
 import useCoupleStore from "../../stores/useCoupleStore";
+import { useQuery } from "@tanstack/react-query";
 
 
 export default function TodayQuestionRecodePage() {
+
   const [isQuestionBoxOpen, setIsQuestionBoxopen] = useState(false);
   const {question} = useCoupleStore()
   const date = dayjs();
