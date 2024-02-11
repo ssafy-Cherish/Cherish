@@ -113,6 +113,11 @@ public class ClipServiceImpl implements ClipService {
     public int clipCnt(int coupleId) throws Exception {
         return clipMapper.clipCnt(coupleId);
     }
+
+    @Override
+    public int changePin(int clipId, boolean mode) {
+        return clipMapper.changePin(clipId, mode);
+    }
 }
 
 
