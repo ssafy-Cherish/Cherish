@@ -3,6 +3,7 @@ package com.ssafy.cherish.utils;
 import com.ssafy.cherish.clip.model.dto.ClipVo;
 import com.ssafy.cherish.clip.model.mapper.ClipMapper;
 import com.ssafy.cherish.clip.model.mapper.VideoMapper;
+import com.ssafy.cherish.clip.model.service.AwsS3Service;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -10,10 +11,15 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,16 +28,15 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @EnableScheduling
 @Component
 @Slf4j
 public class CronScheduler {
 
+    @Autowired
+    private AwsS3Service awsS3Service;
     @Autowired
     private ClipMapper clipMapper;
 
@@ -44,82 +49,61 @@ public class CronScheduler {
     @Value("${custom.path.monthly-video}")
     private String monthlyVideoPath;
 
-    //매월 1일로 바뀔때 실행됨
-//    @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행 (테스트용)
+//     @Scheduled(cron = "1 * * * * *") // 1분마다 실행 (테스트용)
     @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
-        String yearMonth = String.format("%d-%02d-01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
+        //지난달
+        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
+         // 이번달
+//        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
 
         try {
 
             List<ClipVo> clipList = clipMapper.gatherClipsForMonth(yearMonth);
 
-            int coupleId = 0;
-            String keyword = "";
             Path mPath = Paths.get(monthlyVideoPath);
-            StringBuilder content = new StringBuilder();
-
-            // 파일명 중복을 줄이기 위한 현재시간 String
-            String curTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmSSS"));
 
             if (!Files.exists(mPath)) {
                 Files.createDirectories(mPath);
             }
-
+            Map<String, StringBuilder> map=new HashMap<>();
             for (ClipVo clip : clipList) {
-                System.out.println("couple : " + coupleId + "keyword : " + keyword + "clipList : " + clip.toString());
-                if (clip.getCoupleId() != coupleId || !keyword.equals(clip.getKeyword())) {
-
-                    if (!content.isEmpty()) {
-                        String monthFileName = monthlyVideoPath + keyword + "_" + coupleId + "_" + curTime + ".txt";
-                        writeFile(monthFileName, content.toString());
-
-                        // 동영상 병합 메서드 호출
-                        mergeMonthlyVideo(monthFileName);
-                        // 병합 후 클립 리스트 텍스트 폴더 삭제
-                        Files.deleteIfExists(Paths.get(monthFileName));
-
-                        // 병합된 동영상 정보를 monthlyVideo 테이블에 입력
-                        String filepath = monthFileName.replaceAll(".txt", ".mp4");
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("keyword", keyword);
-                        map.put("coupleId", coupleId);
-                        map.put("yearMonth", yearMonth);
-                        map.put("filepath", filepath);
-                        videoMapper.saveVideo(map);
-
-                        content = new StringBuilder();
-                    }
-                    coupleId = clip.getCoupleId();
-                    keyword = clip.getKeyword();
-                }
-
-                // / file 'C:\Users\SSAFY\Documents\cherish_video\1\1\1.mp4' /형식의 텍스트 저장
-                if (Files.exists(Paths.get(clip.getFilepath()))) {
-                    content.append("file '").append(clip.getFilepath()).append("'\n");
-                }
+               String clipInfo = clip.getCoupleId() + "_" + clip.getKeyword();
+               if(!map.containsKey(clipInfo))
+               {
+                  map.put(clipInfo,new StringBuilder());
+               }
+               StringBuilder txtContent = map.get(clipInfo);
+               txtContent.append("file '").append(clip.getFilepath()).append("'\n");
             }
-            if (!content.isEmpty()) {
-                String monthFileName = monthlyVideoPath + keyword + "_" + coupleId + "_" + curTime + ".txt";
-                writeFile(monthFileName, content.toString());
-                // 동영상 병합 메서드 호출
-                mergeMonthlyVideo(monthFileName);
-                // 병합 후 클립 리스트 텍스트 폴더 삭제
-                Files.deleteIfExists(Paths.get(monthFileName));
+
+            for(Map.Entry<String,StringBuilder> entry: map.entrySet())
+            {
+                String clipInfo = entry.getKey();
+                StringBuilder builder=entry.getValue();
+                log.debug("text res : {}",builder);
+                String monthFileName = monthlyVideoPath + clipInfo+"_"+yearMonth+"_video"+".txt";
+                writeFile(monthFileName, builder.toString());
 
                 // 병합된 동영상 정보를 monthlyVideo 테이블에 입력
-                String filepath = monthFileName.replaceAll(".txt", ".mp4");
-                Map<String, Object> map = new HashMap<>();
-                map.put("keyword", keyword);
-                map.put("coupleId", coupleId);
-                map.put("yearMonth", yearMonth);
-                map.put("filepath", filepath);
-                videoMapper.saveVideo(map);
+                String filepath = mergeMonthlyVideo(monthFileName);
+                
+                Map<String, Object> video = new HashMap<>();
+                int idx=clipInfo.indexOf('_');
+                if(idx==-1)
+                {
+                    log.error("something went wrong during processing monthly video");
+                    continue;
+                }
+                video.put("keyword", clipInfo.substring(clipInfo.indexOf('_')+1));
+                video.put("coupleId", Integer.parseInt(clipInfo.substring(0,clipInfo.indexOf('_'))));
+                video.put("yearMonth", yearMonth);
+                video.put("filepath", filepath);
+                videoMapper.saveVideo(video);
             }
-
         } catch (IOException e) {
             log.error("파일 열기 중 에러 발생: {}", e.toString());
         } catch (SQLException e) {
@@ -127,18 +111,39 @@ public class CronScheduler {
         }
     }
 
-    private void mergeMonthlyVideo(String clipListFile) throws IOException {
+    private String mergeMonthlyVideo(String clipListFile) throws IOException {
         FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg.exe");
         FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe.exe");
 
-        String outputFile = clipListFile.replaceAll(".txt", ".mp4");
-        //ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4
-        FFmpegBuilder builder = new FFmpegBuilder().overrideOutputFiles(true).addInput(clipListFile).addExtraArgs("-f", "concat").addExtraArgs("-safe", "0").addOutput(outputFile).done();
+        String outputFile = clipListFile.replaceAll(".txt", ".webm");
+        //ffmpeg -f concat -safe 0 -protocol_whitelist "file,http,https,tcp,tls" -i mylist.txt -c copy output.mp4
+        FFmpegBuilder builder = new FFmpegBuilder()
+                .overrideOutputFiles(true)
+                .addInput(clipListFile)
+                .addExtraArgs("-f", "concat")
+                .addExtraArgs("-safe", "0")
+                .addExtraArgs("-protocol_whitelist","\"file,http,https,tcp,tls\"")
+                .addOutput(outputFile)
+                .addExtraArgs("-s","1280x720")
+                .done();
 
         log.debug("FFmpeg command: {}", builder.build());
 
         FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
         executor.createJob(builder).run();
+
+        //s3에 결과 파일 올리기
+        String originalFileName=outputFile.substring(clipListFile.lastIndexOf(File.separator)+1);
+        FileInputStream input = new FileInputStream(new File(outputFile));
+        MultipartFile multipartFile = new MockMultipartFile("file",
+                originalFileName, "video/webm", StreamUtils.copyToByteArray(input));
+        String clipURL=awsS3Service.uploadFile(multipartFile);
+        input.close();
+
+        //병합 후 파일들 삭제
+        Files.deleteIfExists(Paths.get(outputFile));
+        Files.deleteIfExists(Paths.get(clipListFile));
+        return clipURL;
     }
 
     private void writeFile(String filePath, String content) throws IOException {
