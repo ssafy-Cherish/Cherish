@@ -22,4 +22,5 @@ public interface ClipMapper {
     int clipCnt (int coupleId) throws SQLException;
 
 
+    int changePin(int clipId, boolean mode);
 }
