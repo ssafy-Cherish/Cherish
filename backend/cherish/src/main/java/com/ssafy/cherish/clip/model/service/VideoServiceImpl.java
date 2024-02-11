@@ -18,4 +18,9 @@ public class VideoServiceImpl implements VideoService {
     public List<VideoDto> getVideoList(Map<String, Object> map) throws Exception {
         return videoMapper.getVideoList(map);
     }
+
+    @Override
+    public List<String> getYearMonth(int coupleId) throws Exception {
+        return videoMapper.getYearMonth(coupleId);
+    }
 }

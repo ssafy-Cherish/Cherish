@@ -15,4 +15,7 @@ public interface VideoMapper {
     // 체리보관함의 월별 키워드 동영상 리스트로 반환
     List<VideoDto> getVideoList (Map<String, Object> map) throws SQLException;
 
+    // coupleId를 입력받아 년, 월만 반환
+    List<String> getYearMonth (int coupleId) throws SQLException;
+
 }

@@ -39,16 +39,17 @@
     </select>
 
     <insert id="createAnswer" parameterType="answerDto">
-        INSERT INTO answer
-        (kakao_id, nickname, couple_id, question_id)
-        VALUES
-        (#{kakaoId}, #{nickname}, #{coupleId}, #{questionId})
+        INSERT INTO answer (kakao_id, nickname, couple_id, question_id)
+        VALUES (#{kakaoId}, #{nickname}, #{coupleId}, #{questionId})
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
     </insert>
 
     <update id="updateAnswerPath" parameterType="answerDto" >
         UPDATE answer
         SET filepath = #{filepath}
-        WHERE kakao_id = #{kakaoId} AND question_id = #{questionId}
+        WHERE id = #{id}
     </update>
 
     <select id="getAnswer" parameterType="map" resultMap="answer">
@@ -63,7 +64,7 @@
         JOIN question AS q
         ON a.question_id = q.id
         WHERE couple_id = #{coupleId}
-        ORDER BY a.question_id
+        ORDER BY a.created_at DESC
     </select>
 
 </mapper>
