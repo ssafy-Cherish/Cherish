@@ -484,6 +484,7 @@ function Meeting() {
     };
 
     peerConnection.ondatachannel = function (event) {
+      console.log("ondatachannel");
       meetingInfo.connect.dataChannel = event.channel;
 
       // changePeerConnectionConnected(peerConnection.connectionState === 'connected');
@@ -542,6 +543,7 @@ function Meeting() {
   };
 
   const handleAccess = function (mId) {
+    console.log("handleAccess");
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.connect.offerReady = true;
@@ -551,6 +553,7 @@ function Meeting() {
   };
 
   const handleOffer = function (offer) {
+    console.log("handleOffer");
     meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
     // create and send an answer to an offer
@@ -575,11 +578,12 @@ function Meeting() {
   };
 
   const handleAnswer = function (answer) {
+    console.log("handleAnswer");
     meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-    console.log("connection established successfully!!");
   };
 
   const handleCandidate = function (candidate) {
+    console.log("handleCandidate");
     meetingInfo.connect.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   };
 
