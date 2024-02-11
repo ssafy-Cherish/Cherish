@@ -54,6 +54,8 @@ function Meeting() {
 
     init: false,
 
+    meetingId: null,
+
     isModalOpen: true,
   });
 
@@ -63,7 +65,6 @@ function Meeting() {
     audioBitsPerSecond: 128000,
     videoBitsPerSecond: 2500000,
   };
-  let meetingId = null;
 
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
@@ -94,13 +95,12 @@ function Meeting() {
       const scriptHistory = newMeetingInfo.scriptHistory;
       scriptHistory.push(script);
 
-      let partnerScript = null;
-      for (let i = scriptHistory.length - 1; i >= 0; i--)
-        // 스크립트가 상대방인 경우에만 즉, gpt의 멘트인 경우는 건너 뛰기 위해
-        if (scriptHistory[i].isLocal == 1) partnerScript = scriptHistory[i];
-
-      // 한 번의 대화가 완성 됐다면 gpt 이용 조건 완료
-      if (scriptHistory.length == 2 && partnerScript !== null) {
+      // 본인이 한 말 직전에 상대방이 한 말일 경우에만 작동
+      let partnerScript =
+        scriptHistory.length >= 2 && scriptHistory[scriptHistory.length - 2].isLocal == 1
+          ? scriptHistory[scriptHistory.length - 2]
+          : null;
+      if (partnerScript !== null) {
         console.log("use gpt");
 
         const myIndex = userId == userInfos[0].id ? 0 : 1;
@@ -239,7 +239,7 @@ function Meeting() {
       video: {
         frameRate: 24,
         width: 320,
-        height: 360,
+        height: 320,
         facingMode: "user",
       },
       audio: {
@@ -436,6 +436,7 @@ function Meeting() {
 
         // 상대방으로 부터 멘트를 받았을때 자신의 대본배열에 상대방의 멘트를 추가
         case "script":
+          msg.data.time = new Date(msg.data.time);
           setMeetingInfo((prevMeetingInfo) => {
             console.log("got script");
             const newMeetingInfo = { ...prevMeetingInfo };
@@ -446,6 +447,7 @@ function Meeting() {
 
         // GPT의 멘트를 받았을 때 그 멘트를 생성시킨 대화바로 뒤에 GPT의 멘트를 추가
         case "gptScript":
+          msg.data.time = new Date(msg.data.time);
           playGPTScript(msg.data);
           setMeetingInfo((prevMeetingInfo) => {
             console.log("got gptScript");
@@ -540,10 +542,10 @@ function Meeting() {
   };
 
   const handleAccess = function (mId) {
-    meetingId = mId;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.connect.offerReady = true;
+      newMeetingInfo.meetingId = mId;
       return newMeetingInfo;
     });
   };
@@ -637,7 +639,7 @@ function Meeting() {
         });
 
         let formData = new FormData();
-        formData.set("meeting_id", meetingId);
+        formData.set("meeting_id", newMeetingInfo.meetingId);
         formData.set("keyword", keyword);
         formData.set("couple_id", coupleId);
         formData.set("clip1", user1 === userId ? blobLocal : blobRemote, "clip1.webm");
