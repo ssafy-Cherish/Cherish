@@ -34,6 +34,10 @@ body {
 	overflow: hidden;
 }
 
+#root {
+	height: 100vh;
+}
+
 #cherrybox::-webkit-scrollbar {
 	display: none;
 }

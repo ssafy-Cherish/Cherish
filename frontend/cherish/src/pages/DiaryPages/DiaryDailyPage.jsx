@@ -94,8 +94,6 @@ const DiaryDailyPage = () => {
 		staleTime: 60000,
 		refetchOnWindowFocus: false,
 		select: (data) => {
-			console.log("inselect data : ", data);
-			console.log("inselect : ", data.meeting);
 			return data.meeting;
 		},
 	});
@@ -134,6 +132,7 @@ const DiaryDailyPage = () => {
 							whileHover={{ scale: 1.2, x: "10%", fontWeight: [100, 600] }}
 							transition={{ duration: 0.2 }}
 						>
+							{"<<  "}
 							{dayjs(date).format("YYYY년 MM월 DD일")}
 						</motion.div>
 						<div className="text-[2vw]">
@@ -189,8 +188,8 @@ const DiaryDailyPage = () => {
 														</span>
 													</button>
 												</div>
-												{console.log("inHTML : ", meeting.clips)}
-												{meeting.clips.length > 0 ? (
+												{meeting.clips.length > 0 &&
+												meeting.clips[0].id != 0 ? (
 													meeting.clips.map((clip, cIdx) => (
 														<div
 															key={clip.id}
