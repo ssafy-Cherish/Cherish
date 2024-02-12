@@ -8,16 +8,12 @@ import useCoupleStore from "../../stores/useCoupleStore";
 import { useQuery } from "@tanstack/react-query";
 
 export default function TodayQuestionRecodePage() {
-	const [isQuestionBoxOpen, setIsQuestionBoxopen] = useState(false);
-	const { question } = useCoupleStore();
-	const date = dayjs();
-	const year = date.get("y");
-	const month = date.get("M") + 1;
-	const day = date.get("D");
-
-	const handleClickIsQuestionBoxOpen = () => {
-		setIsQuestionBoxopen((pre) => !pre);
-	};
+  const [isQuestionBoxOpen, setIsQuestionBoxopen] = useState(false);
+  const { question } = useCoupleStore();
+  const date = dayjs();
+  const year = date.get("y");
+  const month = date.get("M") + 1;
+  const day = date.get("D");
 
   const handleClickIsQuestionBoxOpen = () => {
     setIsQuestionBoxopen((pre) => !pre);
@@ -41,7 +37,13 @@ export default function TodayQuestionRecodePage() {
             <img src={NextIcon} alt="" />
           </div>
         </button>
-        {isQuestionBoxOpen ? <TodayRecoding /> : <TodayQuestionBox handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />}
+        {isQuestionBoxOpen ? (
+          <TodayRecoding />
+        ) : (
+          <TodayQuestionBox
+            handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+          />
+        )}
       </div>
     </ModalRoute>
   );
