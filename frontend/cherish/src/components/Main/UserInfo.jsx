@@ -15,14 +15,26 @@ export default function UserInfo() {
 	const [openModifyModal, setOpenModifyModal] = useState(false);
 	const navigate = useNavigate();
 
-	const cherryInfo = userInfos.filter((info) => {
+	let cherryInfo = userInfos.filter((info) => {
 		return info.id !== userId;
 	})[0];
+	console.log(cherryInfo);
+
+	if (!cherryInfo) {
+		cherryInfo = {
+			birthday: "0000-0-0",
+			nickname: "체리씨",
+		};
+	}
 
 	const anni = dayjs(anniversary).format("YYYY년 M월 D일");
 	const myBirth = dayjs(birthday).format("YYYY년 M월 D일");
-	const cherryBirth = dayjs(cherryInfo.birthday).format("YYYY년 M월 D일");
-
+	let cherryBirth;
+	if (cherryInfo.birthday === "0000-0-0") {
+		cherryBirth = "XXXX년 X월 X일";
+	} else {
+		cherryBirth = dayjs(cherryInfo.birthday).format("YYYY년 M월 D일");
+	}
 	const handleClickIsOpen = () => {
 		setIsOpen((pre) => !pre);
 	};
