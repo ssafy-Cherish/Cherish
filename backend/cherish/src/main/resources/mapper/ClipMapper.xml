@@ -50,4 +50,14 @@
         set is_pinned = #{mode}
         where id = #{clipId};
     </update>
+
+    <select id="getPinnedClip" parameterType="int" resultType="clipVo">
+        SELECT C.ID,C.KEYWORD,M.COUPLE_ID,C.FILEPATH
+        FROM CLIP C
+        JOIN MEETING M ON C.MEETING_ID=M.ID
+        WHERE C.is_pinned = true and
+              M.couple_id = #{coupleId}
+        ORDER BY C.created_at desc
+        LIMIT 6
+    </select>
 </mapper>

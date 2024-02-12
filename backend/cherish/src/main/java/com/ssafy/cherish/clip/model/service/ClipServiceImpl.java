@@ -1,6 +1,7 @@
 package com.ssafy.cherish.clip.model.service;
 
 import com.ssafy.cherish.clip.model.dto.ClipDto;
+import com.ssafy.cherish.clip.model.dto.ClipVo;
 import com.ssafy.cherish.clip.model.mapper.ClipMapper;
 import com.ssafy.cherish.utils.SocketHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -117,6 +119,11 @@ public class ClipServiceImpl implements ClipService {
     @Override
     public int changePin(int clipId, boolean mode) {
         return clipMapper.changePin(clipId, mode);
+    }
+
+    @Override
+    public List<ClipVo> getPinnedClip(int coupleId) {
+        return clipMapper.getPinnedClip(coupleId);
     }
 }
 
