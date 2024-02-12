@@ -64,7 +64,7 @@
         ORDER BY 1;
     </select>
 
-    <select id="getSumOfMeetingTime" parameterType="int">
+    <select id="getSumOfMeetingTime" parameterType="int" resultType="String">
         SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(length)))
         FROM MEETING
         WHERE COUPLE_ID = #{coupleId};
