@@ -1,26 +1,12 @@
-function ChattingBox({
-	meetingInfo,
-	setMeetingInfo,
-	chattingWindow,
-	sendMessage,
-	kakaoId,
-	nickname,
-	sendImg,
-}) {
+function ChattingBox({ meetingInfo, setMeetingInfo, chattingWindow, sendMessage, kakaoId, nickname, sendImg }) {
 	return (
 		<div className="h-[80%] flex flex-col justify-between px-4">
 			<div className="relative rounded-b-2xl h-[85%]">
-				<div
-					className="scroll-box bg-white rounded-b-2xl h-full overflow-y-scroll absolute w-full"
-					ref={chattingWindow}
-				>
+				<div className="scroll-box bg-white rounded-2xl h-full overflow-y-scroll absolute w-full" ref={chattingWindow}>
 					{meetingInfo.chattingHistory.map((elem, idx) => {
 						if (elem.isLocal) {
 							return (
-								<div
-									key={idx}
-									className="flex flex-row justify-end pl-8 pr-4 pt-4 w-full"
-								>
+								<div key={idx} className="flex flex-row justify-end pl-8 pr-4 pt-4 w-full">
 									<div
 										style={{
 											backgroundColor: "#FEF8EC",
@@ -35,10 +21,7 @@ function ChattingBox({
 							);
 						} else {
 							return (
-								<div
-									key={idx}
-									className="flex flex-row justify-start pl-4 pr-8 pt-4 w-full"
-								>
+								<div key={idx} className="flex flex-row justify-start pl-4 pr-8 pt-4 w-full">
 									<div
 										style={{
 											backgroundColor: "#E0F4FF",
@@ -101,7 +84,7 @@ function ChattingBox({
 				className="mx-4 rounded-2xl h-[10%] flex flex-row"
 			>
 				<textarea
-					className="bg-white w-full rounded-2xl"
+					className="bg-white w-full rounded-2xl resize-none scroll-box p-[3%]"
 					onKeyUp={(event) => {
 						if (event.key === "Enter") {
 							if (!event.shiftKey) {
