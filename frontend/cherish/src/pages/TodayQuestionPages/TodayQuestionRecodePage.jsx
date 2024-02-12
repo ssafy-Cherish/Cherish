@@ -34,12 +34,12 @@ export default function TodayQuestionRecodePage() {
           onClick={handleClickIsQuestionBoxOpen}
           className="bg-white h-[3vw] w-[42vw] mt-[0.5vw] rounded-[35px] text-[1.3vw] shadow-md text-center leading-[3vw]"
         >
-          {isQuestionBoxOpen ? "오늘의 질문에 답변하기 " : question.content}
+          {isQuestionBoxOpen ? question.content : "오늘의 질문에 답변하기 "}
           <div className="float-right">
             <img src={NextIcon} alt="" />
           </div>
         </button>
-        {isQuestionBoxOpen ? <TodayQuestionBox handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} /> : <TodayRecoding />}
+        {isQuestionBoxOpen ? <TodayRecoding /> : <TodayQuestionBox handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />}
       </div>
     </ModalRoute>
   );
