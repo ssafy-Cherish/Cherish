@@ -95,7 +95,6 @@ public class ClipServiceImpl implements ClipService {
                 .addOutput(uploadDir)
                 .addExtraArgs("-map", "[v]")
                 .addExtraArgs("-map", "[a]")
-                .addExtraArgs("-ac", "2")
                 .done();
 
         log.debug("FFmpeg command: {}", builder.build());
