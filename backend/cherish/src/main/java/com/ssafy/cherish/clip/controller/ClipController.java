@@ -1,6 +1,7 @@
 package com.ssafy.cherish.clip.controller;
 
 import com.ssafy.cherish.clip.model.dto.ClipDto;
+import com.ssafy.cherish.clip.model.dto.ClipVo;
 import com.ssafy.cherish.clip.model.service.ClipService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -132,5 +134,26 @@ public class ClipController {
 
         return new ResponseEntity<>(resultMap, status);
     }
+
+    @GetMapping("/pin/{coupleId}")
+    @Operation(summary = "핀된 클립 가져오기", description = "is_pinned가 true인 클립 최신순 6개 반환")
+    public ResponseEntity<?> getPinnedClip(@PathVariable int coupleId) {
+        HttpStatus status = HttpStatus.OK;
+        HashMap <String, Object> resultMap = new HashMap<>();
+
+        try {
+            List<ClipVo> list = clipService.getPinnedClip(coupleId);
+            resultMap.put("pinnedclip", list);
+        } catch (Exception e) {
+            log.error("changePin 에러 : {}", e.getMessage());
+            resultMap.put("msg", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<>(resultMap, status);
+    }
+
+
+
 
 }

@@ -194,7 +194,7 @@ const DiaryDailyPage = () => {
 													meeting.clips.map((clip, cIdx) => (
 														<div
 															key={clip.id}
-															className="h-1/3 mb-5 flex flex-col justify-center"
+															className="h-1/3 mb-5 flex flex-col justify-center relative"
 														>
 															<motion.div className="flex flex-row justify-center z-30">
 																<Pin
