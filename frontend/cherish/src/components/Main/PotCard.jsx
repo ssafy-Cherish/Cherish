@@ -4,6 +4,8 @@ import PotLv1 from "../../assets/Pot/PotLv1.svg";
 import useCoupleStore from "../../stores/useCoupleStore";
 import { fetchExpLevel } from "../../services/PotService";
 
+const Level = ["새싹 단계", "떡잎 단계", "체리나무 단계"];
+
 
 
 export default function PotCard({dday}) {
@@ -12,6 +14,12 @@ export default function PotCard({dday}) {
     queryKey: ["expLevel", coupleId],
     queryFn: () => fetchExpLevel(coupleId),
   });
+
+  if (isLoading) {
+    return (
+      <div>로딩중</div>
+    )
+  }
   return (
     <>
       <div id="PotState" className="col-span-2 flex flex-col items-center">
@@ -19,14 +27,14 @@ export default function PotCard({dday}) {
           <img src={PotLv1} alt="PotImg" />
         </div>
         <p id="PotName" className="text-[1.2vw] text-cherry font-bold">
-          체리 떡잎
+        {Level[expLevel.level]}
         </p>
-        {isLoading ? <div>로딩중</div> : <progress
+        <progress
           id="PotExp"
           className="PotExp h-2 w-[7vw] mt-5"
           max="100"
           value={expLevel.exp}
-        />}
+        />
       </div>
       <div
         id="PotDescrption"
