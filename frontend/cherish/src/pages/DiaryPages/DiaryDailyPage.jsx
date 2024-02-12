@@ -12,9 +12,10 @@ import MemoImg from "../../assets/MemoImg.svg";
 import chatImg from "../../assets/diary/chat.svg";
 import useUserStore from "../../stores/useUserStore";
 import useCoupleStore from "../../stores/useCoupleStore";
-import { useQuery } from "@tanstack/react-query";
-import { dailyFetch, getMemoFetch } from "../../services/diaryService";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { dailyFetch, getMemoFetch, changePinFetch } from "../../services/diaryService";
 import Pin from "../../assets/diary/pin.svg?react";
+import { queryClient } from "../../utils/query";
 
 const DiaryDailyPage = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -63,18 +64,28 @@ const DiaryDailyPage = () => {
 		navigate({ pathname: "/diary/month", search: `?year=${year}&month=${month}` });
 	}
 
-	function togglePinned(clipId, mIdx) {
+	const { mutate: changePinMutate } = useMutation({
+		mutationFn: changePinFetch,
+		onMutate: async (data) => {
+			const newMeetings = { meeting: meetings };
+			newMeetings.meeting[data.mIdx].clips[data.cIdx].pinned = data.mode;
+
+			console.log("new", newMeetings);
+			await queryClient.cancelQueries({ queryKey: ["meetings", year, month, day] });
+			const prevMeetings = queryClient.getQueriesData(["meetings", year, month, day]);
+			queryClient.setQueryData(["meetings", year, month, day], newMeetings);
+
+			return { prevMeetings };
+		},
+		onError: (error, data, context) => {
+			queryClient.setQueryData(["meetings", year, month, day], context.prevMeetings);
+		},
+	});
+
+	function togglePinned(clipId, pinned, mIdx, cIdx) {
 		console.log(clipId, mIdx);
 		animate(`#pin${clipId}`, { x: [0, -5, 0], y: [0, 5, 0] }, { duration: 0.3 });
-		// const tmpMeetings = [...meetings];
-		// tmpMeetings[mIdx].clips = tmpMeetings[mIdx].clips.map((clip) => {
-		//   const tmp = { ...clip };
-		//   if (tmp.id === clipId) tmp.isPinned = !tmp.isPinned;
-		//   return tmp;
-		// });
-		// console.log(tmpMeetings);
-		// setMeetings(tmpMeetings);
-		// isPin upadte 쿼리
+		changePinMutate({ clipId, mode: !pinned, mIdx, cIdx });
 	}
 
 	const { data: meetings } = useQuery({
@@ -83,6 +94,8 @@ const DiaryDailyPage = () => {
 		staleTime: 60000,
 		refetchOnWindowFocus: false,
 		select: (data) => {
+			console.log("inselect data : ", data);
+			console.log("inselect : ", data.meeting);
 			return data.meeting;
 		},
 	});
@@ -176,28 +189,63 @@ const DiaryDailyPage = () => {
 														</span>
 													</button>
 												</div>
-												{meeting.clips > 0 ? (
-													meeting.clips.map((clip) => (
+												{console.log("inHTML : ", meeting.clips)}
+												{meeting.clips.length > 0 ? (
+													meeting.clips.map((clip, cIdx) => (
 														<div
 															key={clip.id}
-															className="h-1/3 mb-5 flex flex-col justify-center"
+															className="h-1/3 mb-5 flex flex-col justify-center relative"
 														>
-															<div className="flex flex-row justify-center z-30">
-																<motion.Pin
-																	className="absolute -mt-[1vh] hover:cursor-pointer"
-																	whileHover={{ scale: 1.2 }}
+															<motion.div className="flex flex-row justify-center z-30">
+																<Pin
+																	id={`pin${clip.id}`}
 																	onClick={() =>
-																		togglePinned(clip.id, mIdx)
+																		togglePinned(
+																			clip.id,
+																			clip.pinned,
+																			mIdx,
+																			cIdx
+																		)
 																	}
-																></motion.Pin>
-															</div>
+																	className={`absolute -mt-[2vh] w-[10%] h-[10%]  hover:cursor-pointer ${
+																		clip.pinned
+																			? "fill-cherry"
+																			: "fill-[#9D9D9D]"
+																	}`}
+																	onMouseEnter={() => {
+																		animate(
+																			`#pin${clip.id}`,
+																			{ scale: 1.2 },
+																			{ duration: 0.1 }
+																		);
+																	}}
+																	onMouseLeave={() => {
+																		animate(
+																			`#pin${clip.id}`,
+																			{ scale: 1 },
+																			{ duration: 0.1 }
+																		);
+																	}}
+																></Pin>
+															</motion.div>
 															<div
 																className="tooltip tooltip-bottom mb-[2vw]"
 																data-tip={`"${clip.keyword}"`}
 															>
 																<video
-																	src=""
+																	src={clip.filepath}
 																	className="h-full w-full bg-slate-400"
+																	onClick={(event) => {
+																		event.preventDefault();
+																		if (
+																			event.target.paused ===
+																			false
+																		) {
+																			event.target.pause();
+																		} else {
+																			event.target.play();
+																		}
+																	}}
 																/>
 															</div>
 														</div>

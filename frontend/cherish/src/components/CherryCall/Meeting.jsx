@@ -54,6 +54,8 @@ function Meeting() {
 
     init: false,
 
+    meetingId: null,
+
     isModalOpen: true,
   });
 
@@ -63,18 +65,33 @@ function Meeting() {
     audioBitsPerSecond: 128000,
     videoBitsPerSecond: 2500000,
   };
-  let meetingId = null;
+  let firstSpeak = true;
 
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       console.log(result);
 
-      useGPT(result);
+      // 말한 내용을 script 객체로 생성
+      const script = makeScriptAndSend(result);
+
+      // 녹화 재시작
+      setMeetingInfo((prevMeetingInfo) => {
+        const newMeetingInfo = { ...prevMeetingInfo };
+
+        // 처음 발언과 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
+        if (firstSpeak || result.includes("안녕"))
+          recordStopAndStart(newMeetingInfo, true, script, "안녕");
+        else recordStopAndStart(newMeetingInfo, false);
+
+        return newMeetingInfo;
+      });
+
+      useGPT(script);
     },
   });
 
-  // 이승준이 추가한 함수
-  function useGPT(result) {
+  // 스크립트 생성 후 전송
+  function makeScriptAndSend(result) {
     // 스크립트 생성 후 상대방에게 전송
     var script = {
       message: result,
@@ -89,18 +106,21 @@ function Meeting() {
     );
     script.isLocal = 0;
 
+    return script;
+  }
+  // gpt 사용
+  function useGPT(script) {
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       const scriptHistory = newMeetingInfo.scriptHistory;
       scriptHistory.push(script);
 
-      let partnerScript = null;
-      for (let i = scriptHistory.length - 1; i >= 0; i--)
-        // 스크립트가 상대방인 경우에만 즉, gpt의 멘트인 경우는 건너 뛰기 위해
-        if (scriptHistory[i].isLocal == 1) partnerScript = scriptHistory[i];
-
-      // 한 번의 대화가 완성 됐다면 gpt 이용 조건 완료
-      if (scriptHistory.length == 2 && partnerScript !== null) {
+      // 본인이 한 말 직전에 상대방이 한 말일 경우에만 작동
+      let partnerScript =
+        scriptHistory.length >= 2 && scriptHistory[scriptHistory.length - 2].isLocal == 1
+          ? scriptHistory[scriptHistory.length - 2]
+          : null;
+      if (partnerScript !== null) {
         console.log("use gpt");
 
         const myIndex = userId == userInfos[0].id ? 0 : 1;
@@ -138,25 +158,32 @@ function Meeting() {
           .then((data) => {
             console.log("gpt return");
             console.log(data);
-            const output = data.choices[0].message.content.split("\n");
-            output[0] = output[0].split(":");
-            output[1] = output[1].split(":");
+
+            // gpt를 이용한 영상저장이 필요없으므로 주석처리
+            // const output = data.choices[0].message.content.split("\n");
+            // output[0] = output[0].split(":");
+            // output[1] = output[1].split(":");
+
+            const output = data.choices[0].message.content.split(":");
+
             console.log(output);
 
-            recordStopAndStart(
-              newMeetingInfo,
-              JSON.parse(output[0][0]),
-              partnerScript,
-              output[0][1]
-            );
+            // gpt를 이용한 영상저장이 필요없으므로 주석처리
+            // recordStopAndStart(
+            //   newMeetingInfo,
+            //   JSON.parse(output[0][0]),
+            //   partnerScript,
+            //   output[0][1]
+            // );
 
-            if (JSON.parse(output[1][0]) == true) {
+            // gpt를 이용한 영상저장이 필요하다면 output[0]을 output[1][0]로 변경 필요
+            if (JSON.parse(output[0]) == true) {
               // gpt 제안문 대본에 추가하는 기능 구현
               setMeetingInfo((prevMeetingInfo) => {
                 const newMeetingInfo2 = { ...prevMeetingInfo };
                 console.log("gpt 대본 추가");
                 var gptScript = {
-                  message: output[1][1],
+                  message: output[1],
                   isLocal: 2,
                   time: new Date(),
                   lastIndex: scriptHistory.length,
@@ -177,7 +204,9 @@ function Meeting() {
             console.error(error); // 오류 확인
             recordStopAndStart(newMeetingInfo, false);
           });
-      } else recordStopAndStart(newMeetingInfo, false);
+      }
+      // gpt를 이용한 영상저장이 필요없으므로 주석처리
+      // else recordStopAndStart(newMeetingInfo, false);
 
       return newMeetingInfo;
     });
@@ -208,7 +237,7 @@ function Meeting() {
             return newMeetingInfo;
           });
         });
-        //audio.volume = 0.5; // 0에서 1사이 설정가능
+        audio.volume = 0; // 0에서 1사이 설정가능
         audio.play(); // 오디오 재생
         setMeetingInfo((prevMeetingInfo) => {
           const newMeetingInfo = { ...prevMeetingInfo };
@@ -239,7 +268,7 @@ function Meeting() {
       video: {
         frameRate: 24,
         width: 320,
-        height: 360,
+        height: 320,
         facingMode: "user",
       },
       audio: {
@@ -330,7 +359,6 @@ function Meeting() {
     };
 
     conn.onmessage = function (msg) {
-      console.log("Got message");
       var content = JSON.parse(msg.data);
       var data = content.data;
       switch (content.event) {
@@ -378,9 +406,10 @@ function Meeting() {
   const initialize = function () {
     const configuration = {
       iceServers: [
-        {
-          url: "stun:stun2.1.google.com:19302",
-        },
+        // {
+        // 	url: "stun:stun2.1.google.com:19302",
+        // },
+        { url: "stun:stun.l.google.com:19302" },
       ],
     };
 
@@ -394,6 +423,11 @@ function Meeting() {
           data: event.candidate,
         });
       }
+    };
+
+    peerConnection.oniceconnectionstatechange = function (event) {
+      console.log("oniceconnectionstatechange");
+      console.log(event);
     };
 
     // creating data channel
@@ -436,6 +470,7 @@ function Meeting() {
 
         // 상대방으로 부터 멘트를 받았을때 자신의 대본배열에 상대방의 멘트를 추가
         case "script":
+          msg.data.time = new Date(msg.data.time);
           setMeetingInfo((prevMeetingInfo) => {
             console.log("got script");
             const newMeetingInfo = { ...prevMeetingInfo };
@@ -446,6 +481,7 @@ function Meeting() {
 
         // GPT의 멘트를 받았을 때 그 멘트를 생성시킨 대화바로 뒤에 GPT의 멘트를 추가
         case "gptScript":
+          msg.data.time = new Date(msg.data.time);
           playGPTScript(msg.data);
           setMeetingInfo((prevMeetingInfo) => {
             console.log("got gptScript");
@@ -482,6 +518,7 @@ function Meeting() {
     };
 
     peerConnection.ondatachannel = function (event) {
+      console.log("ondatachannel");
       meetingInfo.connect.dataChannel = event.channel;
 
       // changePeerConnectionConnected(peerConnection.connectionState === 'connected');
@@ -540,15 +577,17 @@ function Meeting() {
   };
 
   const handleAccess = function (mId) {
-    meetingId = mId;
+    console.log("handleAccess");
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.connect.offerReady = true;
+      newMeetingInfo.meetingId = mId;
       return newMeetingInfo;
     });
   };
 
   const handleOffer = function (offer) {
+    console.log("handleOffer");
     meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
     // create and send an answer to an offer
@@ -573,11 +612,12 @@ function Meeting() {
   };
 
   const handleAnswer = function (answer) {
+    console.log("handleAnswer");
     meetingInfo.connect.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-    console.log("connection established successfully!!");
   };
 
   const handleCandidate = function (candidate) {
+    console.log("handleCandidate");
     meetingInfo.connect.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
   };
 
@@ -593,86 +633,65 @@ function Meeting() {
   let intervalId = null;
   // 처음 시작할 때와 자신의 발언이 끝날때마다 녹화를 다시 시작
   // 이전 대화가 저장할만 하다면 저장 작업도 수행
-  function recordStopAndStart(newMeetingInfo, save, partnerScript, keyword) {
+  function recordStopAndStart(newMeetingInfo, save, script, keyword) {
     if (record.length > 0) {
-      if (save == true) saveAndSendClip(newMeetingInfo, partnerScript, keyword);
+      if (save == true) saveAndSendClip(newMeetingInfo, script, keyword);
 
       // 모든 녹화 중지
       for (let i = 0; i < record.length; i++) {
         record[i].mediaRecorder[0].stop();
         record[i].mediaRecorder[1].stop();
-        clearInterval(intervalId);
       }
+      clearInterval(intervalId);
     }
 
     // record 초기화
     record = [];
 
     // 녹화 시작과 일정 주기마다 녹화 추가 생성
-    // 주기 10초로 조정 렉 너무 걸림
+    // 주기 5초로 조정 렉 너무 걸림
     newRecordPushAndRemove();
-    intervalId = setInterval(newRecordPushAndRemove, 10000);
+    intervalId = setInterval(newRecordPushAndRemove, 5000);
   }
   // 클립 저장 후 전송
-  function saveAndSendClip(newMeetingInfo, partnerScript, keyword) {
-    const scriptHistory = newMeetingInfo.scriptHistory;
-
-    // 마지막 스크립트 인덱스
-    const last = scriptHistory.length - 1;
-
+  function saveAndSendClip(newMeetingInfo, script, keyword) {
     // 저장할 대화의 소요시간을 대략적으로 계산
     // 문자 3개당 1초가 소요된다고 가정 (조정 가능)
     // 미리초 단위
-    const talkLength = (partnerScript.message.length / 3) * 1000;
+    const talkLength = (script.message.length / 3) * 1000;
 
     // 가장 일찍 녹화를 시작한 시점 즉 이전에 내가 말했던 시점부터
     // 내가 현재 말한 시점까지 가장 대화길이에 알맞는 구간을 선택
     for (let i = 0; i < record.length; i++) {
-      if (i == record.length - 1 || partnerScript.time - record[i + 1].startTime < talkLength) {
-        const blobLocal = new Blob(record[i].recordedChunks[0], {
-          mimeType: recordOption.mimeType,
-        });
-        const blobRemote = new Blob(record[i].recordedChunks[1], {
-          mimeType: recordOption.mimeType,
-        });
+      if (i == record.length - 1 || script.time - record[i + 1].startTime < talkLength) {
+        const selectedRecord = record[i];
+        // 선택된 녹화본은 바로 멈추지 말고 일정시간 이후에 멈추기 위해
+        // 배열에서 제거 시킨 뒤 일정시간뒤에 따로 녹화를 중시 시킨다.
+        record.splice(i, 1);
 
-        let formData = new FormData();
-        formData.set("meeting_id", meetingId);
-        formData.set("keyword", keyword);
-        formData.set("couple_id", coupleId);
-        formData.set("clip1", user1 === userId ? blobLocal : blobRemote, "clip1.webm");
-        formData.set("clip2", user1 === userId ? blobRemote : blobLocal, "clip2.webm");
-        console.log(formData);
-
-        fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
-          method: "post",
-          headers: {
-            Accept: "*/*",
-          },
-          body: formData,
-        })
-          .then((response) => {
-            // sendMessage(
-            //   JSON.stringify({
-            //     cmd: "send new clip",
-            //     data: response.body,
-            //   })
-            // );
-            // setMeetingInfo((prevMeetingInfo) => {
-            //   const newMeetingInfo = { ...prevMeetingInfo };
-            //   newMeetingInfo.clipHistory.push(
-            //     new Blob(response.body, {
-            //       mimeType: "video/webm; codecs=vp9,opus",
-            //     })
-            //   );
-            //   return newMeetingInfo;
-            // });
-          })
-<<<<<<< Updated upstream
-          .catch((err) => {
-            console.log(err);
+        setTimeout(() => {
+          const blobLocal = new Blob(selectedRecord.recordedChunks[0], {
+            mimeType: recordOption.mimeType,
           });
-=======
+          const blobRemote = new Blob(selectedRecord.recordedChunks[1], {
+            mimeType: recordOption.mimeType,
+          });
+
+          let formData = new FormData();
+          formData.set("meeting_id", newMeetingInfo.meetingId);
+          formData.set("keyword", keyword);
+          formData.set("couple_id", coupleId);
+          formData.set("clip1", user1 === userId ? blobLocal : blobRemote, "clip1.webm");
+          formData.set("clip2", user1 === userId ? blobRemote : blobLocal, "clip2.webm");
+          console.log(formData);
+
+          fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
+            method: "post",
+            headers: {
+              Accept: "*/*",
+            },
+            body: formData,
+          })
             .then((response) => {
               // sendMessage(
               //   JSON.stringify({
@@ -697,7 +716,6 @@ function Meeting() {
           selectedRecord.mediaRecorder[0].stop();
           selectedRecord.mediaRecorder[1].stop();
         }, 3000);
->>>>>>> Stashed changes
 
         break;
       }
