@@ -8,7 +8,7 @@
         <result property="coupleId" column="coupleId"/>
         <result property="length" column="length"/>
         <result property="createdAt" column="createdAt"/>
-        <collection property="chats" javaType="List" ofType="chatDto">
+        <collection property="chats" javaType="List" ofType="chatDto" notNullColumn="content">
             <id property="id" column="chatId"/>
             <result property="kakaoId" column="kakaoId"/>
             <result property="nickname" column="nickname"/>
@@ -16,7 +16,7 @@
             <result property="content" column="content"/>
             <result property="createdAt" column="chatCreatedAt"/>
         </collection>
-        <collection property="clips" javaType="List" ofType="clipDto">
+        <collection property="clips" javaType="List" ofType="clipDto"  notNullColumn="filepath">
             <id property="id" column="clipId"/>
             <result property="meetingId" column="id"/>
             <result property="keyword" column="keyword"/>

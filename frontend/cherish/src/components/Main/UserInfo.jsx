@@ -10,7 +10,7 @@ import ModifyModal from "./ModifyModal";
 
 export default function UserInfo() {
 	const { anniversary, userInfos, reset: coupleReset } = useCoupleStore();
-	const { userId, birthday, nickname, reset: userReset } = useUserStore();
+	const { userId, reset: userReset } = useUserStore();
 	const [isOpen, setIsOpen] = useState(false);
 	const [openModifyModal, setOpenModifyModal] = useState(false);
 	const navigate = useNavigate();
@@ -18,23 +18,15 @@ export default function UserInfo() {
 	let cherryInfo = userInfos.filter((info) => {
 		return info.id !== userId;
 	})[0];
-	console.log(cherryInfo);
 
-	if (!cherryInfo) {
-		cherryInfo = {
-			birthday: "0000-0-0",
-			nickname: "체리씨",
-		};
-	}
+	let myInfo = userInfos.filter((info) => {
+		return info.id === userId;
+	})[0];
 
 	const anni = dayjs(anniversary).format("YYYY년 M월 D일");
-	const myBirth = dayjs(birthday).format("YYYY년 M월 D일");
-	let cherryBirth;
-	if (cherryInfo.birthday === "0000-0-0") {
-		cherryBirth = "XXXX년 X월 X일";
-	} else {
-		cherryBirth = dayjs(cherryInfo.birthday).format("YYYY년 M월 D일");
-	}
+	const myBirth = myInfo.birthday;
+	const cherryBirth = cherryInfo.birthday;
+
 	const handleClickIsOpen = () => {
 		setIsOpen((pre) => !pre);
 	};
@@ -67,7 +59,7 @@ export default function UserInfo() {
 					onClick={handleClickIsOpen}
 				>
 					<img className="col-span-1" src={ProfileIcon} alt="ProfileIcon" />
-					<p className="col-span-3 my-auto text-text-black">{nickname}</p>
+					<p className="col-span-3 my-auto text-text-black">{myInfo.nickname}</p>
 					<img
 						className={"col-span-1 w-[2vw] my-auto " + (isOpen && "rotate-180")}
 						src={DropdownIcon}
