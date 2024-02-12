@@ -81,6 +81,12 @@ export default function TodayRecoding() {
     setModalOpen((pre) => false);
   };
 
+  const videoSave = () => {
+    if (confirm('영상을 저장할까요?')) {
+      
+    }
+  }
+
   useEffect(() => {
     getMedia();
   }, []);
@@ -98,11 +104,11 @@ export default function TodayRecoding() {
         <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
           {isRecording ? (
             <button onClick={stopRecoding} id="finish-btn">
-              <img src={StopRecord} alt="" />
+              <img src={StopRecord} alt="StopRecord" />
             </button>
           ) : (
             <button onClick={startRecoding} id="start-btn">
-              <img src={StartRecord} alt="" />
+              <img src={StartRecord} alt="StartRecord" />
             </button>
           )}
         </div>
@@ -135,7 +141,7 @@ export default function TodayRecoding() {
               >
                 취소
               </button>
-              <button className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]">
+              <button onClick={videoSave} className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]">
                 저장
               </button>
             </div>

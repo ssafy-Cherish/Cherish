@@ -406,9 +406,10 @@ function Meeting() {
   const initialize = function () {
     const configuration = {
       iceServers: [
-        {
-          url: "stun:stun2.1.google.com:19302",
-        },
+        // {
+        // 	url: "stun:stun2.1.google.com:19302",
+        // },
+        { url: "stun:stun.l.google.com:19302" },
       ],
     };
 

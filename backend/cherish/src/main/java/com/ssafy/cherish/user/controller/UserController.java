@@ -224,7 +224,7 @@ public class UserController {
                 userService.coupleSecondJoin(userDto);
             }
 
-            if(coupleDto.getUser1() == null && coupleDto.getUser2() == null)
+            if(!(coupleDto.getUser1() == null && coupleDto.getUser2() == null))
                 userService.initCoupleDeletedAt(coupleDto.getId());
 
         } catch (Exception e) {
