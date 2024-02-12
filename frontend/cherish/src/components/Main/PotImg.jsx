@@ -17,8 +17,8 @@ export default function PotImg() {
 
   if (isLoading) {
     return <div>로딩중</div>
-  } else {
-  }
+  } 
+
   return (
     <div
       id="CherryPot"
@@ -28,7 +28,7 @@ export default function PotImg() {
         <img className="w-[100%] animate-wiggle" src={PotLv2} alt="PotLv1" />
       </div>
       <p className="mt-[4vw] text-text-black font-bold text-[2vw]">
-        {isLoading ? <div>로딩중입니다</div> : Level[data.level]}
+        {Level[data.level]}
       </p>
     </div>
   );

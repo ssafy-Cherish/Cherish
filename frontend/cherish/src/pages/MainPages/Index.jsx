@@ -45,7 +45,8 @@ export default function Index() {
         >
           <DiaryCard />
         </Link>
-        <div
+        <Link
+          to="cherrycall"
           id="CherryCall"
           className="bg-beige col-span-2 flex flex-col items-center justify-around rounded-[20px] shadow-md"
         >
@@ -56,7 +57,7 @@ export default function Index() {
             <img src={CoupleImg1} alt="CoupleImg1" />
           </div>
           <p className="text-[1.2vw] mb-[1.8vw] text-text-black">체리콜</p>
-        </div>
+        </Link>
         <div id="Memo" className="col-span-2">
           <MainMemo />
         </div>
