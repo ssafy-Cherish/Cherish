@@ -114,4 +114,23 @@ public class ClipController {
 
         return new String[]{leftVideoPath, rightVideoPath, resPath,resFile};
     }
+
+    @PutMapping("/pin/{clipId}/{mode}")
+    @Operation(summary = "클립 핀 값 변경", description = "해당 클립에 대한 is_pinned 값 변경")
+    public ResponseEntity<?> changePin(@PathVariable int clipId, @PathVariable boolean mode) {
+        HttpStatus status = HttpStatus.OK;
+        HashMap <String, Object> resultMap = new HashMap<>();
+
+        try {
+            int ret = clipService.changePin(clipId, mode);
+            resultMap.put("result", mode);
+        } catch (Exception e) {
+            log.error("changePin 에러 : {}", e.getMessage());
+            resultMap.put("msg", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<>(resultMap, status);
+    }
+
 }

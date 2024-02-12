@@ -30,14 +30,6 @@
         WHERE id = #{id}
     </select>
 
-    <select id="chkAnswer" parameterType="map" resultType="int">
-        SELECT count(a.id)
-        FROM answer AS a
-        JOIN couple AS c
-        ON a.couple_id = c.id
-        WHERE a.question_id = #{questionId} AND a.couple_id = #{coupleId}
-    </select>
-
     <insert id="createAnswer" parameterType="answerDto">
         INSERT INTO answer (kakao_id, nickname, couple_id, question_id)
         VALUES (#{kakaoId}, #{nickname}, #{coupleId}, #{questionId})
@@ -52,10 +44,12 @@
         WHERE id = #{id}
     </update>
 
-    <select id="getAnswer" parameterType="map" resultMap="answer">
+    <select id="getAnswer" parameterType="int" resultType="map">
         SELECT *
-        FROM answer
-        WHERE question_id = #{questionId} AND couple_id = #{coupleId}
+        FROM answer as a
+        JOIN couple as c
+        ON a.couple_id = c.id
+        WHERE a.couple_id = #{coupleId} AND a.question_id = c.question_cnt
     </select>
 
     <select id="getAnswerList" parameterType="int" resultType="map">
@@ -65,6 +59,16 @@
         ON a.question_id = q.id
         WHERE couple_id = #{coupleId}
         ORDER BY a.created_at DESC
+    </select>
+
+    <select id="getQnaCount" parameterType="int" resultType="int">
+        SELECT count(a.id)
+        FROM answer as a
+        JOIN question as q
+        ON a.question_id = q.id
+        JOIN couple as c
+        ON a.couple_id = c.id
+        WHERE c.question_cnt = a.question_id AND c.id = #{coupleId}
     </select>
 
 </mapper>

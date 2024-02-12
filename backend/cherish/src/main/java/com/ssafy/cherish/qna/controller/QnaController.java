@@ -79,7 +79,7 @@ public class QnaController {
     @GetMapping("/getAnswerList")
     @Operation(summary = "오늘의 질문 답변 list 가져옴", description = "couple_id를 받아 해당 커플이 답변한 answerDto을 list로 가져온다")
     public ResponseEntity<?> getAnswerList (@RequestParam("coupleId") int coupleId) {
-        log.debug("getAnswerList 호출 : {}");
+        log.debug("getAnswerList 호출 : {}", coupleId);
         Map<String, Object> resultMap = new HashMap<String, Object>();
         HttpStatus status;
 
@@ -92,6 +92,37 @@ public class QnaController {
         } catch (Exception e) {
             log.error("getAnswerList 에러 : {}", e.getMessage());
             resultMap.put("getAnswerList 에러", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        }
+    }
+
+    @GetMapping("/getAnswer")
+    @Operation(summary = "최신 오늘의 질문에 대한 answer 반환", description = "coupleId를 입력받아 현재 대답 상태와 answer를 반환")
+    public ResponseEntity<?> getAnswer (int coupleId) {
+        log.debug("getAnswer 호출 : {}", coupleId);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            int cnt = qnaService.getQnaCnt(coupleId);
+
+            if (cnt == 2) {
+                resultMap.put("answer", qnaService.getAnswer(coupleId));
+                resultMap.put("answerCnt", 2);
+            } else if (cnt == 1) {
+                resultMap.put("answer", qnaService.getAnswer(coupleId));
+                resultMap.put("answerCnt", 1);
+            } else {
+                resultMap.put("answerCnt", 0);
+            }
+
+            status = HttpStatus.OK;
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        } catch (Exception e) {
+            log.error("getAnswer 에러 : {}", e.getMessage());
+            resultMap.put("getAnswer 에러", e.getMessage());
             status = HttpStatus.BAD_REQUEST;
 
             return new ResponseEntity<Map<String, Object>>(resultMap, status);

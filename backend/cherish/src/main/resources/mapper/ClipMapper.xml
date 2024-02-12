@@ -45,4 +45,9 @@
         WHERE cou.id = #{coupleId}
     </select>
 
+    <update id="changePin" parameterType="map">
+        UPDATE clip
+        set is_pinned = #{mode}
+        where id = #{clipId};
+    </update>
 </mapper>

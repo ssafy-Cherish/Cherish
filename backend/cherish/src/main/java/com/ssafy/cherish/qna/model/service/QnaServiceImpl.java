@@ -57,25 +57,21 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public boolean chkAnswer(Map<String, Object> map) throws Exception {
-        int cnt = qnaMapper.chkAnswer(map);
-
-        if (cnt == 2) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public AnswerDto getAnswer(Map<String, Object> map) throws Exception {
-        return qnaMapper.getAnswer(map);
+    public List<Map<String, Object>> getAnswer(int coupleId) throws Exception {
+        return qnaMapper.getAnswer(coupleId);
     }
 
     @Override
     public List<Map<String, Object>> getAnswerList(int coupleId) throws Exception {
         return qnaMapper.getAnswerList(coupleId);
     }
+
+    @Override
+    public int getQnaCnt(int coupleId) throws Exception {
+        return qnaMapper.getQnaCount(coupleId);
+    }
+
+
 
 //    S3 도입으로 필요없어짐
 //    String setAnswerDir(AnswerDto answerDto) throws Exception {
