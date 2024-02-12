@@ -75,7 +75,7 @@ public class ClipServiceImpl implements ClipService {
 
         log.info("saveClip 중 생성된 filepath 채워진 객체 : {}", clipDto.toString());
         clipMapper.updateClipPath(clipDto);
-        socketHandler.sendClipUrl(coupleId,clipURL);
+        socketHandler.sendClipUrl(coupleId,clipURL,clipDto.getKeyword());
     }
 
 

@@ -150,7 +150,7 @@ public class SocketHandler extends TextWebSocketHandler {
     }
 
     // 완성된 클립의 url을 커플에게 전송
-    public void sendClipUrl(int coupleId, String url) {
+    public void sendClipUrl(int coupleId, String url, String keyword) {
         log.debug("완성된 클립 url 전송 : {}", url);
 
         if (!connections.containsKey(coupleId)) {
@@ -171,7 +171,10 @@ public class SocketHandler extends TextWebSocketHandler {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> res = new HashMap<>();
             res.put("event", "getClipURL");
-            res.put("data", url);
+            Map<String, Object> data = new HashMap<>();
+            data.put("url", url);
+            data.put("keyword", keyword);
+            res.put("data", data);
             TextMessage newMessage = new TextMessage(mapper.writeValueAsBytes(res));
             for (CherishSocketSession cs : list)
                 cs.getSession().sendMessage(newMessage);
