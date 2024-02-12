@@ -76,16 +76,17 @@ public class MeetingController {
         }
     }
 
+
     @GetMapping("/day")
     @Operation(summary = "일별 체리콜 기록 조회", description = "연월일을 기준으로 커플의 영상통화 기록,메모를 조회")
-    public ResponseEntity<Map<String, Object>> getMeetingsByDate(
+    public ResponseEntity<List> getMeetingsByDate2(
             @RequestParam
             @Parameter(description = "커플 아이디와 생성 연월일 e.g. 'coupleId': 1, 'date':'2024-01-23'")
             Map<String, Object> map
     ) {
         log.debug("체리콜 기록 일별 조회, coupleId : {}, date : {}", map.get("coupleId"), map.get("date"));
         try {
-            Map<String, Object> res = meetingService.getMeetingsByDate(map);
+            List<MeetingDto> res = meetingService.getMeetingsByDate(map);
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             log.debug("일별 미팅 조회 중 에러 발생 : {}", e.getMessage());

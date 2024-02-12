@@ -37,20 +37,9 @@ public class MeetingServiceImpl implements MeetingService {
     public List<String> getMeetingsByMonth(Map<String, Object> map) throws Exception {
         return meetingMapper.getMeetingsByMonth(map);
     }
-
     @Override
     @Transactional
-    public Map<String, Object> getMeetingsByDate(Map<String, Object> map) throws Exception {
-        Map<String, Object> res = new HashMap<>();
-
-        List<MeetingDto> list = meetingMapper.getMeetingsByDate(map);
-        for (MeetingDto meeting : list) {
-            meeting.setChats(meetingMapper.getChatsByMeeting(meeting.getId()));
-            meeting.setClips(meetingMapper.getClipsByMeeting(meeting.getId()));
-        }
-
-        res.put("meeting", list);
-
-        return res;
+    public List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws Exception {
+        return meetingMapper.getMeetingsByDate(map);
     }
 }
