@@ -668,9 +668,36 @@ function Meeting() {
             //   return newMeetingInfo;
             // });
           })
+<<<<<<< Updated upstream
           .catch((err) => {
             console.log(err);
           });
+=======
+            .then((response) => {
+              // sendMessage(
+              //   JSON.stringify({
+              //     cmd: "send new clip",
+              //     data: response.body,
+              //   })
+              // );
+              // setMeetingInfo((prevMeetingInfo) => {
+              //   const newMeetingInfo = { ...prevMeetingInfo };
+              //   newMeetingInfo.clipHistory.push(
+              //     new Blob(response.body, {
+              //       mimeType: "video/webm; codecs=vp9,opus",
+              //     })
+              //   );
+              //   return newMeetingInfo;
+              // });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+          selectedRecord.mediaRecorder[0].stop();
+          selectedRecord.mediaRecorder[1].stop();
+        }, 3000);
+>>>>>>> Stashed changes
 
         break;
       }
@@ -727,7 +754,8 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const url = message;
+    const url = message.url;
+    const keyword = message.keyword;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.clipHistory.push(url);
