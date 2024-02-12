@@ -23,4 +23,6 @@ public interface ClipMapper {
 
 
     int changePin(int clipId, boolean mode);
+
+    List<ClipVo> getPinnedClip(int coupleId);
 }
