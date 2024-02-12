@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import ModalForSave from "../Common/ModalForSave";
 import StartRecord from "../../assets/VideoIcon/StartRecord.svg";
 import StopRecord from "../../assets/VideoIcon/StopRecord.svg";
+import useCoupleStore from "../../stores/useCoupleStore";
+import useUserStore from "../../stores/useUserStore";
+import { useMutation } from "@tanstack/react-query";
+import { postVideoSave } from "../../services/QuestionService";
 
 const constraints = {
   audio: {
@@ -15,12 +19,17 @@ const constraints = {
 
 export default function TodayRecoding() {
   const [mediaStream, setMediaStream] = useState(null);
-  const [recordedMediaUrl, setRecordedMediaUrl] = useState(null);
+  const [recordedBlob, setRecordedblob] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorder = useRef(null);
   const videoOutput = useRef(null);
   const recodeOutput = useRef(null);
+  const { question, coupleId } = useCoupleStore();
+  const { kakaoId, nickname } = useUserStore();
+  const { mutate } = useMutation({
+    mutationFn: postVideoSave,
+  });
 
   async function getMedia() {
     //
@@ -54,12 +63,16 @@ export default function TodayRecoding() {
     mediaRecorder.current.onstop = function () {
       const blob = new Blob(mediaData, { type: "video/webm" });
       const url = window.URL.createObjectURL(blob);
-      setRecordedMediaUrl((prev) => url);
+      setRecordedblob((pre) => blob);
       recodeOutput.current.src = url;
       recodeOutput.current.load();
       recodeOutput.current.oncanplaythrough = function () {
         // 로드 완료되면 실행
         recodeOutput.current.play();
+      };
+      recodeOutput.current.onended = function () {
+        // 비디오 재생이 끝났을 때 URL 해제
+        window.URL.revokeObjectURL(url);
       };
     };
 
@@ -81,6 +94,22 @@ export default function TodayRecoding() {
     setModalOpen((pre) => false);
   };
 
+  const videoSave = () => {
+    if (confirm("영상을 저장할까요?")) {
+      const answerDto = {
+        kakaoId,
+        questionId: question.id,
+        coupleId,
+        nickname,
+      };
+
+      const formData = new FormData();
+      formData.set("answerDto", JSON.stringify(answerDto));
+      formData.set("answer", recordedBlob, "video.webm");
+      mutate(formData);
+    }
+  };
+
   useEffect(() => {
     getMedia();
   }, []);
@@ -98,16 +127,15 @@ export default function TodayRecoding() {
         <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
           {isRecording ? (
             <button onClick={stopRecoding} id="finish-btn">
-              <img src={StopRecord} alt="" />
+              <img src={StopRecord} alt="StopRecord" />
             </button>
           ) : (
             <button onClick={startRecoding} id="start-btn">
-              <img src={StartRecord} alt="" />
+              <img src={StartRecord} alt="StartRecord" />
             </button>
           )}
         </div>
       </div>
-
       {modalOpen && (
         <ModalForSave
           closeModalfun={closeModal}
@@ -135,7 +163,10 @@ export default function TodayRecoding() {
               >
                 취소
               </button>
-              <button className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]">
+              <button
+                onClick={videoSave}
+                className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]"
+              >
                 저장
               </button>
             </div>
