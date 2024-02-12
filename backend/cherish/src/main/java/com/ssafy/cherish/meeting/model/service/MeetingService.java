@@ -24,4 +24,6 @@ public interface MeetingService {
     // 출력 : (연결된 ChatDto List와 ClipDto List가 저장된 상태의 MeetingDto List)와 (해당일자 MemoDto)가 들어간 List
     List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws Exception;
 
+    String getSumOfMeetingTime(int coupleId) throws Exception;
+
 }
