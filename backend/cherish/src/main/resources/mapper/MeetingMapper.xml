@@ -38,7 +38,7 @@
         ON (m.id = clip.meeting_id)
         WHERE m.couple_id = #{coupleId}
         AND DATE (m.created_at)= #{date}
-        ORDER BY m.created_at,chat.created_at,clip.created_at
+        ORDER BY m.created_at,chat.created_at,clip.created_at;
     </select>
 
     <insert id="createMeeting" parameterType="int">
