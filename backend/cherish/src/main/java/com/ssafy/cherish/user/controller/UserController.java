@@ -71,6 +71,13 @@ public class UserController {
                 UserDto userDto = userService.userInfo(kakaoId);
                 CoupleDto coupleDto = userService.coupleInfo(userDto.getCoupleId());
                 List<Map<String, String>> userInfos = userService.getUserInfos(userDto.getCoupleId());
+                if(userInfos.size() < 2) {
+                    Map<String, String> tmp = new HashMap<>();
+                    tmp.put("id", "0");
+                    tmp.put("birthday", "0000-0-0");
+                    tmp.put("nickname", "체리씨");
+                    userInfos.add(tmp);
+                }
                 QuestionDto questionDto = qnaService.getQuestion(userDto.getCoupleId());
                 resultMap.put("userDto", userDto);
                 resultMap.put("userInfos", userInfos);
