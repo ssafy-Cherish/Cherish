@@ -27,7 +27,6 @@ export async function fetchExpLevel(coupleId) {
   }
 
   const exp = await response.json();
-  console.log('패치함수안', exp)
   return exp;
 }
 

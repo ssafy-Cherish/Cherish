@@ -19,27 +19,30 @@ export default function TodayQuestionRecodePage() {
 		setIsQuestionBoxopen((pre) => !pre);
 	};
 
-	return (
-		<ModalRoute modalcss="w-[49.5vw] h-[85vh] bg-pink rounded-[40px]" isX={true}>
-			<p className="text-[1.8vw] ml-[4vw] mt-[2vw]">
-				{year}년 {month}월 {day}일
-			</p>
-			<div className="flex flex-col items-center justify-center">
-				<button
-					onClick={handleClickIsQuestionBoxOpen}
-					className="bg-white h-[3vw] w-[42vw] mt-[0.5vw] rounded-[35px] text-[1.3vw] shadow-md text-center leading-[3vw]"
-				>
-					{isQuestionBoxOpen ? "오늘의 질문에 답변하기 " : question?.content}
-					<div className="float-right">
-						<img src={NextIcon} alt="" />
-					</div>
-				</button>
-				{isQuestionBoxOpen ? (
-					<TodayQuestionBox handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />
-				) : (
-					<TodayRecoding />
-				)}
-			</div>
-		</ModalRoute>
-	);
+  const handleClickIsQuestionBoxOpen = () => {
+    setIsQuestionBoxopen((pre) => !pre);
+  };
+
+  return (
+    <ModalRoute
+      modalcss="w-[49.5vw] h-[85vh] bg-pink rounded-[40px]"
+      isX={true}
+    >
+      <p className="text-[1.8vw] ml-[4vw] mt-[2vw]">
+        {year}년 {month}월 {day}일
+      </p>
+      <div className="flex flex-col items-center justify-center">
+        <button
+          onClick={handleClickIsQuestionBoxOpen}
+          className="bg-white h-[3vw] w-[42vw] mt-[0.5vw] rounded-[35px] text-[1.3vw] shadow-md text-center leading-[3vw]"
+        >
+          {isQuestionBoxOpen ? question.content : "오늘의 질문에 답변하기 "}
+          <div className="float-right">
+            <img src={NextIcon} alt="" />
+          </div>
+        </button>
+        {isQuestionBoxOpen ? <TodayRecoding /> : <TodayQuestionBox handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />}
+      </div>
+    </ModalRoute>
+  );
 }
