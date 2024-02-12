@@ -25,4 +25,7 @@ public interface MeetingMapper {
 
     //coupleId와 date(e.g.'2024-01-23')로 해당 일의 MeetingDto 리스트 반환
     List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws SQLException;
+
+    // 커플의 총 통화시간 "hhh:mm:ss" 형태로 반환
+    String getSumOfMeetingTime(int coupleId) throws SQLException;
 }
