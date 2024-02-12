@@ -84,6 +84,17 @@ public class QnaController {
         HttpStatus status;
 
         try {
+
+            int cnt = qnaService.getQnaCnt(coupleId);
+
+            if (cnt == 2) {
+                resultMap.put("answerCnt", 2);
+            } else if (cnt == 1) {
+                resultMap.put("answerCnt", 1);
+            } else {
+                resultMap.put("answerCnt", 0);
+            }
+
             List<Map<String, Object>> list = qnaService.getAnswerList(coupleId);
             resultMap.put("answerDto List", list);
             status = HttpStatus.OK;
