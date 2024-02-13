@@ -6,6 +6,7 @@ import { useState } from "react";
 import TodayQuestionBox from "../../components/TodayQuestion/TodayQuestionBox";
 import useCoupleStore from "../../stores/useCoupleStore";
 import { useQuery } from "@tanstack/react-query";
+import { getAnsList } from "../../services/QuestionService";
 
 export default function TodayQuestionRecodePage() {
   const [isQuestionBoxOpen, setIsQuestionBoxopen] = useState(false);
@@ -14,10 +15,20 @@ export default function TodayQuestionRecodePage() {
   const year = date.get("y");
   const month = date.get("M") + 1;
   const day = date.get("D");
+  const { coupleId } = useCoupleStore();
+  const { data: ansList, isLoading } = useQuery({
+    queryKey: ["ansList", coupleId],
+    queryFn: () => getAnsList(coupleId),
+  });
 
   const handleClickIsQuestionBoxOpen = () => {
     setIsQuestionBoxopen((pre) => !pre);
   };
+
+  if (isLoading) {
+    return <div>로딩 중</div>;
+  }
+  console.log(ansList);
 
   return (
     <ModalRoute
@@ -43,6 +54,7 @@ export default function TodayQuestionRecodePage() {
           <TodayRecoding />
         ) : (
           <TodayQuestionBox
+            ansList={ansList}
             handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
           />
         )}

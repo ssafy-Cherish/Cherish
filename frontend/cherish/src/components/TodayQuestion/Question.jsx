@@ -3,21 +3,26 @@ import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
 import LockIcon from "../../assets/Common/LockIcon.svg";
 import Answer from "./Answer";
 
-export default function Question({ reply, handleClickIsQuestionBoxOpen }) {
+export default function Question({ reply, handleClickIsQuestionBoxOpen, answer }) {
   const [isOpened, setIsOpened] = useState(false);
   let questioncss = `transition-[height] duration-500 w-[42vw] bg-white mt-[1vw] rounded-[15px] text-[1vw] shadow-md ${
     isOpened && reply ? "h-[25vw] flex flex-col overflow-y-auto" : "h-[4.2vw]"
   }`;
 
   const handleClickQuestionButton = () => {
-    if (reply) {
+    if (reply === 2) {
       setIsOpened((pre) => !pre);
     }
   };
   const handleBackAnswer = () => {
-    if (confirm("오늘의 답변을 작성하지 않았어요! 작성하러 갈까요?")) {
-      handleClickIsQuestionBoxOpen();
+    if (reply === 0) {
+      if (confirm("오늘의 답변을 작성하지 않았어요! 작성하러 갈까요?")) {
+        handleClickIsQuestionBoxOpen();
+      }
+    } else if (reply === 2) {
+      confirm("상대방이 아직 답변을 작성하지 않았어요! 조금 기다릴까요?")
     }
+
   };
   return (
     <>
@@ -28,17 +33,17 @@ export default function Question({ reply, handleClickIsQuestionBoxOpen }) {
             <p>질문들 솰라솰라 솰라</p>
           </div>
           <button
-            onClick={reply ? handleClickQuestionButton : handleBackAnswer}
+            onClick={reply === 2 ? handleClickQuestionButton : handleBackAnswer}
             className="m-auto col-span-1 w-full h-full"
           >
             <img
-              src={reply ? DropdownIcon : LockIcon}
+              src={reply === 2 ? DropdownIcon : LockIcon}
               alt="DropdownIcon"
-              className={"m-auto " + ((isOpened && reply) && "rotate-180")}
+              className={"m-auto " + ((isOpened && reply === 2) && "rotate-180")}
             />
           </button>
         </div>
-        {isOpened && reply ? <Answer /> : undefined}
+        {isOpened && reply === 2 ? <Answer answer={answer} /> : undefined}
       </div>
     </>
   );
