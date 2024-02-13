@@ -10,7 +10,8 @@ function ClipBox({ meetingInfo, clipWindow }) {
 						<div key={idx} className="flex flex-col items-center my-4">
 							<div>{clip.keyword}</div>
 							<video
-								src={clip.url}
+								preload="metadata"
+								src={`${clip.url}#t=2`}
 								onClick={(event) => {
 									event.preventDefault();
 									if (event.target.paused) {
