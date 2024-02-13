@@ -1,6 +1,4 @@
 import { useState } from "react";
-import test from "../../assets/test.png";
-import CoupleImg1 from "../../assets/Common/CoupleImg1.svg";
 export default function Answer({ answer }) {
   const [selectName, setSelectName] = useState(null);
 
@@ -45,7 +43,7 @@ export default function Answer({ answer }) {
                   event.target.play();
                 }
               }}
-              className="w-full h-full rounded-lg"
+              className="skeleton w-full h-full rounded-lg"
               src={answer[0]?.filepath}
             ></video>
           ) : (
@@ -58,7 +56,7 @@ export default function Answer({ answer }) {
                   event.target.play();
                 }
               }}
-              className="w-full h-full rounded-lg"
+              className="skeleton w-full h-full rounded-lg"
               src={answer[1]?.filepath}
             ></video>
           )}

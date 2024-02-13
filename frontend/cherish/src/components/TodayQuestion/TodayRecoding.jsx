@@ -116,15 +116,15 @@ export default function TodayRecoding({ handleIsRecording }) {
 
   return (
     <>
-      <div className="w-[42vw] mt-[2vw]">
+      <div className="w-[42vw] mt-[2vw] flex flex-col items-center justify-center">
         <video
-          className="rounded-t-[15px]"
+          className="rounded-t-[15px] w-full skeleton"
           ref={videoOutput}
           id="video-output"
           autoPlay
           playsInline
         ></video>
-        <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
+        <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw] w-full">
           {isRecording ? (
             <button
               onClick={() => {
