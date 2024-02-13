@@ -36,6 +36,7 @@ export default function Testca() {
                 className="bg-pink mx-[1vw] rounded-[25px] border-[5px] border-cherry"
               >
                 <video
+                  preload="metadata"
                   onClick={(event) => {
                     event.preventDefault();
                     if (event.target.paused === false) {
@@ -45,7 +46,7 @@ export default function Testca() {
                     }
                   }}
                   className="w-full h-full"
-                  src={item}
+                  src={`${item}#t=100`}
                 ></video>
               </motion.li>
             );
