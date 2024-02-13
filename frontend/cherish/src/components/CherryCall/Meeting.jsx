@@ -915,6 +915,11 @@ function Meeting() {
       });
 
       stop();
+
+      meetingInfo?.connect?.dataChannel?.close();
+      meetingInfo?.connect?.peerConnection?.close();
+      meetingInfo?.connect?.conn?.close();
+
     };
   }, []);
 
