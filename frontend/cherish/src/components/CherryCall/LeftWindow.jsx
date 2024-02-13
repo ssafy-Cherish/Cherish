@@ -75,7 +75,8 @@ function LeftWindow({
                     updateRemoteVideo(
                       meetingInfo.video.remote.videoOn,
                       meetingInfo.video.remote.volume,
-                      meetingInfo.video.remote.volumeFactor != 0 ? 0 : 1
+                      meetingInfo.video.remote.volumeFactor != 0 ? 0 : 1,
+                      false
                     );
                   }}
                 >
@@ -100,7 +101,8 @@ function LeftWindow({
                     updateRemoteVideo(
                       meetingInfo.video.remote.videoOn,
                       meetingInfo.video.remote.volume,
-                      nextVolumeFactor
+                      nextVolumeFactor,
+                      false
                     );
 
                     setMeetingInfo((prevMeetingInfo) => {
