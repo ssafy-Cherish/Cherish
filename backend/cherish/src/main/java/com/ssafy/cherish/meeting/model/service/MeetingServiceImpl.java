@@ -37,9 +37,14 @@ public class MeetingServiceImpl implements MeetingService {
     public List<String> getMeetingsByMonth(Map<String, Object> map) throws Exception {
         return meetingMapper.getMeetingsByMonth(map);
     }
+
     @Override
-    @Transactional
     public List<MeetingDto> getMeetingsByDate(Map<String, Object> map) throws Exception {
         return meetingMapper.getMeetingsByDate(map);
+    }
+
+    @Override
+    public String getSumOfMeetingTime(int coupleId) throws Exception {
+        return meetingMapper.getSumOfMeetingTime(coupleId);
     }
 }

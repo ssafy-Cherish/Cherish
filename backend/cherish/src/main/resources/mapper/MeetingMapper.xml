@@ -8,7 +8,7 @@
         <result property="coupleId" column="coupleId"/>
         <result property="length" column="length"/>
         <result property="createdAt" column="createdAt"/>
-        <collection property="chats" javaType="List" ofType="chatDto">
+        <collection property="chats" javaType="List" ofType="chatDto" notNullColumn="content">
             <id property="id" column="chatId"/>
             <result property="kakaoId" column="kakaoId"/>
             <result property="nickname" column="nickname"/>
@@ -16,7 +16,7 @@
             <result property="content" column="content"/>
             <result property="createdAt" column="chatCreatedAt"/>
         </collection>
-        <collection property="clips" javaType="List" ofType="clipDto">
+        <collection property="clips" javaType="List" ofType="clipDto"  notNullColumn="filepath">
             <id property="id" column="clipId"/>
             <result property="meetingId" column="id"/>
             <result property="keyword" column="keyword"/>
@@ -29,8 +29,10 @@
 
     <select id="getMeetingsByDate" resultMap="meeting">
         SELECT m.id AS id, m.couple_id AS coupleId, m.length AS length, m.created_at AS createdAt,
-        chat.id AS chatId, chat.kakao_id AS kakaoId, chat.nickname AS nickname, chat.content AS content, chat.created_at AS chatCreatedAt,
-        clip.id AS clipId, clip.keyword AS keyword, clip.filepath AS filepath, clip.is_selected AS isSelected, clip.is_pinned AS isPinned,clip.created_at AS clipCreatedAt
+        chat.id AS chatId, chat.kakao_id AS kakaoId, chat.nickname AS nickname, chat.content AS content, chat.created_at
+        AS chatCreatedAt,
+        clip.id AS clipId, clip.keyword AS keyword, clip.filepath AS filepath, clip.is_selected AS isSelected,
+        clip.is_pinned AS isPinned,clip.created_at AS clipCreatedAt
         FROM MEETING m
         LEFT JOIN CHAT
         ON (m.id = chat.meeting_id)
@@ -50,7 +52,7 @@
     </select>
     <update id="setMeetingLength" parameterType="int">
         UPDATE MEETING
-        SET LENGTH = TIMEDIFF(NOW(), CREATED_AT)
+        SET LENGTH = SEC_TO_TIME(TIMESTAMPDIFF(second,created_at,now()))
         WHERE ID = #{meetingId}
     </update>
 
@@ -58,8 +60,14 @@
         SELECT DISTINCT(DATE_FORMAT(CREATED_AT, '%Y-%m-%d'))
         FROM MEETING
         WHERE COUPLE_ID = #{coupleId}
-          AND DATE_FORMAT(CREATED_AT, '%Y-%m') = #{yearMonth}
+        AND DATE_FORMAT(CREATED_AT, '%Y-%m') = #{yearMonth}
         ORDER BY 1;
     </select>
-    
+
+    <select id="getSumOfMeetingTime" parameterType="int" resultType="String">
+        SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(length)))
+        FROM MEETING
+        WHERE COUPLE_ID = #{coupleId};
+    </select>
+
 </mapper>
