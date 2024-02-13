@@ -43,7 +43,7 @@ export default function Testca() {
                     }
                   }}
                   className="w-full h-full"
-                  src="https://i10d103-cherish.s3.ap-northeast-2.amazonaws.com/output.mp4"
+                  src={item?.filepath}
                 ></video>
               </motion.li>
             );
