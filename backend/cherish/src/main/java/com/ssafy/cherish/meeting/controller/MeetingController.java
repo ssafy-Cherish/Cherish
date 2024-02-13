@@ -107,11 +107,15 @@ public class MeetingController {
         log.debug("총 체리콜 시간 조회, coupleId : {}", coupleId);
         try {
             String res = meetingService.getSumOfMeetingTime(coupleId);
+            if(res==null||res.isBlank())
+            {
+                res="0:0:0";
+            }
             String[] time=res.split(":");
             Map<String,Object> resultMap =new HashMap<>();
-            resultMap.put("hour",time[0]);
-            resultMap.put("minute",time[1]);
-            resultMap.put("second",time[2]);
+            resultMap.put("hour", Integer.parseInt(time[0]));
+            resultMap.put("minute",Integer.parseInt(time[1]));
+            resultMap.put("second",Integer.parseInt(time[2]));
             return new ResponseEntity<>(resultMap, HttpStatus.OK);
         } catch (Exception e) {
             log.error("총 체리콜 시간 조회 중 에러 발생 : {}", e.getMessage());
