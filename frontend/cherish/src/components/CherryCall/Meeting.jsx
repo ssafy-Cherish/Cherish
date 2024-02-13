@@ -11,6 +11,15 @@ import LeftWindow from "./LeftWindow";
 import RightWindow from "./RightWindow";
 import instruction from "./GPT/systemScript";
 
+let record = [];
+let recordOption = {
+  mimeType: "video/webm; codecs=vp9,opus",
+  audioBitsPerSecond: 128000,
+  videoBitsPerSecond: 2500000,
+};
+let firstSpeak = true;
+let lastTime = null;
+
 function Meeting() {
   const { kakaoId, nickname, userId } = userStore((state) => state);
   const { user1, user2, coupleId, userInfos } = coupleStore();
@@ -58,16 +67,6 @@ function Meeting() {
 
     isModalOpen: true,
   });
-
-  let record = [];
-  let recordOption = {
-    mimeType: "video/webm; codecs=vp9,opus",
-    audioBitsPerSecond: 128000,
-    videoBitsPerSecond: 2500000,
-  };
-  let firstSpeak = true;
-  let lastTime = null;
-
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       console.log(result);
@@ -75,19 +74,12 @@ function Meeting() {
       // 말한 내용을 script 객체로 생성
       const script = makeScriptAndSend(result);
 
-      // 녹화 재시작
-      setMeetingInfo((prevMeetingInfo) => {
-        const newMeetingInfo = { ...prevMeetingInfo };
-
-        // 처음 발언과 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
-        if (firstSpeak || result.includes("안녕")) {
-          firstSpeak = false;
-          recordStopAndStart(newMeetingInfo, true, script, "안녕");
-        }
-        else recordStopAndStart(newMeetingInfo, false);
-
-        return newMeetingInfo;
-      });
+      // 처음 발언과 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
+      if (firstSpeak || result.includes("안녕")) {
+        firstSpeak = false;
+        recordStopAndStart(meetingInfo, true, script, "안녕");
+      }
+      else recordStopAndStart(meetingInfo, false);
 
       // const nowTime = new Date();
       // if (lastTime == null || nowTime-lastTime > 20000) {
@@ -565,6 +557,7 @@ function Meeting() {
       meetingInfo.stream.remoteMediaStream.addTrack(event.track);
 
       if (meetingInfo.stream.remoteMediaStream.getTracks().length === 2) {
+        console.log("ontrack record start");
         updateLocalVideo(
           meetingInfo.video.local.videoOn,
           meetingInfo.video.local.volume,
