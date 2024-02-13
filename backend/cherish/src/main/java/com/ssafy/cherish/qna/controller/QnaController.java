@@ -140,4 +140,26 @@ public class QnaController {
         }
     }
 
+    @GetMapping("/getAns")
+    @Operation(summary = "answerlist 호출", description = "coupleid를 입력하면 해당 커플이 가지고 있는 answerList를 반환하고 제일 최근 질문에 대해 몇 명이 답했는지를 같이 반환함")
+    public ResponseEntity<?> getAns (@RequestParam("coupleId") int coupleId) {
+        log.debug("test 호출 : {}", coupleId);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        HttpStatus status;
+
+        try {
+            resultMap.put("answercnt", qnaService.getQnaCnt(coupleId));
+            resultMap.put("answerList", qnaService.answerList(coupleId));
+            status = HttpStatus.OK;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        } catch (Exception e) {
+            log.error("test 에러 : {}", e.getMessage());
+            resultMap.put("test 에러", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<Map<String, Object>>(resultMap, status);
+        }
+    }
+
 }
