@@ -267,6 +267,10 @@ function Meeting() {
 
   const chattingWindow = useRef();
 
+  const clipWindow = useRef();
+
+  const scriptWindow = useRef();
+
   const localCam = useRef();
 
   const remoteCam = useRef();
@@ -325,7 +329,7 @@ function Meeting() {
     } else {
       if (
         meetingInfo.video.local.videoOn !== on ||
-        !localCam.current.srcObject
+        !localCam?.current.srcObject
       ) {
         localCam.current.srcObject = on
           ? meetingInfo.stream.localMediaStream
@@ -528,6 +532,7 @@ function Meeting() {
 
     dataChannel.onclose = function () {
       updateRemoteVideo(false, 0, 0, true);
+      stop();
       peerConnection.close();
       console.log("data channel is closed");
       setMeetingInfo((prevMeetingInfo) => {
@@ -857,7 +862,7 @@ function Meeting() {
   useEffect(() => {
     if (
       meetingInfo.chattingHistory.length &&
-      meetingInfo.rightWindowIsChatting
+      meetingInfo.rightWindow === 0
     ) {
       chattingWindow.current.childNodes[
         meetingInfo.chattingHistory.length - 1
@@ -865,26 +870,53 @@ function Meeting() {
         block: "end",
       });
     }
-  }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindowIsChatting]);
+  }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindow]);
 
   useEffect(() => {
-    return (() => {
+    if (
+      meetingInfo.clipHistory.length &&
+      meetingInfo.rightWindow === 1
+    ) {
+      clipWindow.current.childNodes[
+        meetingInfo.clipHistory.length - 1
+      ].scrollIntoView({
+        block: "end",
+      });
+    }
+  }, [meetingInfo.clipHistory.length, meetingInfo.rightWindow]);
+
+  useEffect(() => {
+    if (
+      meetingInfo.scriptHistory.length &&
+      meetingInfo.rightWindow === 2
+    ) {
+      scriptWindow.current.childNodes[
+        meetingInfo.scriptHistory.length - 1
+      ].scrollIntoView({
+        block: "end",
+      });
+    }
+  }, [meetingInfo.scriptHistory.length, meetingInfo.rightWindow]);  
+
+
+  useEffect(() => {
+    return () => {
       console.log("Leave");
-      // meetingInfo.connect.dataChannel.close();
+      meetingInfo?.connect?.dataChannel?.close();
       setMeetingInfo((prevMeetingInfo) => {
         const newMeetingInfo = { ...prevMeetingInfo };
         newMeetingInfo.init = false;
         return newMeetingInfo;
       });
 
-      meetingInfo.stream.localMediaStream.getTracks().forEach((track)=>{
+      meetingInfo.stream.localMediaStream.getTracks().forEach((track) => {
         track.stop();
-        meetingInfo.stream.localMediaStream.removeTrack(track)
-      })
+        meetingInfo.stream.localMediaStream.removeTrack(track);
+      });
 
       stop();
-    });
-  },[]);
+    };
+  }, []);
 
   return (
     <div className="h-full w-full flex flex-row contents-center">
@@ -910,6 +942,8 @@ function Meeting() {
           meetingInfo={meetingInfo}
           setMeetingInfo={setMeetingInfo}
           chattingWindow={chattingWindow}
+          clipWindow={clipWindow}
+          scriptWindow={scriptWindow}
           sendMessage={sendMessage}
           kakaoId={kakaoId}
           nickname={nickname}
