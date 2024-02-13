@@ -13,6 +13,7 @@ export default function PotImg() {
   const { data, isLoading } = useQuery({
     queryKey: ["expLevel", coupleId],
     queryFn: () => fetchExpLevel(coupleId),
+    refetchOnWindowFocus: false,
   });
 
   if (isLoading) {
