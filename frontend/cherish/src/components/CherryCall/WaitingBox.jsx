@@ -96,10 +96,6 @@ function WaitingBox({
               });
 
               updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
-
-              // 이승준이 수정한 코드
-              // 음성인식을 한국어로 설정하고 결과를 말하는게 끝나면 한 꺼번에 받아오는 방식으로 변경
-              listen({ interimResults: false, lang: "ko-KR" });
             }}
           >
             입장
