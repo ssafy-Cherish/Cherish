@@ -43,7 +43,7 @@ export default function Testca() {
                     }
                   }}
                   className="w-full h-full"
-                  src={item?.filepath}
+                  src={item}
                 ></video>
               </motion.li>
             );
