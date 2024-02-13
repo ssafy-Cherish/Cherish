@@ -19,6 +19,7 @@ public interface QnaService {
     int getQnaCnt (int coupleId) throws Exception;
 
     List<List<Map<String, Object>>> answerList(int coupleId) throws Exception;
+    List<Map<String, Object>> getQ (int questionId) throws Exception;
 
 //    List<Map<String, Object>> getAns (Map<String, Object> map) throws Exception;
 }

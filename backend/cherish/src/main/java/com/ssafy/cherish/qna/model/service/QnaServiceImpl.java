@@ -70,17 +70,41 @@ public class QnaServiceImpl implements QnaService {
         List<List<Map<String, Object>>> ansList = new ArrayList<>();
         int cnt = qnaMapper.getQuestionCnt(coupleId);
 
-        for (int i = cnt; i >= 1; i--) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("coupleId", coupleId);
-            map.put("questionId", i);
+        int count = getQnaCnt(coupleId);
 
-            ansList.add(qnaMapper.getAns(map));
+        if (count == 0) {
+            int id = qnaMapper.getQuestionCnt(coupleId);
+
+            if (cnt > 1) {
+                ansList.add(qnaMapper.getQ(id));
+                for (int i = cnt-1; i >= 1; i--) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("coupleId", coupleId);
+                    map.put("questionId", i);
+
+                    ansList.add(qnaMapper.getAns(map));
+                }
+            } else {
+                ansList.add(qnaMapper.getQ(id));
+            }
+
+        } else {
+            for (int i = cnt; i >= 1; i--) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("coupleId", coupleId);
+                map.put("questionId", i);
+
+                ansList.add(qnaMapper.getAns(map));
+            }
         }
 
         return ansList;
     }
 
+    @Override
+    public List<Map<String, Object>> getQ(int questionId) throws Exception {
+        return qnaMapper.getQ(questionId);
+    }
 
 
 //    S3 도입으로 필요없어짐
