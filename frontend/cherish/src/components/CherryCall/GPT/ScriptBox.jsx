@@ -1,4 +1,4 @@
-function ScriptBox({ meetingInfo }) {
+function ScriptBox({ meetingInfo, scriptWindow }) {
   function scriptType(elem, idx) {
     switch (elem.isLocal) {
       case 0: // 자신
@@ -63,7 +63,7 @@ function ScriptBox({ meetingInfo }) {
   return (
     <div className="h-[80%] w-full flex flex-col justify-between px-4">
       <div className=" relative h-full">
-        <div className="scroll-box bg-white rounded-2xl h-[100%] w-[100%] overflow-y-scroll py-[5%] absolute">
+        <div className="scroll-box bg-white rounded-2xl h-[100%] w-[100%] overflow-y-scroll py-[5%] absolute" ref={scriptWindow}>
           {meetingInfo.scriptHistory.map((elem, idx) => {
             return scriptType(elem, idx);
           })}
