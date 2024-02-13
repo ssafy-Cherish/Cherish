@@ -66,6 +66,7 @@ function Meeting() {
     videoBitsPerSecond: 2500000,
   };
   let firstSpeak = true;
+  let lastTime = null;
 
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
@@ -79,13 +80,20 @@ function Meeting() {
         const newMeetingInfo = { ...prevMeetingInfo };
 
         // 처음 발언과 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
-        if (firstSpeak || result.includes("안녕"))
+        if (firstSpeak || result.includes("안녕")) {
+          firstSpeak = false;
           recordStopAndStart(newMeetingInfo, true, script, "안녕");
+        }
         else recordStopAndStart(newMeetingInfo, false);
 
         return newMeetingInfo;
       });
 
+      // const nowTime = new Date();
+      // if (lastTime == null || nowTime-lastTime > 20000) {
+      //   lastTime = nowTime;
+      //   useGPT(script);
+      // }
       useGPT(script);
     },
   });
