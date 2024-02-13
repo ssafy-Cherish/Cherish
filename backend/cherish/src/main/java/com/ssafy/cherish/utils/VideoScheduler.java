@@ -48,15 +48,16 @@ public class VideoScheduler {
     private String monthlyVideoPath;
 
 //     @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행 (테스트용)
-    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
+    @Scheduled(cron="0 0 0 * * *")//매일 0시 0분 실행
+//    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
         //지난달
-        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
+//        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
          // 이번달
-//        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
+        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
 
         try {
 
