@@ -4,24 +4,68 @@ import Question from "./Question";
 export default function TodayQuestionBox({
   handleClickIsQuestionBoxOpen,
   ansList,
+  handleIsAnswered,
 }) {
-  const {kakaoId} = useUserStore()
-  
+  const { kakaoId, nickname } = useUserStore();
+  //나중에 카카오아이디로 수정하기 밑에 if 문
+
   const questionList = ansList.answerList.map((answer, idx) => {
     if (idx === 0) {
       if (ansList.answercnt === 0) {
-        return <Question reply={0} handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />
+        return (
+          <Question
+            handleIsAnswered={handleIsAnswered}
+            key={answer[0].content}
+            answer={answer}
+            reply={0}
+            handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+          />
+        );
       } else if (ansList.answercnt === 1) {
-        if (answer?.kakao_id === kakaoId) {
-          return <Question reply={1} handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />
+        if (answer[0]?.nickname === nickname) {
+          return (
+            <Question
+              handleIsAnswered={handleIsAnswered}
+              key={answer[0].content}
+              answer={answer}
+              reply={1}
+              handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+            />
+          );
         } else {
-          return <Question reply={0} handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />
+          return (
+            <Question
+              handleIsAnswered={handleIsAnswered}
+              key={answer[0].content}
+              answer={answer}
+              reply={0}
+              handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+            />
+          );
         }
       } else {
-        return<Question answer={answer} reply={2} handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} />
+        return (
+          <Question
+            key={answer[0].content}
+            handleIsAnswered={handleIsAnswered}
+            answer={answer}
+            reply={2}
+            handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+          />
+        );
       }
+    } else {
+      return (
+        <Question
+          key={answer[0].content}
+          handleIsAnswered={handleIsAnswered}
+          answer={answer}
+          reply={2}
+          handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+        />
+      );
     }
-  })
+  });
 
   return (
     <>

@@ -17,7 +17,7 @@ const constraints = {
   },
 };
 
-export default function TodayRecoding() {
+export default function TodayRecoding({ handleIsRecording }) {
   const [mediaStream, setMediaStream] = useState(null);
   const [recordedBlob, setRecordedblob] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -126,11 +126,23 @@ export default function TodayRecoding() {
         ></video>
         <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
           {isRecording ? (
-            <button onClick={stopRecoding} id="finish-btn">
+            <button
+              onClick={() => {
+                handleIsRecording();
+                stopRecoding();
+              }}
+              id="finish-btn"
+            >
               <img src={StopRecord} alt="StopRecord" />
             </button>
           ) : (
-            <button onClick={startRecoding} id="start-btn">
+            <button
+              onClick={() => {
+                handleIsRecording();
+                startRecoding();
+              }}
+              id="start-btn"
+            >
               <img src={StartRecord} alt="StartRecord" />
             </button>
           )}
