@@ -64,37 +64,6 @@ public class AwsS3Service {
         return s3Client.utilities().getUrl(getUrlRequest).toString();
     }
 
-    public String uploadFile(MultipartFile multipartFile,String fileName) {
-
-        // 빈 파일이면 빈 문자열 리턴
-        if(multipartFile.isEmpty()) {
-            log.info("image is null");
-            return "";
-        }
-
-        // S3에 파일 저장
-        try {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .contentType(multipartFile.getContentType())
-                    .contentLength(multipartFile.getSize())
-                    .key(fileName)
-                    .build();
-            RequestBody requestBody = RequestBody.fromBytes(multipartFile.getBytes());
-            s3Client.putObject(putObjectRequest, requestBody);
-        } catch (IOException e) {
-            log.error("cannot upload file",e);
-            throw new RuntimeException(e);
-        }
-
-        // 저장한 파일의 URL 가져오기
-        GetUrlRequest getUrlRequest = GetUrlRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .build();
-        return s3Client.utilities().getUrl(getUrlRequest).toString();
-    }
-
     // 다운로드 테스트
     public String downloadFile(String fileName) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()

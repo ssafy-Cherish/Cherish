@@ -40,11 +40,9 @@ public class QnaServiceImpl implements QnaService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int saveAnswer(MultipartFile answer, AnswerDto answerDto) throws Exception {
-
-
         qnaMapper.createAnswer(answerDto);
 
-        String filePath = awsS3Service.uploadFile(answer, answerDto.getId() + "_answer.webm");
+        String filePath = awsS3Service.uploadFile(answer);
         answerDto.setFilepath(filePath);
 
         return qnaMapper.updateAnswerPath(answerDto);
