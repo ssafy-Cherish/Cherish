@@ -41,17 +41,17 @@ public interface UserMapper {
     // 커플 인증 코드 가져오기
     CoupleDto getCode (String code) throws SQLException;
 
-    void createCouple(CoupleDto coupleDto);
+    void createCouple(CoupleDto coupleDto) throws SQLException;
 
-    CoupleDto findByCode(String code);
+    CoupleDto findByCode(String code) throws SQLException;
 
-    List<Map<String, String>> getUserInfos(int coupleId);
+    List<Map<String, String>> getUserInfos(int coupleId) throws SQLException;
 
-    int deleteUser(UserDto userDto);
+    int deleteUser(UserDto userDto) throws SQLException;
 
-    void setCoupleDeletedAt(int id);
+    void setCoupleDeletedAt(int id) throws SQLException;
 
-    void initCoupleDeletedAt(int id);
+    void initCoupleDeletedAt(int id) throws SQLException;
 
     void updateQuestionCnt() throws SQLException;
 

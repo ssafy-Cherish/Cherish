@@ -69,32 +69,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createCouple(CoupleDto coupleDto) {
+    public void createCouple(CoupleDto coupleDto) throws Exception {
         userMapper.createCouple(coupleDto);
     }
 
     @Override
-    public CoupleDto findByCode(String code) {
+    public CoupleDto findByCode(String code) throws Exception {
         return userMapper.findByCode(code);
     }
 
     @Override
-    public List<Map<String, String>> getUserInfos(int coupleId) {
+    public List<Map<String, String>> getUserInfos(int coupleId) throws Exception {
         return userMapper.getUserInfos(coupleId);
     }
 
     @Override
-    public int deleteUser(UserDto userDto) {
+    public int deleteUser(UserDto userDto) throws Exception {
         return userMapper.deleteUser(userDto);
     }
 
     @Override
-    public void setCoupleDeletedAt(int id) {
+    public void setCoupleDeletedAt(int id) throws Exception {
         userMapper.setCoupleDeletedAt(id);
     }
 
     @Override
-    public void initCoupleDeletedAt(int id) {
+    public void initCoupleDeletedAt(int id) throws Exception {
         userMapper.initCoupleDeletedAt(id);
     }
 
