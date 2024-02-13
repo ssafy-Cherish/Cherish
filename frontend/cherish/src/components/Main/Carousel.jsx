@@ -1,15 +1,15 @@
 import { motion } from "framer-motion";
 import "./Carousel.css";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useCoupleStore from "../../stores/useCoupleStore";
 import { getPinedClip } from "../../services/IndexPageService";
 
 export default function Testca() {
-  const listEl = [1, 2, 3, 4, 5, 6];
   const { coupleId } = useCoupleStore();
   const { data, isLoading } = useQuery({
     queryKey: ["pinedClip", coupleId],
     queryFn: () => getPinedClip(coupleId),
+    refetchOnMount: true,
   });
 
   if (isLoading) {
@@ -43,7 +43,7 @@ export default function Testca() {
                     }
                   }}
                   className="w-full h-full"
-                  src={item}
+                  src="https://i10d103-cherish.s3.ap-northeast-2.amazonaws.com/output.mp4"
                 ></video>
               </motion.li>
             );
