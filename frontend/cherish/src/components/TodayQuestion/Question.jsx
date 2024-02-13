@@ -15,13 +15,13 @@ export default function Question({ reply, handleClickIsQuestionBoxOpen }) {
     }
   };
   const handleBackAnswer = () => {
-    if (confirm('오늘의 답변을 작성하지 않았어요! 작성하러 갈까요?')) {
-      handleClickIsQuestionBoxOpen()
+    if (confirm("오늘의 답변을 작성하지 않았어요! 작성하러 갈까요?")) {
+      handleClickIsQuestionBoxOpen();
     }
-  }
+  };
   return (
     <>
-      <div id='question' className={questioncss}>
+      <div id="question" className={questioncss}>
         <div className="grid grid-cols-10">
           <div className="col-span-9 ml-[1vw] mt-[0.2vw] py-[0.5vw]">
             <p>20XX년 X월 X일</p>
@@ -34,7 +34,7 @@ export default function Question({ reply, handleClickIsQuestionBoxOpen }) {
             <img
               src={reply ? DropdownIcon : LockIcon}
               alt="DropdownIcon"
-              className="m-auto"
+              className={"m-auto " + ((isOpened && reply) && "rotate-180")}
             />
           </button>
         </div>
