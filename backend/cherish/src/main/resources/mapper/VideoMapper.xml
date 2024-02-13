@@ -24,7 +24,7 @@
     </select>
 
     <select id="getYearMonth" parameterType="int" resultType="String">
-        SELECT DISTINCT(DATE_FORMAT(yearMonth, "%Y년 %m월")) AS mon
+        SELECT DISTINCT(DATE_FORMAT(yearMonth, "%Y-%m")) AS mon
         FROM monthlyvideo
         WHERE couple_id = #{coupleId}
         ORDER BY mon DESC;

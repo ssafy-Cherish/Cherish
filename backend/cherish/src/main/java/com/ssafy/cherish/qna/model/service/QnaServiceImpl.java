@@ -6,18 +6,12 @@ import com.ssafy.cherish.qna.model.dto.QuestionDto;
 import com.ssafy.cherish.qna.model.mapper.QnaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +63,22 @@ public class QnaServiceImpl implements QnaService {
     @Override
     public int getQnaCnt(int coupleId) throws Exception {
         return qnaMapper.getQnaCount(coupleId);
+    }
+
+    @Override
+    public List<List<Map<String, Object>>> answerList(int coupleId) throws Exception {
+        List<List<Map<String, Object>>> ansList = new ArrayList<>();
+        int cnt = qnaMapper.getQuestionCnt(coupleId);
+
+        for (int i = cnt; i >= 1; i--) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("coupleId", coupleId);
+            map.put("questionId", i);
+
+            ansList.add(qnaMapper.getAns(map));
+        }
+
+        return ansList;
     }
 
 
