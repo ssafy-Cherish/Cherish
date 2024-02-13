@@ -148,7 +148,8 @@ public class QnaController {
         HttpStatus status;
 
         try {
-            resultMap.put("answercnt", qnaService.getQnaCnt(coupleId));
+            int count = qnaService.getQnaCnt(coupleId);
+            resultMap.put("answercnt", count);
             resultMap.put("answerList", qnaService.answerList(coupleId));
             status = HttpStatus.OK;
 
