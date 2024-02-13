@@ -71,4 +71,10 @@
         WHERE c.question_cnt = a.question_id AND c.id = #{coupleId}
     </select>
 
+    <select id="getAns" parameterType="map" resultType="map">
+        SELECT *
+        FROM answer
+        WHERE couple_id = #{coupleId} AND question_id = #{questionId}
+    </select>
+
 </mapper>
