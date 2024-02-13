@@ -13,6 +13,8 @@ function RightWindow({
   kakaoId,
   nickname,
   sendImg,
+  clipWindow,
+  scriptWindow
 }) {
   // 항목이 3개가 되었기 때문에 switch 문으로 변경
   function rightWindow() {
@@ -31,10 +33,10 @@ function RightWindow({
         );
 
       case 1: // 클립
-        return <ClipBox meetingInfo={meetingInfo} />;
+        return <ClipBox meetingInfo={meetingInfo} clipWindow={clipWindow}/>;
 
       case 2: // 대본
-        return <ScriptBox meetingInfo={meetingInfo} />;
+        return <ScriptBox meetingInfo={meetingInfo} scriptWindow={scriptWindow}/>;
     }
   }
 
