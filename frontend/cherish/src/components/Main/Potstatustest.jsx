@@ -19,16 +19,19 @@ export default function Potstatustest() {
   const { data: clipCntdata, isLoading: loading1 } = useQuery({
     queryKey: ["clipCnt", coupleId],
     queryFn: () => fetchClipCnt(coupleId),
+    refetchOnWindowFocus: false,
   });
 
   const { data: expLeveldata, isLoading: loading2 } = useQuery({
     queryKey: ["expLevel", coupleId],
     queryFn: () => fetchExpLevel(coupleId),
+    refetchOnWindowFocus: false,
   });
 
   const { data: meetingsum, isLoading: loading3 } = useQuery({
     queryKey: ["meetingSum", coupleId],
     queryFn: () => fetchMeetingSum(coupleId),
+    refetchOnWindowFocus: false,
   });
 
   if (loading1 || loading2 || loading3) {

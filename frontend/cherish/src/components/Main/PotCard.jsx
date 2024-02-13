@@ -13,6 +13,7 @@ export default function PotCard({dday}) {
   const { data: expLevel, isLoading } = useQuery({
     queryKey: ["expLevel", coupleId],
     queryFn: () => fetchExpLevel(coupleId),
+    refetchOnWindowFocus: false,
   });
 
   if (isLoading) {
