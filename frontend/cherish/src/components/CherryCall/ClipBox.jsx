@@ -11,7 +11,7 @@ function ClipBox({ meetingInfo, clipWindow }) {
 							<div>{clip.keyword}</div>
 							<video
 								preload="metadata"
-								src={`${clip.url}#t=2`}
+								src={`${clip.url}#t=100`}
 								onClick={(event) => {
 									event.preventDefault();
 									if (event.target.paused) {

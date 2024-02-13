@@ -2,7 +2,14 @@ import micImg from "../../assets/meeting/mic.svg";
 import camImg from "../../assets/meeting/cam.svg";
 import barImg from "../../assets/meeting/bar.svg";
 
-function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, setMeetingInfo, listen }) {
+function WaitingBox({
+	meetingInfo,
+	updateLocalVideo,
+	readyCam,
+	setConnection,
+	setMeetingInfo,
+	listen,
+}) {
 	return (
 		<div
 			className={`h-full bg-slate-700 flex flex-col justify-center items-center rounded-t-2xl ${
@@ -25,7 +32,9 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 							}}
 						>
 							<img className="h-full absolute" src={micImg} />
-							{meetingInfo.video.local.volume == 0 && <img className="h-full absolute" src={barImg}></img>}
+							{meetingInfo.video.local.volume == 0 && (
+								<img className="h-full absolute" src={barImg}></img>
+							)}
 						</button>
 						<button
 							className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
@@ -37,7 +46,9 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 							}}
 						>
 							<img className="h-full absolute" src={camImg} />
-							{!meetingInfo.video.local.videoOn && <img className="h-full absolute" src={barImg}></img>}
+							{!meetingInfo.video.local.videoOn && (
+								<img className="h-full absolute" src={barImg}></img>
+							)}
 						</button>
 					</div>
 
@@ -51,8 +62,8 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 						></video>
 					</div>
 				</div>
-				<div className="h-1/4 w-5/6 flex flex-row justify-between items-center">
-					<button
+				<div className="h-1/4 w-5/6 flex flex-row justify-center items-center">
+					{/* <button
 						className={
 							meetingInfo.stream.localMediaStream.getTracks().length !== 0
 								? "px-5 h-14 bg-skyblue rounded-2xl font-extrabold text-xl"
@@ -67,7 +78,7 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 						}}
 					>
 						알림보내기
-					</button>
+					</button> */}
 					<button
 						className={
 							meetingInfo.stream.localMediaStream.getTracks().length !== 0
@@ -84,7 +95,11 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 								return newMeetingInfo;
 							});
 
-							updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
+							updateLocalVideo(
+								meetingInfo.video.local.videoOn,
+								meetingInfo.video.local.volume,
+								1
+							);
 						}}
 					>
 						입장

@@ -154,7 +154,8 @@ const DiaryDailyPage = () => {
 						{/* 미팅 타임라인 */}
 						<div className="me-auto relative col-span-2 w-full">
 							<ul className="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical  overflow-y-auto h-[35vw] rmscroll">
-								{meetings && meetings.length > 0 ? (
+								{meetings &&
+									meetings.length > 0 &&
 									meetings.map((meeting, mIdx) => (
 										// <MeetingTimeline key={meeting.id} meeting={meeting} />
 										<li
@@ -232,7 +233,9 @@ const DiaryDailyPage = () => {
 																data-tip={`"${clip.keyword}"`}
 															>
 																<video
-																	src={clip.filepath}
+																	preload="metadata"
+																	src={`${clip.filepath}#t=100`}
+																	controls
 																	className="h-full w-full bg-slate-400"
 																	onClick={(event) => {
 																		event.preventDefault();
@@ -252,22 +255,14 @@ const DiaryDailyPage = () => {
 												) : (
 													<>
 														<div className="text-[2vw]">
-															저장된 클립이 없어요.. ㅠㅠ
+															저장된 클립이 없어요
 														</div>
 													</>
 												)}
 											</div>
 											<hr className="bg-subpuple col-start-1" />
 										</li>
-									))
-								) : (
-									<>
-										<div className="text-[2vw]">
-											<span className="text-cherry">체리콜</span>을 하지
-											않았어요..
-										</div>
-									</>
-								)}
+									))}
 							</ul>
 						</div>
 
