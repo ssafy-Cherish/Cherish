@@ -18,7 +18,8 @@ public class CoupleScheduler {
     private UserMapper userMapper;
 
 //         @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행 (테스트용)
-    @Scheduled(cron="0 0 0 * * *")//매일 0시 0분 실행
+//    @Scheduled(cron="0 0 0 * * *")//매일 0시 0분 실행
+    @Scheduled(cron="0 0 0/1 * * *")//매일 1시간마다 정각에 실행
     public void updateQuestionCnt()
     {
         log.debug("커플 Question Cnt Update");
