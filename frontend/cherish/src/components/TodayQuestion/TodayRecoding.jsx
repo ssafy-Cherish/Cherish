@@ -34,7 +34,8 @@ export default function TodayRecoding({ handleIsRecording }) {
   async function getMedia() {
     //
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    setMediaStream((pre) => stream);
+    setMediaStream(stream);
+    console.log(mediaStream);
     videoOutput.current.srcObject = stream;
     videoOutput.current.onloadedmetadata = () => {
       // HTMLVideoElement로 카메라의 화면을 출력하기 시작
@@ -111,8 +112,16 @@ export default function TodayRecoding({ handleIsRecording }) {
   };
 
   useEffect(() => {
-    getMedia();
-  }, []);
+    if (!mediaStream) {
+      getMedia();
+    }
+
+    return () => {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [mediaStream]);
 
   return (
     <>
