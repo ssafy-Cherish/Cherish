@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import "./Carousel.css";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import useCoupleStore from "../../stores/useCoupleStore";
 import { getPinedClip } from "../../services/IndexPageService";
 
@@ -13,7 +13,9 @@ export default function Testca() {
   });
 
   if (isLoading) {
-    return <div>로딩중</div>;
+    return (
+      <div className="view skeleton border-2 rounded-[20px] px-[1.2vw] shadow-md h-[17vw]"></div>
+    );
   }
 
   const videoList = new Array(6).fill(null);
