@@ -832,11 +832,9 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const url = message.url;
-    const keyword = message.keyword;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.clipHistory.push(url);
+      newMeetingInfo.clipHistory.push(message);
       return newMeetingInfo;
     });
   }
