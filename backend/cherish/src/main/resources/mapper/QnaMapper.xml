@@ -58,7 +58,7 @@
         JOIN question AS q
         ON a.question_id = q.id
         WHERE couple_id = #{coupleId}
-        ORDER BY a.created_at DESC
+        ORDER BY a.question_id DESC
     </select>
 
     <select id="getQnaCount" parameterType="int" resultType="int">
@@ -69,6 +69,12 @@
         JOIN couple as c
         ON a.couple_id = c.id
         WHERE c.question_cnt = a.question_id AND c.id = #{coupleId}
+    </select>
+
+    <select id="getAns" parameterType="map" resultType="map">
+        SELECT *
+        FROM answer
+        WHERE couple_id = #{coupleId} AND question_id = #{questionId}
     </select>
 
 </mapper>
