@@ -26,14 +26,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @EnableScheduling
 @Component
 @Slf4j
-public class CronScheduler {
+public class VideoScheduler {
 
     @Autowired
     private AwsS3Service awsS3Service;
@@ -49,7 +47,7 @@ public class CronScheduler {
     @Value("${custom.path.monthly-video}")
     private String monthlyVideoPath;
 
-//     @Scheduled(cron = "1 * * * * *") // 1분마다 실행 (테스트용)
+//     @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행 (테스트용)
     @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
