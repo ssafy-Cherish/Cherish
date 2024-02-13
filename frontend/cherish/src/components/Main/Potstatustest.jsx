@@ -2,7 +2,11 @@ import dayjs from "dayjs";
 import HeartIcon from "../../assets/Common/HeartIcon.svg";
 import useCoupleStore from "../../stores/useCoupleStore";
 import { useQuery } from "@tanstack/react-query";
-import { fetchClipCnt, fetchExpLevel } from "../../services/PotService";
+import {
+  fetchClipCnt,
+  fetchExpLevel,
+  fetchMeetingSum,
+} from "../../services/PotService";
 import PotGraph from "./PotGraph";
 
 export default function Potstatustest() {
@@ -22,7 +26,12 @@ export default function Potstatustest() {
     queryFn: () => fetchExpLevel(coupleId),
   });
 
-  if (loading1 || loading2) {
+  const { data: meetingsum, isLoading: loading3 } = useQuery({
+    queryKey: ["meetingSum", coupleId],
+    queryFn: () => fetchMeetingSum(coupleId),
+  });
+
+  if (loading1 || loading2 || loading3) {
     return <div>로딩중</div>;
   }
 
@@ -54,9 +63,9 @@ export default function Potstatustest() {
           우리가 체리콜로 만난 시간은?
         </p>
         <p className="text-[1.3vw] text-text-black font-bold">
-          <span className="text-[2vw] text-cherry">129</span>시간{" "}
-          <span className="text-[2vw] text-cherry">28</span>분{" "}
-          <span className="text-[2vw] text-cherry">17</span>초
+          <span className="text-[2vw] text-cherry">{meetingsum.hour}</span>시간
+          <span className="text-[2vw] text-cherry"> {meetingsum.minute}</span>분
+          <span className="text-[2vw] text-cherry"> {meetingsum.second}</span>초
         </p>
       </div>
       <PotGraph exp={expLeveldata.exp} />

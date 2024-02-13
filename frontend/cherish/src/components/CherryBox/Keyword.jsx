@@ -33,7 +33,7 @@ export default function Keyword({
         >
           <p className="col-span-3 my-auto">{selectKeyword}</p>
           <img
-            className="col-span-1 w-[2vw] my-auto"
+            className={"col-span-1 w-[2vw] my-auto " + (isOpen && "rotate-180")}
             src={DropdownIcon}
             alt="DropdownIcon"
           />

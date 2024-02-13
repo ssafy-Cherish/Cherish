@@ -19,20 +19,20 @@ export default function Testca() {
   return (
     <>
       <div className="view border-2 rounded-[20px] px-[1.2vw] shadow-md h-[17vw]">
-        <ui className="slide">
-          {listEl.concat(listEl).map((el) => {
+        <ul className="slide">
+          {listEl.concat(listEl).map((el, idx) => {
             // ⭐️ concat으로 original과 clone 연결
             return (
               <motion.li
                 whileHover={{ scale: 1.1 }}
-                key={el}
+                key={idx}
                 className="bg-pink mx-[1vw] rounded-[25px] border-[5px] border-cherry"
               >
                 {el}
               </motion.li>
             );
           })}
-        </ui>
+        </ul>
       </div>
     </>
   );
