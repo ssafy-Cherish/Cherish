@@ -75,8 +75,9 @@ function Meeting() {
       const script = makeScriptAndSend(result);
 
       // 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
-      if (result.includes("안녕")) {
-        recordStopAndStart(meetingInfo, true, script, "안녕");
+      const keyword = getKeyword(result);
+      if (keyword !== null) {
+        recordStopAndStart(meetingInfo, true, script, keyword);
       } else recordStopAndStart(meetingInfo, false);
 
       // const nowTime = new Date();
@@ -87,7 +88,63 @@ function Meeting() {
       useGPT(script);
     },
   });
-  function getKeyword(result) {}
+  function getKeyword(result) {
+    if (
+      result.includes("안녕") ||
+      result.includes("반가워") ||
+      result.includes("잘자") ||
+      result.includes("하이") ||
+      result.includes("바이") ||
+      result.includes("내일 봐") ||
+      result.includes("내꿈 꿔") ||
+      result.includes("오하요")
+    )
+      return "인사";
+    else if (
+      result.includes("멋있다") ||
+      result.includes("멋있어") ||
+      result.includes("예쁘다") ||
+      result.includes("예뻐") ||
+      result.includes("잘했다") ||
+      result.includes("잘했어") ||
+      result.includes("최고야") ||
+      result.includes("최고") ||
+      result.includes("대박") ||
+      result.includes("잘생겼다") ||
+      result.includes("잘생겼어") ||
+      result.includes("귀엽다") ||
+      result.includes("착해") ||
+      result.includes("용감하다") ||
+      result.includes("씩씩하다")
+    )
+      return "칭찬";
+    else if (
+      result.includes("고마워") ||
+      result.includes("사랑해") ||
+      result.includes("좋아해") ||
+      result.includes("귀여워") ||
+      result.includes("보고싶어") ||
+      result.includes("심쿵") ||
+      result.includes("너밖에 없어") ||
+      result.includes("자기야") ||
+      result.includes("여보") ||
+      result.includes("애기야")
+    )
+      return "애정표현";
+    else if (
+      result.includes("잘하고있어") ||
+      result.includes("화이팅") ||
+      result.includes("믿고있었다구") ||
+      result.includes("힘내") ||
+      result.includes("기운내") ||
+      result.includes("할 수 있어") ||
+      result.includes("힘들었겠다") ||
+      result.includes("응원할게")
+    )
+      return "응원";
+
+    return null;
+  }
 
   // 스크립트 생성 후 전송
   function makeScriptAndSend(result) {
