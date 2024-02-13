@@ -1,44 +1,39 @@
-import React from "react";
-import Slider from "react-slick";
-import "./CarouselSlick.css";
-import "./CarouselSlickTheme.css";
-import test from "../../assets/test.png";
+import { motion } from "framer-motion";
+import "./Carousel.css";
+import { useQuery } from "@tanstack/react-query";
+import useCoupleStore from "../../stores/useCoupleStore";
+import { getPinedClip } from "../../services/IndexPageService";
 
-export default function Carousel() {
-  const settings = {
-    dots: false,
-    infinite: true,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    speed: 5000,
-    autoplaySpeed: 500,
-    cssEase: "linear",
-  };
-  
+export default function Testca() {
+  const listEl = [1, 2, 3, 4, 5, 6];
+  const { coupleId } = useCoupleStore();
+  const { data, isLoading } = useQuery({
+    queryKey: ["pinedClip", coupleId],
+    queryFn: () => getPinedClip(coupleId),
+  });
+
+  if (isLoading) {
+    return <div>로딩중</div>;
+  }
 
   return (
-    <div className="border-2 rounded-[20px] px-[1.2vw] shadow-md">
-      <Slider  {...settings}>
-        <div className="border-[7px] border-cherry rounded-[20px]">
-          <img className="rounded-[12px]" src={test} alt="" />
-        </div>
-        <div>
-          <img src={test} alt="" />
-        </div>
-        <div>
-          <img src={test} alt="" />
-        </div>
-        <div>
-          <h3>4</h3>
-        </div>
-        <div>
-          <h3>5</h3>
-        </div>
-        <div>
-          <h3>6</h3>
-        </div>
-      </Slider>
-    </div>
+    <>
+      <div className="view border-2 rounded-[20px] px-[1.2vw] shadow-md h-[17vw]">
+        <ui className="slide">
+          {listEl.concat(listEl).map((el) => {
+            // ⭐️ concat으로 original과 clone 연결
+            return (
+              <motion.li
+                whileHover={{ scale: 1.1 }}
+                key={el}
+                className="bg-pink mx-[1vw] rounded-[25px] border-[5px] border-cherry"
+              >
+                {el}
+              </motion.li>
+            );
+          })}
+        </ui>
+      </div>
+    </>
   );
 }

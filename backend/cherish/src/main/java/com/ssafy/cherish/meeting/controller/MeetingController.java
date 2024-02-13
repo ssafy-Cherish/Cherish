@@ -88,12 +88,34 @@ public class MeetingController {
         log.debug("체리콜 기록 일별 조회, coupleId : {}, date : {}", map.get("coupleId"), map.get("date"));
         try {
             List<MeetingDto> res = meetingService.getMeetingsByDate(map);
-            Map<String,Object> resultMap=new HashMap<>();
-            resultMap.put("meeting",res);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("meeting", res);
             return new ResponseEntity<>(resultMap, HttpStatus.OK);
         } catch (Exception e) {
             log.debug("일별 미팅 조회 중 에러 발생 : {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/sum/{coupleId}")
+    @Operation(summary = "총 체리콜 시간 조회")
+    public ResponseEntity<?> getSumOfMeetingTime(
+            @PathVariable("coupleId")
+            @Parameter(description = "커플 아이디")
+            int coupleId
+    ) {
+        log.debug("총 체리콜 시간 조회, coupleId : {}", coupleId);
+        try {
+            String res = meetingService.getSumOfMeetingTime(coupleId);
+            String[] time=res.split(":");
+            Map<String,Object> resultMap =new HashMap<>();
+            resultMap.put("hour",time[0]);
+            resultMap.put("minute",time[1]);
+            resultMap.put("second",time[2]);
+            return new ResponseEntity<>(resultMap, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("총 체리콜 시간 조회 중 에러 발생 : {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

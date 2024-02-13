@@ -715,7 +715,7 @@ function Meeting() {
 
           selectedRecord.mediaRecorder[0].stop();
           selectedRecord.mediaRecorder[1].stop();
-        }, 1000);
+        }, 3000);
 
         break;
       }
@@ -772,7 +772,8 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const url = message;
+    const url = message.url;
+    const keyword = message.keyword;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.clipHistory.push(url);
