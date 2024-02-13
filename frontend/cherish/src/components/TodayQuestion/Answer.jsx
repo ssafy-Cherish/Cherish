@@ -36,9 +36,31 @@ export default function Answer({ answer }) {
         </div>
         <div className="w-[28vw]">
           {selectName === answer[0]?.nickname ? (
-            <img className="w-full rounded-lg" src={test} alt="" />
+            <video
+              onClick={(event) => {
+                event.preventDefault();
+                if (event.target.paused === false) {
+                  event.target.pause();
+                } else {
+                  event.target.play();
+                }
+              }}
+              className="w-full h-full rounded-lg"
+              src={answer[0]?.filepath}
+            ></video>
           ) : (
-            <img className="w-full rounded-lg" src={CoupleImg1} alt="" />
+            <video
+              onClick={(event) => {
+                event.preventDefault();
+                if (event.target.paused === false) {
+                  event.target.pause();
+                } else {
+                  event.target.play();
+                }
+              }}
+              className="w-full h-full rounded-lg"
+              src={answer[1]?.filepath}
+            ></video>
           )}
         </div>
       </div>
