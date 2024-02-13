@@ -30,5 +30,6 @@ public interface QnaMapper {
 
     // 확인용
     List<Map<String, Object>> getAns (Map<String, Object> map) throws SQLException;
+    List<Map<String, Object>> getQ (int questionId) throws SQLException;
 
 }
