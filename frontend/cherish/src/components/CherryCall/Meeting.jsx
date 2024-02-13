@@ -320,9 +320,9 @@ function Meeting() {
     });
   };
 
-  const updateRemoteVideo = function (on, volume, volumeFactor) {
+  const updateRemoteVideo = function (on, volume, volumeFactor, force) {
     if (remoteCam.current) {
-      if (meetingInfo.video.remote.videoOn !== on) {
+      if (meetingInfo.video.remote.videoOn !== on || force) {
         remoteCam.current.srcObject = on ? meetingInfo.stream.remoteMediaStream : new MediaStream();
       }
       if (
@@ -460,7 +460,8 @@ function Meeting() {
           updateRemoteVideo(
             msg.data.videoOn,
             msg.data.volume,
-            meetingInfo.video.remote.volumeFactor
+            meetingInfo.video.remote.volumeFactor,
+            false
           );
           break;
 
@@ -497,6 +498,7 @@ function Meeting() {
     };
 
     dataChannel.onclose = function () {
+      updateRemoteVideo(false, 0, 0, true);
       peerConnection.close();
       console.log("data channel is closed");
       setMeetingInfo((prevMeetingInfo) => {
@@ -509,10 +511,11 @@ function Meeting() {
         newMeetingInfo.video.remote.videoOn = false;
         newMeetingInfo.video.remote.volume = 0;
 
-        updateRemoteVideo(newMeetingInfo.video.remote.videoOn, newMeetingInfo.video.remote.volume);
+        
         newMeetingInfo.connect.offerReady = false;
         return newMeetingInfo;
       });
+      
       initialize();
       meetingInfo.record = [];
     };
