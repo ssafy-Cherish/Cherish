@@ -143,9 +143,9 @@ export default function TodayRecoding({
 
   return (
     <>
-      <div className="w-[35vw] mt-[2vw] flex flex-col items-center justify-center">
+      <div className="w-[35vw] mt-[2vw] flex flex-col items-center justify-center skeleton">
         <video
-          className="rounded-t-[15px] w-full h-full skeleton"
+          className="rounded-t-[15px] w-full h-full"
           ref={videoOutput}
           id="video-output"
           autoPlay
@@ -181,8 +181,8 @@ export default function TodayRecoding({
           modalcss="w-[40vw] h-[30vw] rounded-[20px] bg-pink"
         >
           <div className="flex flex-col items-center">
-            <div className="bg-white w-[30vw] h-[4vw] text-center leading-[4vw] text-[1vw] rounded-[35px] mt-[2vw]">
-              오늘의 질문란
+            <div className="bg-white w-[30vw] h-[4vw] text-center leading-[4vw] text-[1vw] rounded-[35px] mt-[2vw] text-text-black">
+              {question ? question.content : "오늘의 질문"}
             </div>
             <div className="w-[30vw] mt-[1.5vw]">
               <video
@@ -198,13 +198,13 @@ export default function TodayRecoding({
             <div className="w-[13vw] flex flex-row justify-between mt-[1vw]">
               <button
                 onClick={closeModal}
-                className="w-[4vw] h-[2vw] bg-white border-[3px] border-cherry text-cherry rounded-[5px]"
+                className="w-[4vw] h-[2vw] bg-white border-[3px] border-cherry text-cherry rounded-[5px] hover:text-[#F5473E] hover:border-[#F5473E]"
               >
                 취소
               </button>
               <button
                 onClick={videoSave}
-                className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px]"
+                className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px] hover:bg-[#F5473E] hover:border-[#F5473E]"
               >
                 저장
               </button>

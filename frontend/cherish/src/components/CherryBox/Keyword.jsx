@@ -10,7 +10,9 @@ export default function Keyword({
   handleClickIsOpen,
 }) {
   let keywordClassName = `absolute z-20 left-[65%] transition-[height] duration-500 bg-white float-end w-[15vw] py-[0.5vw] text-[1.3vw] mr-[2vw] rounded-[40px] shadow-md text-center ${
-    isOpen ? "h-[20vw] flex flex-col rounded-[15px] overflow-y-auto" : "h-[3vw]"
+    isOpen
+      ? "h-[20vw] flex flex-col rounded-[15px] overflow-y-auto"
+      : "h-[3vw] hover:bg-[#EFEFEF] cursor-pointer"
   }`;
   const { coupleId } = useCoupleStore();
   const { data } = useQuery({
@@ -44,7 +46,7 @@ export default function Keyword({
             <div
               key={date}
               onClick={(event) => handleSelectKeyword(event.target.innerText)}
-              className="m-2 pl-[3.2rem] text-left"
+              className="m-2 pl-[3.2rem] text-left cursor-pointer text-text-black hover:text-[#888888]"
             >
               {date}
             </div>
