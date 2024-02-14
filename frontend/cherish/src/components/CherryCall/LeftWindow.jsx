@@ -9,6 +9,12 @@ import barImg from "../../assets/meeting/bar.svg";
 import speakerImg from "../../assets/meeting/speaker.svg";
 
 import phoneOnImg from "../../assets/meeting/phone-on.svg";
+import phoneOffImg from "../../assets/meeting/phone-off.svg";
+import loadingImg from "../../assets/meeting/loading.svg";
+
+import { Link } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 
 function LeftWindow({
   meetingInfo,
@@ -23,8 +29,10 @@ function LeftWindow({
   localCamContainer,
   localCam,
   updateRemoteVideo,
+  stop,
 }) {
   const [barIsVisible, setBarIsVisible] = useState(false);
+  const nav = useNavigate();
 
   return (
     <div className="h-3/4 m-2 rounded-2xl flex flex-col-reverse">
@@ -124,10 +132,9 @@ function LeftWindow({
               </div>
             </div>
             <div className="flex flex-row justify-center items-center">
-              {meetingInfo.connect.offerReady ? (
+              {meetingInfo.connect.offerState === 1 ? (
                 <button
                   className=" m-2 w-14 rounded-2xl btn bg-green-400 hover:bg-green-600"
-                  disabled={!meetingInfo.connect.offerReady}
                   onClick={(event) => {
                     event.preventDefault();
                     createOffer();
@@ -139,10 +146,26 @@ function LeftWindow({
                 >
                   <img src={phoneOnImg} />
                 </button>
+              ) : meetingInfo.connect.offerState === 2 ? (
+                <div className="m-2 w-14 rounded-2xl btn bg-gray-100">
+                  <img src={loadingImg} className="w-full h-full" />
+                </div>
+              ) : meetingInfo.connect.offerState === 3 ? (
+                <button
+                  className="m-2 w-14 rounded-2xl btn bg-red-400 hover:bg-red-600"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    if (confirm("통화를 종료하고 메인으로 이동할까요?")) {
+                      nav("/");
+                    }
+                  }}
+                >
+                  <img src={phoneOffImg} />
+                </button>
               ) : (
                 <button
                   className=" m-2 w-14 rounded-2xl btn bg-gray-400"
-                  disabled={!meetingInfo.connect.offerReady}
+                  disabled="true"
                 >
                   <img src={phoneOnImg} />
                 </button>

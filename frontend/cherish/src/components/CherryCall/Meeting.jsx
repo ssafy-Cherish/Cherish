@@ -46,7 +46,7 @@ function Meeting() {
       conn: null,
       peerConnection: null,
       dataChannel: null,
-      offerReady: false,
+      offerState: 0,
     },
 
     chattingHistory: [],
@@ -537,7 +537,7 @@ function Meeting() {
         newMeetingInfo.video.remote.videoOn = false;
         newMeetingInfo.video.remote.volume = 0;
 
-        newMeetingInfo.connect.offerReady = false;
+        newMeetingInfo.connect.offerState = 0;
         return newMeetingInfo;
       });
 
@@ -564,6 +564,11 @@ function Meeting() {
           1
         );
         recordStopAndStart(meetingInfo, false);
+        setMeetingInfo((prevMeetingInfo)=>{
+          const newMeetingInfo = {...prevMeetingInfo}
+          newMeetingInfo.connect.offerState = 3
+          return newMeetingInfo
+        })
       }
 
       sendMessage(
@@ -604,7 +609,7 @@ function Meeting() {
     }
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.connect.offerReady = false;
+      newMeetingInfo.connect.offerState = 2;
       return newMeetingInfo;
     });
   };
@@ -613,7 +618,7 @@ function Meeting() {
     console.log("handleAccess");
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.connect.offerReady = true;
+      newMeetingInfo.connect.offerState = 1;
       newMeetingInfo.meetingId = mId;
       return newMeetingInfo;
     });
@@ -938,6 +943,7 @@ function Meeting() {
           localCam={localCam}
           sendMessage={sendMessage}
           updateRemoteVideo={updateRemoteVideo}
+          stop={stop}
         />
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">
