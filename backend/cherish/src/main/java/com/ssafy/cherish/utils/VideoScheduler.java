@@ -26,14 +26,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @EnableScheduling
 @Component
 @Slf4j
-public class CronScheduler {
+public class VideoScheduler {
 
     @Autowired
     private AwsS3Service awsS3Service;
@@ -49,16 +47,18 @@ public class CronScheduler {
     @Value("${custom.path.monthly-video}")
     private String monthlyVideoPath;
 
-//     @Scheduled(cron = "1 * * * * *") // 1분마다 실행 (테스트용)
-    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
+//     @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행 (테스트용)
+
+//    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
+    @Scheduled(cron="0 30 0/1 * * *")//매일 1시간마다 정각에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
         //지난달
-        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
+//        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1);
          // 이번달
-//        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
+        String yearMonth = String.format("%d%02d01", c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 2);
 
         try {
 
