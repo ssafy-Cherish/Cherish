@@ -6,7 +6,7 @@ export default function DiaryCard() {
       <div className="mt-[1vw]">
         <img src={DiaryImg} alt="DiaryImg" />
       </div>
-      <p className="mt-[1vw] text-[1.2vw] text-text-black">다이어리</p>
+      <p className="text-[1.2vw] text-text-black mb-[0.5vw]">다이어리</p>
     </>
   );
 }
