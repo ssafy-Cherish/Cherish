@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DropdownIcon from "../../assets/Common/DropdownIcon.svg";
 import LockIcon from "../../assets/Common/LockIcon.svg";
 import Answer from "./Answer";
 import dayjs from "dayjs";
+import { motion } from "framer-motion";
 
 export default function Question({
   reply,
@@ -24,13 +25,17 @@ export default function Question({
     date = day.format("YYYY년 M월 D일");
   }
 
-  if (reply === 1) {
-    handleIsAnswered();
-  }
+  useEffect(() => {
+    if (reply === 1) {
+      handleIsAnswered();
+    }
+  }, [reply]);
 
   const [isOpened, setIsOpened] = useState(false);
   let questioncss = `transition-[height] duration-500 w-[42vw] bg-white mt-[1vw] rounded-[15px] text-[1vw] shadow-md ${
-    isOpened && reply ? "h-[25vw] flex flex-col overflow-y-auto" : "h-[4.2vw]"
+    isOpened && reply
+      ? "h-[25vw] flex flex-col overflow-y-auto"
+      : "h-[4.2vw] hover:bg-[#EFEFEF]"
   }`;
 
   const handleClickQuestionButton = () => {
@@ -49,7 +54,7 @@ export default function Question({
   };
   return (
     <>
-      <div id="question" className={questioncss}>
+      <motion.div id="question" className={questioncss}>
         <div className="grid grid-cols-10">
           <div className="col-span-9 ml-[1vw] mt-[0.2vw] py-[0.5vw] text-text-black">
             <p>{date}</p>
@@ -67,7 +72,7 @@ export default function Question({
           </button>
         </div>
         {isOpened && reply === 2 ? <Answer answer={answer} /> : undefined}
-      </div>
+      </motion.div>
     </>
   );
 }

@@ -51,13 +51,13 @@ export default function TodayQuestionRecodePage() {
       <p className="text-[1.8vw] ml-[4vw] mt-[2vw] text-text-black">
         {year}년 {month}월 {day}일
       </p>
-      <div className="flex flex-col items-center justify-center w-[43vw] h-[33vw] mx-auto">
+      <div className="flex flex-col items-center justify-center mx-auto">
         <button
           onClick={handleClickIsQuestionBoxOpen}
           disabled={isRecoding}
           className="bg-white h-[3vw] w-[42vw] mt-[0.5vw] rounded-[35px] shadow-md leading-[3vw] grid grid-cols-10"
         >
-          <p className="text-[1.3vw] col-span-9 text-text-black">
+          <p className="text-[1.3vw] col-span-9 text-text-black hover:text-[#888888]">
             {isQuestionBoxOpen ? question?.content : "오늘의 질문에 답변하기 "}
           </p>
           <div className="col-span-1 h-[2.5vw] my-auto">
@@ -65,7 +65,11 @@ export default function TodayQuestionRecodePage() {
           </div>
         </button>
         {isQuestionBoxOpen ? (
-          <TodayRecoding handleIsRecording={handleIsRecording} handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} handleIsAnswered={handleIsAnswered} />
+          <TodayRecoding
+            handleIsRecording={handleIsRecording}
+            handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen}
+            handleIsAnswered={handleIsAnswered}
+          />
         ) : (
           <TodayQuestionBox
             handleIsAnswered={handleIsAnswered}

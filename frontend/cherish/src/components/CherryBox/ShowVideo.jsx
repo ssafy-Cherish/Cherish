@@ -8,7 +8,7 @@ export default function ShowVideo({ handleClickVideoOpen, video }) {
       <div className="mt-[3vw] ml-[1.5vw]">
         <button
           onClick={handleClickVideoOpen}
-          className="ml-[3vw] mb-[1vw] bg-cherry rounded-lg px-[0.5vw] py-[0.2vw] text-white"
+          className="ml-[3vw] mb-[1vw] bg-cherry rounded-lg px-[0.5vw] py-[0.2vw] text-white hover:bg-[#F5473E]"
         >
           뒤로가기
         </button>
@@ -19,6 +19,7 @@ export default function ShowVideo({ handleClickVideoOpen, video }) {
           <div className="w-[42vw] mt-[1vw]">
             <div className="w-[4wvw] h-[25vw] bg-black">
               <video
+                src={video.filepath}
                 className="rounded-t-[15px]"
                 id="video-output"
                 autoPlay
