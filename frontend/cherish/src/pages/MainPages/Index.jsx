@@ -62,7 +62,7 @@ export default function Index() {
             <div className="grow flex justify-center items-center w-[70%]">
               <img src={CoupleImg1} alt="CoupleImg1" />
             </div>
-            <p className="text-[1.2vw] mb-[1.8vw] text-text-black">체리콜</p>
+            <p className="text-[1.2vw] mb-[0.5vw] text-text-black">체리콜</p>
           </Link>
         </motion.div>
         <div id="Memo" className="col-span-2">
