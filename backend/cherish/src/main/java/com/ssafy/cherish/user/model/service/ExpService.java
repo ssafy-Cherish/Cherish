@@ -10,7 +10,7 @@ import java.util.Map;
 public interface ExpService {
 
     // 입력 : coupleId, exp, content
-    public void createExpHistory(Map<String,Object> map) throws Exception;
+    public void createExpHistory(ExpHistoryDto historyDto) throws Exception;
 
     // 입력 : coupleId
     // 출력 : 경험치 기록이 있는 날짜를 key로 가진 경험치 기록 객체 리스트
