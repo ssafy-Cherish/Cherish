@@ -47,10 +47,10 @@ public class VideoScheduler {
     @Value("${custom.path.monthly-video}")
     private String monthlyVideoPath;
 
-//     @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행 (테스트용)
+//     @Scheduled(cron = "0 0/1 * * * *") // 1분마다 실행 (테스트용)
 
 //    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
-    @Scheduled(cron="0 30 0/1 * * *")//매일 1시간마다 정각에 실행
+    @Scheduled(cron="0 0 0/1 * * *")//매일 1시간마다 정각에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
