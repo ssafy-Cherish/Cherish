@@ -50,7 +50,7 @@ public class VideoScheduler {
 //     @Scheduled(cron = "0 0/1 * * * *") // 1분마다 실행 (테스트용)
 
 //    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
-    @Scheduled(cron="0 0/5 * * * *")//매일 1시간마다 정각에 실행
+    @Scheduled(cron="0 0/10 * * * *")//매일 1시간마다 정각에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
@@ -112,8 +112,8 @@ public class VideoScheduler {
     }
 
     private String mergeMonthlyVideo(String clipListFile) throws IOException {
-        FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg.exe");
-        FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe.exe");
+        FFmpeg ffmpeg = new FFmpeg(ffmpegPath + "ffmpeg");
+        FFprobe ffprobe = new FFprobe(ffmpegPath + "ffprobe");
 
         String outputFile = clipListFile.replaceAll(".txt", ".webm");
         //ffmpeg -f concat -safe 0 -protocol_whitelist "file,http,https,tcp,tls" -i mylist.txt -c copy output.mp4
