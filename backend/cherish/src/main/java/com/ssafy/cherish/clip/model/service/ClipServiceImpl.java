@@ -101,8 +101,9 @@ public class ClipServiceImpl implements ClipService {
                 .overrideOutputFiles(true)
                 .addInput(leftVideoPath)
                 .addInput(rightVideoPath)
-                .setComplexFilter("[0][1]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[0s][1s]; " +
-                        "[1s][0s]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[1s][0s]; " +
+                .setComplexFilter(
+//                        "[0][1]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[0s][1s]; " +
+//                        "[1s][0s]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[1s][0s]; " +
                         "[0s][1s]hstack=inputs=2[v]; [0:a][1:a]amerge[a]")
                 .addOutput(uploadDir)
                 .addExtraArgs("-map", "[v]")
