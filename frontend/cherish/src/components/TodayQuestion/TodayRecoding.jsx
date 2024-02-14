@@ -125,9 +125,9 @@ export default function TodayRecoding({ handleIsRecording }) {
 
   return (
     <>
-      <div className="w-[42vw] mt-[2vw] flex flex-col items-center justify-center">
+      <div className="w-[35vw] mt-[2vw] flex flex-col items-center justify-center">
         <video
-          className="rounded-t-[15px] w-full skeleton"
+          className="rounded-t-[15px] w-full h-full skeleton"
           ref={videoOutput}
           id="video-output"
           autoPlay
