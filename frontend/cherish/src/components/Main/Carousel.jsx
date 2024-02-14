@@ -5,22 +5,29 @@ import useCoupleStore from "../../stores/useCoupleStore";
 import { getPinedClip } from "../../services/IndexPageService";
 
 export default function Testca() {
-  const listEl = [1, 2, 3, 4, 5, 6];
   const { coupleId } = useCoupleStore();
   const { data, isLoading } = useQuery({
     queryKey: ["pinedClip", coupleId],
     queryFn: () => getPinedClip(coupleId),
+    refetchOnMount: true,
   });
 
   if (isLoading) {
-    return <div>로딩중</div>;
+    return (
+      <div className="view skeleton border-2 rounded-[20px] px-[1.2vw] shadow-md h-[17vw]"></div>
+    );
   }
+
+  const videoList = new Array(6).fill(null);
+  data.pinnedclip.forEach((item, idx) => {
+    videoList[idx] = item.filepath;
+  });
 
   return (
     <>
       <div className="view border-2 rounded-[20px] px-[1.2vw] shadow-md h-[17vw]">
         <ul className="slide">
-          {listEl.concat(listEl).map((el, idx) => {
+          {videoList.concat(videoList).map((item, idx) => {
             // ⭐️ concat으로 original과 clone 연결
             return (
               <motion.li
@@ -28,7 +35,19 @@ export default function Testca() {
                 key={idx}
                 className="bg-pink mx-[1vw] rounded-[25px] border-[5px] border-cherry"
               >
-                {el}
+                <video
+                  preload="metadata"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    if (event.target.paused === false) {
+                      event.target.pause();
+                    } else {
+                      event.target.play();
+                    }
+                  }}
+                  className="w-full h-full"
+                  src={`${item}#t=100`}
+                ></video>
               </motion.li>
             );
           })}
