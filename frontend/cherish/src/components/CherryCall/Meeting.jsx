@@ -487,6 +487,11 @@ function Meeting() {
         // 	url: "stun:stun2.1.google.com:19302",
         // },
         { url: "stun:stun.l.google.com:19302" },
+        {
+          urls: 'turn:172.26.8.234?transport=tcp',
+          credential: '1234',
+          username: 'cherish'
+        }
       ],
     };
 
