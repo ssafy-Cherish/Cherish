@@ -46,7 +46,7 @@ function Meeting() {
       conn: null,
       peerConnection: null,
       dataChannel: null,
-      offerReady: false,
+      offerState: 0,
     },
 
     chattingHistory: [],
@@ -572,7 +572,7 @@ function Meeting() {
         newMeetingInfo.video.remote.videoOn = false;
         newMeetingInfo.video.remote.volume = 0;
 
-        newMeetingInfo.connect.offerReady = false;
+        newMeetingInfo.connect.offerState = 0;
         return newMeetingInfo;
       });
 
@@ -595,6 +595,11 @@ function Meeting() {
         console.log("ontrack record start");
         updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
         recordStopAndStart(meetingInfo, false);
+        setMeetingInfo((prevMeetingInfo)=>{
+          const newMeetingInfo = {...prevMeetingInfo}
+          newMeetingInfo.connect.offerState = 3
+          return newMeetingInfo
+        })
       }
 
       sendMessage(
@@ -635,7 +640,7 @@ function Meeting() {
     }
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.connect.offerReady = false;
+      newMeetingInfo.connect.offerState = 2;
       return newMeetingInfo;
     });
   };
@@ -644,7 +649,7 @@ function Meeting() {
     console.log("handleAccess");
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.connect.offerReady = true;
+      newMeetingInfo.connect.offerState = 1;
       newMeetingInfo.meetingId = mId;
       return newMeetingInfo;
     });
@@ -845,6 +850,8 @@ function Meeting() {
 
   //////
 
+  console.log(meetingInfo)
+
   if (!meetingInfo.init) {
     getLocalMediaStream();
     setMeetingInfo((prevMeetingInfo) => {
@@ -917,6 +924,11 @@ function Meeting() {
     };
   }, []);
 
+  window.onbeforeunload = (event)=>{
+    event.preventDefault();
+    console.log('unload', event)
+  }
+
   return (
     <div className="h-full w-full flex flex-row contents-center">
       <div className="w-9/12 flex flex-col justify-center">
@@ -934,6 +946,7 @@ function Meeting() {
           localCam={localCam}
           sendMessage={sendMessage}
           updateRemoteVideo={updateRemoteVideo}
+          stop={stop}
         />
       </div>
       <div className="w-3/12 flex flex-col justify-center mr-5">
