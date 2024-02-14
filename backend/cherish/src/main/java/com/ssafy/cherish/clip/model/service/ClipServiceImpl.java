@@ -105,8 +105,13 @@ public class ClipServiceImpl implements ClipService {
                         "[1s][0s]scale2ref='oh*mdar':'if(lt(main_h,ih),ih,main_h)'[1s][0s]; " +
                         "[0s][1s]hstack=inputs=2[v]; [0:a][1:a]amerge[a]")
                 .addOutput(uploadDir)
+                .addExtraArgs("-c:v","libvpx-vp9")
+                .addExtraArgs("-crf","50")
+                .addExtraArgs("-b:v","0")
                 .addExtraArgs("-map", "[v]")
                 .addExtraArgs("-map", "[a]")
+                .addExtraArgs("-preset","ultrafast")
+                .addExtraArgs("-ac","1")
                 .done();
 
         log.debug("FFmpeg command: {}", builder.build());
