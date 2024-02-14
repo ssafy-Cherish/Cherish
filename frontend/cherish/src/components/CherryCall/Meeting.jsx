@@ -11,6 +11,15 @@ import LeftWindow from "./LeftWindow";
 import RightWindow from "./RightWindow";
 import instruction from "./GPT/systemScript";
 
+let record = [];
+let recordOption = {
+  mimeType: "video/webm; codecs=vp9,opus",
+  audioBitsPerSecond: 128000,
+  videoBitsPerSecond: 2500000,
+};
+let firstSpeak = true;
+let lastTime = null;
+
 function Meeting() {
   const { kakaoId, nickname, userId } = userStore((state) => state);
   const { user1, user2, coupleId, userInfos } = coupleStore();
@@ -58,15 +67,6 @@ function Meeting() {
 
     isModalOpen: true,
   });
-
-  let record = [];
-  let recordOption = {
-    mimeType: "video/webm; codecs=vp9,opus",
-    audioBitsPerSecond: 128000,
-    videoBitsPerSecond: 2500000,
-  };
-  let firstSpeak = true;
-
   const { listen, listening, stop } = useSpeechRecognition({
     onResult: (result) => {
       console.log(result);
@@ -74,21 +74,77 @@ function Meeting() {
       // 말한 내용을 script 객체로 생성
       const script = makeScriptAndSend(result);
 
-      // 녹화 재시작
-      setMeetingInfo((prevMeetingInfo) => {
-        const newMeetingInfo = { ...prevMeetingInfo };
+      // 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
+      const keyword = getKeyword(result);
+      if (keyword !== null) {
+        recordStopAndStart(meetingInfo, true, script, keyword);
+      } else recordStopAndStart(meetingInfo, false);
 
-        // 처음 발언과 키워드가 인식되면 저장 그렇지 않다면 단순히 녹화만 재시작
-        if (firstSpeak || result.includes("안녕"))
-          recordStopAndStart(newMeetingInfo, true, script, "안녕");
-        else recordStopAndStart(newMeetingInfo, false);
-
-        return newMeetingInfo;
-      });
-
+      // const nowTime = new Date();
+      // if (lastTime == null || nowTime-lastTime > 20000) {
+      //   lastTime = nowTime;
+      //   useGPT(script);
+      // }
       useGPT(script);
     },
   });
+  function getKeyword(result) {
+    if (
+      result.includes("안녕") ||
+      result.includes("반가워") ||
+      result.includes("잘자") ||
+      result.includes("하이") ||
+      result.includes("바이") ||
+      result.includes("내일 봐") ||
+      result.includes("내꿈 꿔") ||
+      result.includes("오하요")
+    )
+      return "인사";
+    else if (
+      result.includes("멋있다") ||
+      result.includes("멋있어") ||
+      result.includes("예쁘다") ||
+      result.includes("예뻐") ||
+      result.includes("잘했다") ||
+      result.includes("잘했어") ||
+      result.includes("최고야") ||
+      result.includes("최고") ||
+      result.includes("대박") ||
+      result.includes("잘생겼다") ||
+      result.includes("잘생겼어") ||
+      result.includes("귀엽다") ||
+      result.includes("착해") ||
+      result.includes("용감하다") ||
+      result.includes("씩씩하다")
+    )
+      return "칭찬";
+    else if (
+      result.includes("고마워") ||
+      result.includes("사랑해") ||
+      result.includes("좋아해") ||
+      result.includes("귀여워") ||
+      result.includes("보고싶어") ||
+      result.includes("심쿵") ||
+      result.includes("너밖에 없어") ||
+      result.includes("자기야") ||
+      result.includes("여보") ||
+      result.includes("애기야")
+    )
+      return "애정표현";
+    else if (
+      result.includes("잘하고있어") ||
+      result.includes("화이팅") ||
+      result.includes("믿고있었다구") ||
+      result.includes("힘내") ||
+      result.includes("기운내") ||
+      result.includes("할 수 있어") ||
+      result.includes("힘들었겠다") ||
+      result.includes("응원할게")
+    )
+      return "응원";
+
+    return null;
+  }
 
   // 스크립트 생성 후 전송
   function makeScriptAndSend(result) {
@@ -254,6 +310,10 @@ function Meeting() {
 
   const chattingWindow = useRef();
 
+  const clipWindow = useRef();
+
+  const scriptWindow = useRef();
+
   const localCam = useRef();
 
   const remoteCam = useRef();
@@ -305,7 +365,7 @@ function Meeting() {
       readyCam.current.volume = volume;
       localCam.current.volume = 0;
     } else {
-      if (meetingInfo.video.local.videoOn !== on || !localCam.current.srcObject) {
+      if (meetingInfo.video.local.videoOn !== on || !localCam?.current.srcObject) {
         localCam.current.srcObject = on ? meetingInfo.stream.localMediaStream : new MediaStream();
       }
       readyCam.current.volume = 0;
@@ -499,6 +559,7 @@ function Meeting() {
 
     dataChannel.onclose = function () {
       updateRemoteVideo(false, 0, 0, true);
+      stop();
       peerConnection.close();
       console.log("data channel is closed");
       setMeetingInfo((prevMeetingInfo) => {
@@ -511,11 +572,10 @@ function Meeting() {
         newMeetingInfo.video.remote.videoOn = false;
         newMeetingInfo.video.remote.volume = 0;
 
-        
         newMeetingInfo.connect.offerReady = false;
         return newMeetingInfo;
       });
-      
+
       initialize();
       meetingInfo.record = [];
     };
@@ -532,6 +592,7 @@ function Meeting() {
       meetingInfo.stream.remoteMediaStream.addTrack(event.track);
 
       if (meetingInfo.stream.remoteMediaStream.getTracks().length === 2) {
+        console.log("ontrack record start");
         updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
         recordStopAndStart(meetingInfo, false);
       }
@@ -775,11 +836,9 @@ function Meeting() {
   }
 
   function handleNewClip(message) {
-    const url = message.url;
-    const keyword = message.keyword;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.clipHistory.push(url);
+      newMeetingInfo.clipHistory.push(message);
       return newMeetingInfo;
     });
   }
@@ -796,29 +855,51 @@ function Meeting() {
   }
 
   useEffect(() => {
-    if (meetingInfo.chattingHistory.length && meetingInfo.rightWindowIsChatting) {
+    if (meetingInfo.chattingHistory.length && meetingInfo.rightWindow === 0) {
       chattingWindow.current.childNodes[meetingInfo.chattingHistory.length - 1].scrollIntoView({
         block: "end",
       });
     }
-  }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindowIsChatting]);
+  }, [meetingInfo.chattingHistory.length, meetingInfo.rightWindow]);
 
-  // useEffect(() => {
-  //   updateLocalVideo(
-  //     meetingInfo.video.local.videoOn,
-  //     meetingInfo.video.local.volume,
-  //   );
-  // }, [meetingInfo.isModalOpen]);
+  useEffect(() => {
+    if (meetingInfo.clipHistory.length && meetingInfo.rightWindow === 1) {
+      clipWindow.current.childNodes[meetingInfo.clipHistory.length - 1].scrollIntoView({
+        block: "end",
+      });
+    }
+  }, [meetingInfo.clipHistory.length, meetingInfo.rightWindow]);
 
-  useBeforeUnload(() => {
-    meetingInfo.connect.dataChannel.close();
-    setMeetingInfo((prevMeetingInfo) => {
-      const newMeetingInfo = { ...prevMeetingInfo };
-      newMeetingInfo.init = false;
-      return newMeetingInfo;
-    });
-    stop();
-  });
+  useEffect(() => {
+    if (meetingInfo.scriptHistory.length && meetingInfo.rightWindow === 2) {
+      scriptWindow.current.childNodes[meetingInfo.scriptHistory.length - 1].scrollIntoView({
+        block: "end",
+      });
+    }
+  }, [meetingInfo.scriptHistory.length, meetingInfo.rightWindow]);
+
+  useEffect(() => {
+    return () => {
+      console.log("Leave");
+      meetingInfo?.connect?.dataChannel?.close();
+      setMeetingInfo((prevMeetingInfo) => {
+        const newMeetingInfo = { ...prevMeetingInfo };
+        newMeetingInfo.init = false;
+        return newMeetingInfo;
+      });
+
+      meetingInfo.stream.localMediaStream.getTracks().forEach((track) => {
+        track.stop();
+        meetingInfo.stream.localMediaStream.removeTrack(track);
+      });
+
+      stop();
+
+      meetingInfo?.connect?.dataChannel?.close();
+      meetingInfo?.connect?.peerConnection?.close();
+      meetingInfo?.connect?.conn?.close();
+    };
+  }, []);
 
   return (
     <div className="h-full w-full flex flex-row contents-center">
@@ -844,6 +925,8 @@ function Meeting() {
           meetingInfo={meetingInfo}
           setMeetingInfo={setMeetingInfo}
           chattingWindow={chattingWindow}
+          clipWindow={clipWindow}
+          scriptWindow={scriptWindow}
           sendMessage={sendMessage}
           kakaoId={kakaoId}
           nickname={nickname}

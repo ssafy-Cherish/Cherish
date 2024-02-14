@@ -7,6 +7,7 @@ export default function PotTimeLine() {
   const { data, isLoading } = useQuery({
     queryKey: ["expTimeline", coupleId],
     queryFn: () => fetchExpTimeLine(coupleId),
+    refetchOnWindowFocus: false,
   });
 
   if (isLoading) {
