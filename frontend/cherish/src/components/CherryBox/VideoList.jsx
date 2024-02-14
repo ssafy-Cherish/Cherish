@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { fetchMonthList } from "../../services/CherryBoxService";
 import useCoupleStore from "../../stores/useCoupleStore";
+import { motion } from "framer-motion";
 
 export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
   const { coupleId } = useCoupleStore();
@@ -12,9 +13,12 @@ export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
   if (isLoading) {
     return (
       <>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
-        <div className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeletonw-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
       </>
     );
   }
@@ -22,7 +26,8 @@ export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
   return (
     <>
       {data.VideoDtoList.map((video) => (
-        <div
+        <motion.div
+          whileHover={{ scale: 1.07 }}
           key={video.id}
           onClick={() =>
             handleClickVideoOpen({
@@ -35,7 +40,7 @@ export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
           <p className="text-[1.5vw]">
             우리들의 "<span className="text-cherry">{video.keyword}</span>"
           </p>
-        </div>
+        </motion.div>
       ))}
     </>
   );
