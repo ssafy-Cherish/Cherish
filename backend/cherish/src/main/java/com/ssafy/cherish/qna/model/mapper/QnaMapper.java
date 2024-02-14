@@ -27,4 +27,9 @@ public interface QnaMapper {
     // coupleId를 입력하면 몇 명이 답했는지 반환
     int getQnaCount (int coupleId) throws SQLException;
 
+
+    // 확인용
+    List<Map<String, Object>> getAns (Map<String, Object> map) throws SQLException;
+    List<Map<String, Object>> getQ (int questionId) throws SQLException;
+
 }

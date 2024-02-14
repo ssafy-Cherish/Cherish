@@ -1,14 +1,65 @@
-import test from "../../assets/test.png";
-export default function Answer() {
+import { useState } from "react";
+export default function Answer({ answer }) {
+  const [selectName, setSelectName] = useState(null);
+
+  const handleSelectName = (name) => {
+    setSelectName((pre) => name);
+  };
   return (
     <>
       <div className="col-span-10 h-[20vw] flex flex-col items-center">
         <div className="flex flex-row justify-center">
-          <button className="m-[1vw] text-[1.2vw]">나희도</button>
-          <button className="m-[1vw] text-[1.2vw]">백이진</button>
+          <button
+            onClick={() => handleSelectName(answer[0]?.nickname)}
+            className={
+              "m-[1vw] text-[1.2vw] font-bold " +
+              (selectName === answer[0]?.nickname
+                ? "text-cherry"
+                : "text-text-black")
+            }
+          >
+            {answer[0]?.nickname}
+          </button>
+          <button
+            onClick={() => handleSelectName(answer[1]?.nickname)}
+            className={
+              "m-[1vw] text-[1.2vw] font-bold " +
+              (selectName === answer[1]?.nickname
+                ? "text-cherry"
+                : "text-text-black")
+            }
+          >
+            {answer[1]?.nickname}
+          </button>
         </div>
         <div className="w-[28vw]">
-          <img className="w-full rounded-lg" src={test} alt="" />
+          {selectName === answer[0]?.nickname ? (
+            <video
+              onClick={(event) => {
+                event.preventDefault();
+                if (event.target.paused === false) {
+                  event.target.pause();
+                } else {
+                  event.target.play();
+                }
+              }}
+              className="skeleton w-full h-full rounded-lg"
+              src={answer[0]?.filepath}
+            ></video>
+          ) : (
+            <video
+              onClick={(event) => {
+                event.preventDefault();
+                if (event.target.paused === false) {
+                  event.target.pause();
+                } else {
+                  event.target.play();
+                }
+              }}
+              className="skeleton w-full h-full rounded-lg"
+              src={answer[1]?.filepath}
+            ></video>
+          )}
         </div>
       </div>
     </>
