@@ -19,6 +19,7 @@ let recordOption = {
 };
 let firstSpeak = true;
 let lastTime = null;
+let meetingId2 = null;
 
 function Meeting() {
   const { kakaoId, nickname, userId } = userStore((state) => state);
@@ -609,7 +610,7 @@ function Meeting() {
       );
     };
 
-    peerConnection.onconnectionstatechange = function () {};
+    peerConnection.onconnectionstatechange = function () { };
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
@@ -647,6 +648,7 @@ function Meeting() {
 
   const handleAccess = function (mId) {
     console.log("handleAccess");
+    meetingId2 = mId;
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.connect.offerState = 1;
@@ -906,9 +908,11 @@ function Meeting() {
       meetingInfo?.connect?.peerConnection?.close();
       meetingInfo?.connect?.conn?.close();
 
+      console.log("meetingId2 : " + meetingId2);
       // 유저 한 명만 종료됐음을 전송
-      if (meetingInfo.meetingId !== null && user1 === userId) {
-        fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/meeting/${meetingInfo.meetingId}`, {
+      if (meetingId2 !== null && user1 === userId) {
+        console.log("미팅 종료 알림")
+        fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/meeting/${meetingId2}`, {
           method: "PUT",
           headers: {
             Accept: "*/*",
