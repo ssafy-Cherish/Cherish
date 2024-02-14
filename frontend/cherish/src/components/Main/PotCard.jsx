@@ -32,7 +32,7 @@ export default function PotCard({dday}) {
         </p>
         <progress
           id="PotExp"
-          className="PotExp h-2 w-[7vw] mt-5"
+          className="PotExp h-2 w-[7vw]"
           max="100"
           value={expLevel.exp}
         />
