@@ -28,7 +28,7 @@
             (select C.KEYWORD,M.COUPLE_ID from CLIP C JOIN MEETING M
             ON C.MEETING_ID=M.ID
             WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(#{yearMonth},"%Y-%m")
-            AND IS_SELECTED IS TRUE
+<!--            AND IS_SELECTED IS TRUE-->
             AND FILEPATH IS NOT NULL
             GROUP BY C.KEYWORD,M.COUPLE_ID
             HAVING COUNT(C.ID)>=5)
