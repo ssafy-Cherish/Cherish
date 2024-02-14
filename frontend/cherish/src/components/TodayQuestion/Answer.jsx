@@ -15,7 +15,7 @@ export default function Answer({ answer }) {
               "m-[1vw] text-[1.2vw] font-bold " +
               (selectName === answer[0]?.nickname
                 ? "text-cherry"
-                : "text-text-black")
+                : "text-text-black hover:text-[#888888]")
             }
           >
             {answer[0]?.nickname}
@@ -26,7 +26,7 @@ export default function Answer({ answer }) {
               "m-[1vw] text-[1.2vw] font-bold " +
               (selectName === answer[1]?.nickname
                 ? "text-cherry"
-                : "text-text-black")
+                : "text-text-black hover:text-[#888888]")
             }
           >
             {answer[1]?.nickname}
@@ -46,7 +46,7 @@ export default function Answer({ answer }) {
                   event.target.play();
                 }
               }}
-              className="skeleton w-full h-full rounded-lg"
+              className="skeleton w-full h-full rounded-lg "
               src={answer[0]?.filepath}
             ></video>
           ) : (
@@ -62,7 +62,7 @@ export default function Answer({ answer }) {
                   event.target.play();
                 }
               }}
-              className="skeleton w-full h-full rounded-lg"
+              className="skeleton w-full h-full rounded-lg "
               src={answer[1]?.filepath}
             ></video>
           )}
