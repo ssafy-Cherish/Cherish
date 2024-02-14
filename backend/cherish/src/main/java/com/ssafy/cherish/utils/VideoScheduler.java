@@ -50,7 +50,7 @@ public class VideoScheduler {
 //     @Scheduled(cron = "0 0/1 * * * *") // 1분마다 실행 (테스트용)
 
 //    @Scheduled(cron = "0 0 1 1 * *") // 매달 1일 새벽 1시에 실행
-    @Scheduled(cron="0 0/10 * * * *")//매일 1시간마다 정각에 실행
+    @Scheduled(cron="0 0/20 * * * *")//매일 1시간마다 정각에 실행
     public void saveMonthlyVideo() {
         // 모음집 기준 연월 = 이전 달
         Calendar c = Calendar.getInstance();
@@ -122,7 +122,7 @@ public class VideoScheduler {
                 .addInput(clipListFile)
                 .addExtraArgs("-f", "concat")
                 .addExtraArgs("-safe", "0")
-                .addExtraArgs("-protocol_whitelist","\"file,http,https,tcp,tls\"")
+                .addExtraArgs("-protocol_whitelist","file,http,https,tcp,tls")
                 .addOutput(outputFile)
                 .addExtraArgs("-s","1280x720")
                 .done();
