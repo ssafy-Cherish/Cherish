@@ -22,7 +22,7 @@ export default function TodayQuestionBox({
           />
         );
       } else if (ansList.answercnt === 1) {
-        if (answer[0]?.nickname === nickname) {
+        if (answer[0]?.kakao_id === kakaoId) {
           return (
             <Question
               handleIsAnswered={handleIsAnswered}

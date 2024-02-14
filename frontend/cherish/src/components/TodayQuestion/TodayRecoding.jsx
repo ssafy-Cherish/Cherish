@@ -4,7 +4,7 @@ import StartRecord from "../../assets/VideoIcon/StartRecord.svg";
 import StopRecord from "../../assets/VideoIcon/StopRecord.svg";
 import useCoupleStore from "../../stores/useCoupleStore";
 import useUserStore from "../../stores/useUserStore";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postVideoSave } from "../../services/QuestionService";
 
 const constraints = {
@@ -17,7 +17,11 @@ const constraints = {
   },
 };
 
-export default function TodayRecoding({ handleIsRecording }) {
+export default function TodayRecoding({
+  handleIsRecording,
+  handleClickIsQuestionBoxOpen,
+  handleIsAnswered,
+}) {
   const [mediaStream, setMediaStream] = useState(null);
   const [recordedBlob, setRecordedblob] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,8 +31,22 @@ export default function TodayRecoding({ handleIsRecording }) {
   const recodeOutput = useRef(null);
   const { question, coupleId } = useCoupleStore();
   const { kakaoId, nickname } = useUserStore();
+
+  const queryClient = useQueryClient();
+
   const { mutate } = useMutation({
     mutationFn: postVideoSave,
+    onSuccess: (data) => {
+      // 뮤테이션이 성공한 후 실행할 작업
+      alert("저장했습니다! 상대방의 답변을 기다려주세요!");
+      closeModal();
+      queryClient.invalidateQueries(["ansList", coupleId]);
+      handleClickIsQuestionBoxOpen();
+      handleIsAnswered();
+    },
+    onError: (error) => {
+      alert("저장에 실패했어요. 다시 시도해주실래요?");
+    },
   });
 
   async function getMedia() {
