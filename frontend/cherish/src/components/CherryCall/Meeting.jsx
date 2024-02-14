@@ -248,7 +248,7 @@ function Meeting() {
                   time: new Date(),
                   lastIndex: scriptHistory.length,
                 };
-                // playGPTScript(gptScript);
+                playGPTScript(gptScript);
                 setMeetingInfo((prevMeetingInfo) => {
                   const newMeetingInfo = { ...prevMeetingInfo };
                   newMeetingInfo.showMessage = true;
@@ -286,6 +286,9 @@ function Meeting() {
   }
   // TTS
   function playGPTScript(gptScript) {
+    // 사용 안함
+    return;
+
     fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
       headers: {
