@@ -28,4 +28,6 @@ public interface MeetingMapper {
 
     // 커플의 총 통화시간 "hhh:mm:ss" 형태로 반환
     String getSumOfMeetingTime(int coupleId) throws SQLException;
+
+    MeetingDto getMeetingsById(int id) throws SQLException;
 }

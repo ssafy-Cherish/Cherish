@@ -7,6 +7,11 @@
         INSERT INTO EXPHISTORY(COUPLE_ID,EXP,CONTENT)
         VALUE (#{coupleId},#{exp},#{content});
     </insert>
+    <update id="addCoupleExp" parameterType="map">
+        UPDATE couple
+        SET exp = (select sum(exp) from exphistory where couple_id=#{coupleId})
+        where id = #{coupleId};
+    </update>
 
     <select id="getExpHistory" parameterType="int" resultType="expHistoryDto">
         SELECT ID,DATE_FORMAT(created_at,"%Y. %m. %d") AS createdAt, CONTENT, EXP
