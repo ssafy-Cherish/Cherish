@@ -22,8 +22,9 @@ export default function ShowVideo({ handleClickVideoOpen, video }) {
                 src={video.filepath}
                 className="rounded-t-[15px]"
                 id="video-output"
-                autoPlay
+                preload="metadata"
                 playsInline
+                controls
               ></video>
             </div>
             <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">

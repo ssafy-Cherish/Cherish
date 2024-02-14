@@ -53,7 +53,12 @@ export default function Testca() {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <img className="w-[50%]" src={cherish} alt="" />
-                    <p className="text-[1.3vw] text-text-black font-bold">당신의 추억을 <span className="text-cherry">Pin</span>으로 고정하세요!</p>
+                    <p className="text-[1.3vw] text-text-black font-bold">
+                      <span className="text-cherry font-bold">다이어리</span>
+                      에서<br></br> 추억을
+                      <span className="text-cherry font-bold"> Pin</span>으로
+                      <br></br> 고정하세요!
+                    </p>
                   </div>
                 )}
               </motion.li>
