@@ -841,6 +841,8 @@ function Meeting() {
 
   //////
 
+  console.log(meetingInfo)
+
   if (!meetingInfo.init) {
     getLocalMediaStream();
     setMeetingInfo((prevMeetingInfo) => {
@@ -913,6 +915,11 @@ function Meeting() {
 
     };
   }, []);
+
+  window.onbeforeunload = (event)=>{
+    event.preventDefault();
+    console.log('unload', event)
+  }
 
   return (
     <div className="h-full w-full flex flex-row contents-center">

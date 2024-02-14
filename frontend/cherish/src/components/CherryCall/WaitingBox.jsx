@@ -16,7 +16,7 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 				<div className="h-2/3 w-5/6  flex flex-col-reverse justify-center">
 					<div className="h-14 bg-white rounded-b-2xl flex flex-row justify-center">
 						<button
-							className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
+							className="w-10 my-2 mx-5  flex flex-col justify-center items-center relative"
 							onClick={(event) => {
 								event.preventDefault();
 								const targetVolume = meetingInfo.video.local.volume == 0 ? 0.5 : 0;
@@ -28,7 +28,7 @@ function WaitingBox({ meetingInfo, updateLocalVideo, readyCam, setConnection, se
 							{meetingInfo.video.local.volume == 0 && <img className="h-full absolute" src={barImg}></img>}
 						</button>
 						<button
-							className="w-10 my-2 mx-5 border-2 flex flex-col justify-center items-center relative"
+							className="w-10 my-2 mx-5  flex flex-col justify-center items-center relative"
 							onClick={(event) => {
 								event.preventDefault();
 								const targetVolume = meetingInfo.video.local.volume;
