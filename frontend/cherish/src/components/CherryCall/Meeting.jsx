@@ -62,6 +62,9 @@ function Meeting() {
     showMessage: false,
     showMessageContent: "",
 
+    // 반짝임 효과
+    clipReceived: false,
+
     init: false,
 
     meetingId: null,
@@ -245,7 +248,20 @@ function Meeting() {
                   time: new Date(),
                   lastIndex: scriptHistory.length,
                 };
-                playGPTScript(gptScript);
+                // playGPTScript(gptScript);
+                setMeetingInfo((prevMeetingInfo) => {
+                  const newMeetingInfo = { ...prevMeetingInfo };
+                  newMeetingInfo.showMessage = true;
+                  return newMeetingInfo;
+                });
+                setTimeout(() => {
+                  setMeetingInfo((prevMeetingInfo) => {
+                    const newMeetingInfo = { ...prevMeetingInfo };
+                    newMeetingInfo.showMessage = false;
+                    return newMeetingInfo;
+                  });
+                }, 3000);
+
                 sendMessage(
                   JSON.stringify({
                     cmd: "gptScript",
@@ -846,8 +862,16 @@ function Meeting() {
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.clipHistory.push(message);
+      newMeetingInfo.clipReceived = true;
       return newMeetingInfo;
     });
+    setTimeout(() => {
+      setMeetingInfo((prevMeetingInfo) => {
+        const newMeetingInfo = { ...prevMeetingInfo };
+        newMeetingInfo.clipReceived = false;
+        return newMeetingInfo;
+      });
+    }, 3000);
   }
 
   //////
