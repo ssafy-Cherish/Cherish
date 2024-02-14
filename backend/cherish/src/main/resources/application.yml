@@ -33,6 +33,8 @@ logging:
     com:
       ssafy:
         cherish: DEBUG
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSSz,Asia/Seoul
 
 # 로컬 스토리지 저장을 위한 자체 경로 정보
 # EC2에 맞춰서 수정 필요
