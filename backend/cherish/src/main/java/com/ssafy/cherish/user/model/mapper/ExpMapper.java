@@ -18,4 +18,6 @@ public interface ExpMapper {
     // 경험치 양 가져오기
     int getExpLevel (int coupleId) throws SQLException;
 
+    void addCoupleExp(int coupleId) throws SQLException;
+
 }
