@@ -85,6 +85,7 @@ function ChattingBox({ meetingInfo, setMeetingInfo, chattingWindow, sendMessage,
 			>
 				<textarea
 					className="bg-white w-full rounded-2xl resize-none scroll-box p-[3%]"
+					disabled={meetingInfo.connect.dataChannel?.readyState !== "open"}
 					onKeyUp={(event) => {
 						if (event.key === "Enter") {
 							if (!event.shiftKey) {
