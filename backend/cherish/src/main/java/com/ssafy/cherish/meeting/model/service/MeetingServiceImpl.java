@@ -3,6 +3,9 @@ package com.ssafy.cherish.meeting.model.service;
 import com.ssafy.cherish.meeting.model.dto.MeetingDto;
 import com.ssafy.cherish.meeting.model.mapper.MeetingMapper;
 import com.ssafy.cherish.memo.model.mapper.MemoMapper;
+import com.ssafy.cherish.user.model.dto.ExpHistoryDto;
+import com.ssafy.cherish.user.model.mapper.ExpMapper;
+import com.ssafy.cherish.user.model.service.ExpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,9 @@ import java.util.Map;
 public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private MeetingMapper meetingMapper;
+
+    @Autowired
+    private ExpService expService;
     @Autowired
     private MemoMapper memoMapper;
 
@@ -29,8 +35,22 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    @Transactional
     public int setMeetingLength(int meetingId) throws Exception {
-        return meetingMapper.setMeetingLength(meetingId);
+
+        int res=meetingMapper.setMeetingLength(meetingId);
+
+        MeetingDto meetingDto=meetingMapper.getMeetingsById(meetingId);
+
+        ExpHistoryDto historyDto=new ExpHistoryDto();
+        String[] len=meetingDto.getLength().split(":");
+        int min=Integer.parseInt(len[0])*60+Integer.parseInt(len[1]);
+        historyDto.setCoupleId(meetingDto.getCoupleId());
+        historyDto.setExp(min/10);
+        historyDto.setContent(min*10+"분 이상 체리콜");
+
+        expService.createExpHistory(historyDto);
+        return res;
     }
 
     @Override

@@ -898,6 +898,22 @@ function Meeting() {
       meetingInfo?.connect?.dataChannel?.close();
       meetingInfo?.connect?.peerConnection?.close();
       meetingInfo?.connect?.conn?.close();
+
+      // 유저 한 명만 종료됐음을 전송
+      if (meetingInfo.meetingId !== null && user1 === userId) {
+        fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/meeting/${meetingInfo.meetingId}`, {
+          method: "PUT",
+          headers: {
+            Accept: "*/*",
+          },
+        })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     };
   }, []);
 

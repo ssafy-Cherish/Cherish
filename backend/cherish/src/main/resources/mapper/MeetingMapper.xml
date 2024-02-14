@@ -64,6 +64,12 @@
         ORDER BY 1;
     </select>
 
+    <select id="getMeetingsById" parameterType="int" resultType="meetingDto">
+        SELECT id,couple_id,length,created_at
+        FROM MEETING
+        WHERE id=#{id};
+    </select>
+
     <select id="getSumOfMeetingTime" parameterType="int" resultType="String">
         SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(length)))
         FROM MEETING
