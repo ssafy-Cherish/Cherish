@@ -117,6 +117,7 @@ public class VideoScheduler {
 
         String outputFile = clipListFile.replaceAll(".txt", ".webm");
         //ffmpeg -f concat -safe 0 -protocol_whitelist "file,http,https,tcp,tls" -i mylist.txt -c copy output.mp4
+        //ffmpeg -f concat -safe 0 -protocol_whitelist "file,http,https,tcp,tls" -i mylist.txt -s 1280x720 output.webm
         FFmpegBuilder builder = new FFmpegBuilder()
                 .overrideOutputFiles(true)
                 .addInput(clipListFile)
@@ -125,6 +126,7 @@ public class VideoScheduler {
                 .addExtraArgs("-protocol_whitelist","file,http,https,tcp,tls")
                 .addOutput(outputFile)
                 .addExtraArgs("-s","1280x720")
+                .addExtraArgs("-async","1")
                 .done();
 
         log.debug("FFmpeg command: {}", builder.build());
