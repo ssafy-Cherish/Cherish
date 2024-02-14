@@ -62,7 +62,7 @@ const SocialKakao = () => {
 		// 	redirectUri: `${import.meta.env.VITE_APP_KAKAO_REDIRECT_URI}`,
 		// });
 
-		Kakao.Auth.loginForm({
+		Kakao.Auth.login({
 			success(data) {
 				console.log(data);
 				kakaoLogin();
