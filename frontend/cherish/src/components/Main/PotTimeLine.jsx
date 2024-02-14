@@ -47,6 +47,14 @@ export default function PotTimeLine() {
       timeline.push(date);
     });
 
-    return <>{timeline.length > 0 ? {timeline} : <div>체리콜로 화분을 성장시켜요!</div>}</>;
+    return (
+      <>
+        {timeline.length > 0 ? (
+          timeline
+        ) : (
+          <div>체리콜로 화분을 성장시켜요!</div>
+        )}
+      </>
+    );
   }
 }
