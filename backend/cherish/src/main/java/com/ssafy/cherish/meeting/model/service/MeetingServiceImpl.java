@@ -44,10 +44,14 @@ public class MeetingServiceImpl implements MeetingService {
 
         ExpHistoryDto historyDto=new ExpHistoryDto();
         String[] len=meetingDto.getLength().split(":");
-        int min=Integer.parseInt(len[0])*60+Integer.parseInt(len[1]);
+        int time=(Integer.parseInt(len[0])*60+Integer.parseInt(len[1]))/10;
+        if(time<=0)
+        {
+            return res;
+        }
         historyDto.setCoupleId(meetingDto.getCoupleId());
-        historyDto.setExp(min/10);
-        historyDto.setContent(min*10+"분 이상 체리콜");
+        historyDto.setExp(time);
+        historyDto.setContent(time*10+"분 이상 체리콜");
 
         expService.createExpHistory(historyDto);
         return res;
