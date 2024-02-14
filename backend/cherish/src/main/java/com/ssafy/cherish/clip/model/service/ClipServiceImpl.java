@@ -3,6 +3,9 @@ package com.ssafy.cherish.clip.model.service;
 import com.ssafy.cherish.clip.model.dto.ClipDto;
 import com.ssafy.cherish.clip.model.dto.ClipVo;
 import com.ssafy.cherish.clip.model.mapper.ClipMapper;
+import com.ssafy.cherish.user.model.dto.ExpHistoryDto;
+import com.ssafy.cherish.user.model.mapper.ExpMapper;
+import com.ssafy.cherish.user.model.service.ExpService;
 import com.ssafy.cherish.utils.SocketHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
@@ -39,7 +42,8 @@ public class ClipServiceImpl implements ClipService {
     private ClipMapper clipMapper;
     @Autowired
     private  AwsS3Service awsS3Service;
-
+    @Autowired
+    private ExpService expService;
     private final SocketHandler socketHandler;
     @Autowired
     public ClipServiceImpl(SocketHandler socketHandler) {
@@ -71,11 +75,17 @@ public class ClipServiceImpl implements ClipService {
         Files.deleteIfExists(Paths.get(pathForMerge[1]));
         Files.deleteIfExists(Paths.get(pathForMerge[2]));
 
-
         //변경된 filepath clipDto 객체에 넣기
         clipDto.setFilepath(clipURL);
 
+        ExpHistoryDto historyDto=new ExpHistoryDto();
+        historyDto.setCoupleId(coupleId);
+        historyDto.setExp(1);
+        historyDto.setContent(clipDto.getKeyword()+" 클립 생성");
+        expService.createExpHistory(historyDto);
+
         log.info("saveClip 중 생성된 filepath 채워진 객체 : {}", clipDto.toString());
+
         clipMapper.updateClipPath(clipDto);
         socketHandler.sendClipUrl(coupleId,clipURL,clipDto.getKeyword());
     }
