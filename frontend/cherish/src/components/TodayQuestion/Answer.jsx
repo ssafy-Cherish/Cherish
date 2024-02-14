@@ -1,6 +1,6 @@
 import { useState } from "react";
 export default function Answer({ answer }) {
-  const [selectName, setSelectName] = useState(null);
+  const [selectName, setSelectName] = useState(answer[0]?.nickname);
 
   const handleSelectName = (name) => {
     setSelectName((pre) => name);
@@ -35,6 +35,9 @@ export default function Answer({ answer }) {
         <div className="w-[28vw]">
           {selectName === answer[0]?.nickname ? (
             <video
+              preload="metadata"
+              playsInline
+              controls
               onClick={(event) => {
                 event.preventDefault();
                 if (event.target.paused === false) {
@@ -48,6 +51,9 @@ export default function Answer({ answer }) {
             ></video>
           ) : (
             <video
+              preload="metadata"
+              playsInline
+              controls
               onClick={(event) => {
                 event.preventDefault();
                 if (event.target.paused === false) {

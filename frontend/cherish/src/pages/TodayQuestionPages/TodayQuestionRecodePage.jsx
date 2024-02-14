@@ -51,7 +51,7 @@ export default function TodayQuestionRecodePage() {
       <p className="text-[1.8vw] ml-[4vw] mt-[2vw] text-text-black">
         {year}년 {month}월 {day}일
       </p>
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center w-[43vw] h-[33vw] mx-auto">
         <button
           onClick={handleClickIsQuestionBoxOpen}
           disabled={isRecoding}
@@ -65,7 +65,7 @@ export default function TodayQuestionRecodePage() {
           </div>
         </button>
         {isQuestionBoxOpen ? (
-          <TodayRecoding handleIsRecording={handleIsRecording} />
+          <TodayRecoding handleIsRecording={handleIsRecording} handleClickIsQuestionBoxOpen={handleClickIsQuestionBoxOpen} handleIsAnswered={handleIsAnswered} />
         ) : (
           <TodayQuestionBox
             handleIsAnswered={handleIsAnswered}
