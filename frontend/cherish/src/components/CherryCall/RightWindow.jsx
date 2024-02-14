@@ -61,7 +61,7 @@ function RightWindow({
         <button
           className={`w-[33%] h-full font-extrabold text-xl ${
             meetingInfo.rightWindow == 1 ? "text-cherry" : ""
-          }`}
+          }  ${meetingInfo.clipReceived && "blink-effect"}`}
           disabled={meetingInfo.rightWindow == 1}
           onClick={() => {
             setMeetingInfo((prevMeetingInfo) => {
