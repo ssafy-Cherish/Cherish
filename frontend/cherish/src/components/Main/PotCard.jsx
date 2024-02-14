@@ -9,6 +9,7 @@ import { fetchExpLevel } from "../../services/PotService";
 
 const Level = ["새싹 단계", "떡잎 단계", "체리나무 단계"];
 const potImage = [PotLv1, PotLv2, PotLv3, PotLv3, PotLv3];
+const coupleLevel = ["풋풋한", "알콩달콩", "천생연분"];
 
 export default function PotCard({ dday }) {
   const { coupleId, userInfos } = useCoupleStore();
@@ -46,7 +47,8 @@ export default function PotCard({ dday }) {
         className="h-[15vw] mt-[2vw] col-span-3 flex flex-col items-center justify-around"
       >
         <p id="PotCouple" className="text-[1.5vw] font-bold text-text-black">
-          알콩달콩 <span className="text-cherry">커플</span>
+          {coupleLevel[expLevel.level]}{" "}
+          <span className="text-cherry">커플</span>
         </p>
         <div id="PotCoupleName" className="flex flex-row items-center">
           <p className="text-[1.2vw] text-text-black">
