@@ -486,12 +486,13 @@ function Meeting() {
         // {
         // 	url: "stun:stun2.1.google.com:19302",
         // },
-        { url: "stun:stun.l.google.com:19302" },
+        // { url: "stun:stun.l.google.com:19302" },
+        { url: "stun:172.26.8.234:3478" },
         {
-          urls: 'turn:172.26.8.234?transport=tcp',
-          credential: '1234',
-          username: 'cherish'
-        }
+          urls: "turn:172.26.8.234?transport=tcp",
+          credential: "1234",
+          username: "cherish",
+        },
       ],
     };
 
@@ -617,11 +618,11 @@ function Meeting() {
         console.log("ontrack record start");
         updateLocalVideo(meetingInfo.video.local.videoOn, meetingInfo.video.local.volume, 1);
         recordStopAndStart(meetingInfo, false);
-        setMeetingInfo((prevMeetingInfo)=>{
-          const newMeetingInfo = {...prevMeetingInfo}
-          newMeetingInfo.connect.offerState = 3
-          return newMeetingInfo
-        })
+        setMeetingInfo((prevMeetingInfo) => {
+          const newMeetingInfo = { ...prevMeetingInfo };
+          newMeetingInfo.connect.offerState = 3;
+          return newMeetingInfo;
+        });
       }
 
       sendMessage(
@@ -631,7 +632,7 @@ function Meeting() {
       );
     };
 
-    peerConnection.onconnectionstatechange = function () { };
+    peerConnection.onconnectionstatechange = function () {};
 
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
@@ -881,7 +882,7 @@ function Meeting() {
 
   //////
 
-  console.log(meetingInfo)
+  console.log(meetingInfo);
 
   if (!meetingInfo.init) {
     getLocalMediaStream();
@@ -940,7 +941,7 @@ function Meeting() {
       console.log("meetingId2 : " + meetingId2);
       // 유저 한 명만 종료됐음을 전송
       if (meetingId2 !== null && user1 === userId) {
-        console.log("미팅 종료 알림")
+        console.log("미팅 종료 알림");
         fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/meeting/${meetingId2}`, {
           method: "PUT",
           headers: {
@@ -957,10 +958,10 @@ function Meeting() {
     };
   }, []);
 
-  window.onbeforeunload = (event)=>{
+  window.onbeforeunload = (event) => {
     event.preventDefault();
-    console.log('unload', event)
-  }
+    console.log("unload", event);
+  };
 
   return (
     <div className="h-full w-full flex flex-row contents-center">
