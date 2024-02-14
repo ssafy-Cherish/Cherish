@@ -332,10 +332,14 @@ public class UserController {
 
     @GetMapping("/coupleInfo")
     @Operation(summary = "커플 정보 조회", description="couple 테이블의 id를 가져와 알맞은 유저의 정보를 가져옴")
-    public ResponseEntity<?> coupleInfo (@RequestParam("id") int id) throws Exception {
+    public ResponseEntity<?> coupleInfo (@RequestParam("id") int id) {
         log.debug("coupleInfo 호출 : {}", id);
-
-        return new ResponseEntity<CoupleDto>(userService.coupleInfo(id), HttpStatus.OK);
+        try {
+            return new ResponseEntity<CoupleDto>(userService.coupleInfo(id), HttpStatus.OK);
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
 

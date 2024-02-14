@@ -1,19 +1,24 @@
 .scroll-box::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
-video {
-  -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
+.video-mirror {
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
 }
 
 /* 버튼 반짝임 애니메이션 */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
 }
 
 /* 버튼 반짝임 애니메이션 */
 .blink-effect {
-  animation: blink 1s ease-in-out infinite;
+	animation: blink 1s ease-in-out infinite;
 }

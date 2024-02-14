@@ -12,8 +12,8 @@
   display: flex;
   position: relative;
   left: -100px; /* View에 padding-left: 100px가 있어 시작점을 조절하고자 추가 */
-  width: calc(24vw * 12); /* (original + clone)의 너비 */
-  animation: carouselautoPlay 25s linear infinite;
+  width: calc(24.9vw * 12); /* (original + clone)의 너비 */
+  animation: carouselautoPlay 40s linear infinite;
 }
 
 @keyframes carouselautoPlay {
@@ -21,12 +21,12 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-24vw * 6)); /* original의 너비만큼 이동 */
+    transform: translateX(calc(-24.9vw * 6)); /* original의 너비만큼 이동 */
   }
 }
 
 .slide > li {
-  width: 24vw; /* 슬라이드 내부 요소 길이 */
+  width: 24.9vw; /* 슬라이드 내부 요소 길이 */
   height: 14vw;
 }
 

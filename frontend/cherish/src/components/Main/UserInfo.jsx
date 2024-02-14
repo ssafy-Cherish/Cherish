@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import ModifyModal from "./ModifyModal";
+import Kakao from "../../utils/Kakao";
 
 export default function UserInfo() {
 	const { anniversary, userInfos, reset: coupleReset } = useCoupleStore();
@@ -40,7 +41,10 @@ export default function UserInfo() {
 		userReset();
 		localStorage.removeItem("user-store");
 		localStorage.removeItem("couple-store");
-		navigate("/");
+
+		window.location.href = `https://kauth.kakao.com/oauth/logout?client_id=${
+			import.meta.env.VITE_APP_KAKAO_REST_API_KEY
+		}&logout_redirect_uri=${location.protocol + "//" + location.host}`;
 	}
 
 	let userInfoClassName = `left-[2%] transition-[height] duration-500 absolute w-[18rem]  bg-white my-[65px]  text-[1.5rem] rounded-[40px] shadow-md text-center ${
@@ -74,7 +78,7 @@ export default function UserInfo() {
 							<p className="mb-[8px] text-cherry">체리씨 : {cherryInfo.nickname}</p>
 							<p className=" text-cherry">체리 생일 : {cherryBirth}</p>
 						</div>
-						<div className="flex justify-around mt-[32px] text-text-black">
+						<div className="flex justify-around text-text-black">
 							<button onClick={() => setOpenModifyModal(true)}>내정보</button>
 							<button onClick={logout}>로그아웃</button>
 						</div>

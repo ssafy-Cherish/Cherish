@@ -125,6 +125,13 @@
         where id = #{id}
     </update>
 
+    <update id="updateQuestionCnt">
+        UPDATE couple SET question_cnt = question_cnt + 1
+        WHERE id IN
+        (SELECT DISTINCT id FROM
+        (SELECT c.id AS id FROM couple c JOIN answer a ON c.id=a.couple_id
+        WHERE a.question_id=c.question_cnt GROUP BY c.id HAVING COUNT(a.kakao_id)=2) AS tmp);
+    </update>
 <!--    이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.-->
 <!--    <select id="login" parameterType="long" resultMap="user">-->
 <!--        SELECT *-->

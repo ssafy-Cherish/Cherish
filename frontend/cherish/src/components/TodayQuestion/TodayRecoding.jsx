@@ -17,7 +17,7 @@ const constraints = {
   },
 };
 
-export default function TodayRecoding() {
+export default function TodayRecoding({ handleIsRecording }) {
   const [mediaStream, setMediaStream] = useState(null);
   const [recordedBlob, setRecordedblob] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,7 +34,8 @@ export default function TodayRecoding() {
   async function getMedia() {
     //
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    setMediaStream((pre) => stream);
+    setMediaStream(stream);
+    console.log(mediaStream);
     videoOutput.current.srcObject = stream;
     videoOutput.current.onloadedmetadata = () => {
       // HTMLVideoElement로 카메라의 화면을 출력하기 시작
@@ -111,26 +112,46 @@ export default function TodayRecoding() {
   };
 
   useEffect(() => {
-    getMedia();
-  }, []);
+    if (!mediaStream) {
+      getMedia();
+    }
+
+    return () => {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [mediaStream]);
 
   return (
     <>
-      <div className="w-[42vw] mt-[2vw]">
+      <div className="w-[42vw] mt-[2vw] flex flex-col items-center justify-center">
         <video
-          className="rounded-t-[15px]"
+          className="rounded-t-[15px] w-full skeleton"
           ref={videoOutput}
           id="video-output"
           autoPlay
           playsInline
         ></video>
-        <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
+        <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw] w-full">
           {isRecording ? (
-            <button onClick={stopRecoding} id="finish-btn">
+            <button
+              onClick={() => {
+                handleIsRecording();
+                stopRecoding();
+              }}
+              id="finish-btn"
+            >
               <img src={StopRecord} alt="StopRecord" />
             </button>
           ) : (
-            <button onClick={startRecoding} id="start-btn">
+            <button
+              onClick={() => {
+                handleIsRecording();
+                startRecoding();
+              }}
+              id="start-btn"
+            >
               <img src={StartRecord} alt="StartRecord" />
             </button>
           )}
