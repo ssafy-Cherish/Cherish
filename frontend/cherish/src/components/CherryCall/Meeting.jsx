@@ -611,8 +611,16 @@ function Meeting() {
               0,
               msg.data
             );
+            newMeetingInfo.showMessage = true;
             return newMeetingInfo;
           });
+          setTimeout(() => {
+            setMeetingInfo((prevMeetingInfo) => {
+              const newMeetingInfo = { ...prevMeetingInfo };
+              newMeetingInfo.showMessage = false;
+              return newMeetingInfo;
+            });
+          }, 3000);
           break;
 
         default:
