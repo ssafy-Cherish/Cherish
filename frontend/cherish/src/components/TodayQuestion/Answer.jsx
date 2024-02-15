@@ -46,7 +46,7 @@ export default function Answer({ answer }) {
                   event.target.play();
                 }
               }}
-              className="skeleton w-full h-full rounded-lg "
+              className="w-full h-[16vw] rounded-lg object-cover "
               src={answer[0]?.filepath}
             ></video>
           ) : (
@@ -62,7 +62,7 @@ export default function Answer({ answer }) {
                   event.target.play();
                 }
               }}
-              className="skeleton w-full h-full rounded-lg "
+              className="w-full h-[16vw] rounded-lg object-cover "
               src={answer[1]?.filepath}
             ></video>
           )}

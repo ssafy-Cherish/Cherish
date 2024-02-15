@@ -8,7 +8,7 @@ export default function ShowVideo({ handleClickVideoOpen, video }) {
       <div className="mt-[3vw] ml-[1.5vw]">
         <button
           onClick={handleClickVideoOpen}
-          className="ml-[3vw] mb-[1vw] bg-cherry rounded-lg px-[0.5vw] py-[0.2vw] text-white hover:bg-[#F5473E]"
+          className="ml-[3vw] mb-[1vw] bg-cherry rounded-lg text-white hover:bg-[#F5473E] btn btn-sm"
         >
           뒤로가기
         </button>
@@ -17,10 +17,10 @@ export default function ShowVideo({ handleClickVideoOpen, video }) {
         </p>
         <div className="flex flex-col items-center justify-center">
           <div className="w-[42vw] mt-[1vw]">
-            <div className="w-[4wvw] h-[25vw] bg-black">
+            <div className="w-[4wvw] h-[25vw]">
               <video
-                src={video.filepath}
-                className="rounded-t-[15px] w-full"
+                src={video.filepath + "#t=100"}
+                className="rounded-[15px] h-full object-cover"
                 id="video-output"
                 preload="metadata"
                 playsInline
