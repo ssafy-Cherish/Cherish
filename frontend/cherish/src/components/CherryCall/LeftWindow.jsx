@@ -45,8 +45,7 @@ function LeftWindow({
                   className=" relative flex flex-col justify-center items-center w-full h-full"
                   onClick={(event) => {
                     event.preventDefault();
-                    const targetVolume =
-                      meetingInfo.video.local.volume == 0 ? 0.5 : 0;
+                    const targetVolume = meetingInfo.video.local.volume == 0 ? 0.5 : 0;
                     const targetOn = meetingInfo.video.local.videoOn;
                     updateLocalVideo(targetOn, targetVolume, 1);
                   }}
@@ -106,9 +105,7 @@ function LeftWindow({
                   max="1"
                   value={meetingInfo.video.remote.volumeFactor}
                   step="0.01"
-                  className={`range w-[85%] h-[20%] ${
-                    barIsVisible ? "" : "hidden"
-                  }`}
+                  className={`range w-[85%] h-[20%] ${barIsVisible ? "" : "hidden"}`}
                   onChange={(event) => {
                     event.preventDefault();
                     const nextVolumeFactor = event.target.value;
@@ -123,8 +120,7 @@ function LeftWindow({
 
                     setMeetingInfo((prevMeetingInfo) => {
                       const newMeetingInfo = { ...prevMeetingInfo };
-                      newMeetingInfo.video.remote.volumeFactor =
-                        nextVolumeFactor;
+                      newMeetingInfo.video.remote.volumeFactor = nextVolumeFactor;
                       return newMeetingInfo;
                     });
                   }}
@@ -138,8 +134,8 @@ function LeftWindow({
                   onClick={(event) => {
                     event.preventDefault();
                     send({
-                      event: "request loading"
-                    })
+                      event: "request loading",
+                    });
 
                     // 이승준이 수정한 코드
                     // 음성인식을 한국어로 설정하고 결과를 말하는게 끝나면 한 꺼번에 받아오는 방식으로 변경
@@ -165,10 +161,7 @@ function LeftWindow({
                   <img src={phoneOffImg} />
                 </button>
               ) : (
-                <button
-                  className=" m-2 w-14 rounded-2xl btn bg-gray-400"
-                  disabled="true"
-                >
+                <button className=" m-2 w-14 rounded-2xl btn bg-gray-400" disabled={true}>
                   <img src={phoneOnImg} />
                 </button>
               )}
