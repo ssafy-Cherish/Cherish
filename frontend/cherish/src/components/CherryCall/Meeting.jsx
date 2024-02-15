@@ -135,6 +135,8 @@ function Meeting() {
       result.includes("파이팅") ||
       result.includes("힘내") ||
       result.includes("기운내") ||
+      result.includes("수고") ||
+      result.includes("고생") ||
       result.includes("응원할게")
     )
       return "응원";
