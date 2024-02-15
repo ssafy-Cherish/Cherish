@@ -148,6 +148,7 @@ export default function TodayRecoding({
           className="rounded-t-[15px] w-full h-full"
           ref={videoOutput}
           id="video-output"
+          muted
           autoPlay
           playsInline
         ></video>
@@ -184,27 +185,25 @@ export default function TodayRecoding({
             <div className="bg-white w-[30vw] h-[4vw] text-center leading-[4vw] text-[1vw] rounded-[35px] mt-[2vw] text-text-black">
               {question ? question.content : "오늘의 질문"}
             </div>
-            <div className="w-[30vw] h-[17vw] mt-[1.5vw]">
+            <div className="w-[30vw] h-[17vw] mt-[1.5vw] flex justify-center">
               <video
                 ref={recodeOutput}
                 preload="metadata"
                 playsInline
                 controls
-                width="100%"
-                height="100%"
-                className="rounded-[20px]"
+                className="rounded-[20px] h-full"
               ></video>
             </div>
             <div className="w-[13vw] flex flex-row justify-between mt-[1vw]">
               <button
                 onClick={closeModal}
-                className="w-[4vw] h-[2vw] bg-white border-[3px] border-cherry text-cherry rounded-[5px] hover:text-[#F5473E] hover:border-[#F5473E]"
+                className="btn btn-sm bg-white border-[3px] border-cherry text-cherry rounded-[5px] hover:text-[#F5473E] hover:border-[#F5473E]"
               >
                 취소
               </button>
               <button
                 onClick={videoSave}
-                className="w-[4vw] h-[2vw] bg-cherry border-[3px] border-cherry text-white rounded-[5px] hover:bg-[#F5473E] hover:border-[#F5473E]"
+                className="btn btn-sm bg-cherry border-[3px] border-cherry text-white rounded-[5px] hover:bg-[#F5473E] hover:border-[#F5473E]"
               >
                 저장
               </button>
