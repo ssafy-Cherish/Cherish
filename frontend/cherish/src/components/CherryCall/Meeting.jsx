@@ -896,12 +896,6 @@ function Meeting() {
   }
   // 새로운 record 생성
   function makeNewRecord() {
-    meetingInfo.stream.localMediaStream.getTracks().forEach((track) => {
-      console.log("const local 1 : ", track.getConstraints());
-    });
-    meetingInfo.stream.remoteMediaStream.getTracks().forEach((track) => {
-      console.log("const remote 1 : ", track.getConstraints());
-    });
     const local = new MediaRecorder(meetingInfo.stream.localMediaStream, recordOption);
     const remote = new MediaRecorder(meetingInfo.stream.remoteMediaStream, recordOption);
     local.start(500);
