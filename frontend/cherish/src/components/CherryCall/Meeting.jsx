@@ -76,6 +76,9 @@ function Meeting() {
     onResult: (result) => {
       console.log(result);
 
+      if (meetingInfo.video.local.volume == 0)
+        return;
+
       // 말한 내용을 script 객체로 생성
       const script = makeScriptAndSend(result);
 
