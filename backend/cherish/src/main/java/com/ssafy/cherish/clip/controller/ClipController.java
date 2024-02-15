@@ -153,6 +153,21 @@ public class ClipController {
         return new ResponseEntity<>(resultMap, status);
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(summary = "클립 삭제")
+    public ResponseEntity deleteClip(@PathVariable("id") @Parameter(description = "클립 아이디") int id)
+    {
+        log.debug("clip 삭제, clipid : {}",id);
+
+        try{
+            clipService.deleteClip(id);
+            return new ResponseEntity(HttpStatus.OK);
+        }catch (Exception e)
+        {
+            return new ResponseEntity(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 
