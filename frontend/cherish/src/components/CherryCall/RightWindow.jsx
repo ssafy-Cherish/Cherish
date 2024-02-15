@@ -89,7 +89,7 @@ function RightWindow({
         >
           체리톡
         </button>
-        {meetingInfo.showMessage && (
+        {/* {meetingInfo.showMessage && (
           <div className="absolute bottom-full right-12 translate-y-10">
             <div
               style={{
@@ -102,7 +102,7 @@ function RightWindow({
               {meetingInfo.showMessageContent}
             </div>
           </div>
-        )}
+        )} */}
       </div>
       {/* switch 문으로 변경 */}
       {rightWindow()}
