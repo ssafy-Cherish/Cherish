@@ -58,4 +58,8 @@
         ORDER BY C.created_at desc
         LIMIT 6
     </select>
+
+    <delete id="deleteClip" parameterType="int">
+        delete from clip where id=#{id};
+    </delete>
 </mapper>
