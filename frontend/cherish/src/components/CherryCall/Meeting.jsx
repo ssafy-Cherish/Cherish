@@ -409,7 +409,7 @@ function Meeting() {
 
   const updateRemoteVideo = function (on, volume, volumeFactor, force) {
     if (remoteCam.current) {
-      if (meetingInfo.video.remote.videoOn !== on || force) {
+      if (meetingInfo.video.remote.videoOn !== on) {
         remoteCam.current.srcObject = on
           ? meetingInfo.stream.remoteMediaStream
           : new MediaStream();
