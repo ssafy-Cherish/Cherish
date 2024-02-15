@@ -82,7 +82,7 @@ const DiaryDailyPage = () => {
       await queryClient.cancelQueries({
         queryKey: ["meetings", year, month, day],
       });
-      const prevMeetings = queryClient.getQueriesData(["meetings", year, month, day]);
+      const prevMeetings = queryClient.getQueryData(["meetings", year, month, day]);
       queryClient.setQueryData(["meetings", year, month, day], newMeetings);
 
       return { prevMeetings };
