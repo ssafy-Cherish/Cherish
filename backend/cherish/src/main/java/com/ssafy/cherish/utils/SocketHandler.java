@@ -43,33 +43,7 @@ public class SocketHandler extends TextWebSocketHandler {
             CherishSocketSession cherishSession = sessions.get(session.getId());
 
             switch (map.get("event")) {
-                // WebRTC 연결에 사용되는 메세지라면 상대방에게 메세지를 바로 보낸다
-                case "offer":
-                case "answer":
-                case "candidate":
-                    if (cherishSession.getCoupleId() == Integer.MIN_VALUE) {
-                        log.debug("커플 아이디 없음 : {}", cherishSession);
-                        return;
-                    }
-
-                    // 연결 가능한 세션들을 가져옴
-                    List<CherishSocketSession> couple = connections.get(cherishSession.getCoupleId());
-
-                    // 커플이 둘 다 연결되어 있다면
-                    if (couple.size() > 1) {
-
-                        // 상대방에게 WebRTC 연결에 필요한 메세지 전송
-                        for (CherishSocketSession cs : couple)
-                            if (cs.getSession().isOpen() &&
-                                    !cs.getSession().getId().equals(session.getId()))
-                                cs.getSession().sendMessage(message);
-
-                    } else {
-                        log.debug("상대방 연결 안됨 : {}", cherishSession);
-                    }
-                    break;
-
-                    // 클라이언트가 처음 서버와 연결된 뒤 정보를 저장하기 위해 커플 아이디를 전송
+                // 클라이언트가 처음 서버와 연결된 뒤 정보를 저장하기 위해 커플 아이디를 전송
                 case "access":
                     // 데이터를 맵으로 변환
                     Map<String, Integer> map2 = mapper.readValue(map.get("data"), Map.class);
@@ -112,7 +86,28 @@ public class SocketHandler extends TextWebSocketHandler {
 
                     break;
 
+                // WebRTC 연결 및 다른 메세지는 상대방에게 메세지를 바로 보낸다
                 default:
+                    if (cherishSession.getCoupleId() == Integer.MIN_VALUE) {
+                        log.debug("커플 아이디 없음 : {}", cherishSession);
+                        return;
+                    }
+
+                    // 연결 가능한 세션들을 가져옴
+                    List<CherishSocketSession> couple = connections.get(cherishSession.getCoupleId());
+
+                    // 커플이 둘 다 연결되어 있다면
+                    if (couple.size() > 1) {
+
+                        // 상대방에게 WebRTC 연결에 필요한 메세지 전송
+                        for (CherishSocketSession cs : couple)
+                            if (cs.getSession().isOpen() &&
+                                    !cs.getSession().getId().equals(session.getId()))
+                                cs.getSession().sendMessage(message);
+
+                    } else {
+                        log.debug("상대방 연결 안됨 : {}", cherishSession);
+                    }
                     break;
             }
 
