@@ -408,8 +408,6 @@ function Meeting() {
       }
     }
 
-    console.log("remoteCam.current.volume : ", remoteCam.current.volume);
-
     setMeetingInfo((prevMeetingInfo) => {
       const newMeetingInfo = { ...prevMeetingInfo };
       newMeetingInfo.video.remote.videoOn = on;
@@ -524,7 +522,6 @@ function Meeting() {
 
     peerConnection.oniceconnectionstatechange = function (event) {
       console.log("oniceconnectionstatechange");
-      console.log(event);
     };
 
     // creating data channel
@@ -832,7 +829,6 @@ function Meeting() {
           formData.set("couple_id", coupleId);
           formData.set("clip1", user1 === userId ? blobLocal : blobRemote, "clip1.webm");
           formData.set("clip2", user1 === userId ? blobRemote : blobLocal, "clip2.webm");
-          console.log(formData);
 
           fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/clip`, {
             method: "post",
@@ -880,7 +876,6 @@ function Meeting() {
       record[0].mediaRecorder[1].stop();
       record.shift();
     }
-    console.log("record size : " + record.length);
 
     record.push(makeNewRecord());
 
@@ -938,8 +933,6 @@ function Meeting() {
 
   //////
 
-  console.log(meetingInfo);
-
   if (!meetingInfo.init) {
     getLocalMediaStream();
     setMeetingInfo((prevMeetingInfo) => {
@@ -994,7 +987,6 @@ function Meeting() {
       meetingInfo?.connect?.peerConnection?.close();
       meetingInfo?.connect?.conn?.close();
 
-      console.log("meetingId2 : " + meetingId2);
       // 유저 한 명만 종료됐음을 전송
       if (meetingId2 !== null && user1 === userId) {
         console.log("미팅 종료 알림");
