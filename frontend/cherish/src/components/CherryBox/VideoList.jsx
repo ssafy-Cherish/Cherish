@@ -14,7 +14,7 @@ export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
     return (
       <>
         <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
-        <div className="skeletonw-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
+        <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
         <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
         <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
         <div className="skeleton w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"></div>
@@ -27,7 +27,7 @@ export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
     <>
       {data.VideoDtoList.map((video) => (
         <motion.div
-          whileHover={{ scale: 1.07 }}
+          whileHover={{ backgroundColor: "#EFEFEF" }}
           key={video.id}
           onClick={() =>
             handleClickVideoOpen({
@@ -35,7 +35,7 @@ export default function VideoList({ selectKeyword, handleClickVideoOpen }) {
               keyword: video.keyword,
             })
           }
-          className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center"
+          className="bg-white w-[15vw] h-[10vw] rounded-[15px] flex items-center justify-center hover:cursor-pointer"
         >
           <p className="text-[1.5vw]">
             우리들의 "<span className="text-cherry">{video.keyword}</span>"
