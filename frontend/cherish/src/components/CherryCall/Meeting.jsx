@@ -1027,7 +1027,7 @@ function Meeting() {
         block: "end",
       });
     }
-  }, [meetingInfo.scriptHistory.length, meetingInfo.rightWindow]);
+  }, [meetingInfo.rightWindow]);
 
   useEffect(() => {
     return () => {
