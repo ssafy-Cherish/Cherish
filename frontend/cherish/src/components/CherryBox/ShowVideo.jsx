@@ -20,17 +20,12 @@ export default function ShowVideo({ handleClickVideoOpen, video }) {
             <div className="w-[4wvw] h-[25vw] bg-black">
               <video
                 src={video.filepath}
-                className="rounded-t-[15px]"
+                className="rounded-t-[15px] w-full"
                 id="video-output"
                 preload="metadata"
                 playsInline
                 controls
               ></video>
-            </div>
-            <div className="bg-pink rounded-b-[15px] shadow-md text-center py-[0.5vw]">
-              <button>
-                <img src={VideoStartIcon} alt="" />
-              </button>
             </div>
           </div>
         </div>
