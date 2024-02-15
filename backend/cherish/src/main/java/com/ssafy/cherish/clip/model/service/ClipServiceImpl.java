@@ -112,7 +112,6 @@ public class ClipServiceImpl implements ClipService {
                 .addExtraArgs("-map", "[a]")
                 .addExtraArgs("-preset","ultrafast")
                 .addExtraArgs("-ac","1")
-                .addExtraArgs("-threads", "4")
                 .done();
 
         log.debug("FFmpeg command: {}", builder.build());
