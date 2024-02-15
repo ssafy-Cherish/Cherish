@@ -184,7 +184,7 @@ export default function TodayRecoding({
             <div className="bg-white w-[30vw] h-[4vw] text-center leading-[4vw] text-[1vw] rounded-[35px] mt-[2vw] text-text-black">
               {question ? question.content : "오늘의 질문"}
             </div>
-            <div className="w-[30vw] mt-[1.5vw]">
+            <div className="w-[30vw] h-[17vw] mt-[1.5vw]">
               <video
                 ref={recodeOutput}
                 preload="metadata"
