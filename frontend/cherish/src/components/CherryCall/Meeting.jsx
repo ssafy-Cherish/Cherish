@@ -1032,7 +1032,7 @@ function Meeting() {
         block: "end",
       });
     }
-  }, [meetingInfo.rightWindow]);
+  }, [meetingInfo.scriptHistory.length ,meetingInfo.rightWindow]);
 
   useEffect(() => {
     return () => {
