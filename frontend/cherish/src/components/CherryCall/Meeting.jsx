@@ -286,7 +286,7 @@ function Meeting() {
   }
   // TTS
   function playGPTScript(gptScript) {
-    return; 
+    return;
     fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
       headers: {
