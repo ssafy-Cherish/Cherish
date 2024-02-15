@@ -19,4 +19,6 @@ public interface ClipService {
     int changePin(int clipId, boolean mode);
 
     List<ClipVo> getPinnedClip(int coupleId);
+
+    void deleteClip(int id) throws Exception;
 }

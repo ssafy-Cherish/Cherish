@@ -3,6 +3,7 @@ package com.ssafy.cherish.clip.model.mapper;
 import com.ssafy.cherish.clip.model.dto.ClipDto;
 import com.ssafy.cherish.clip.model.dto.ClipVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.jdbc.SQL;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,8 +22,7 @@ public interface ClipMapper {
     // 입력받은 coupleId를 통해 해당 커플이 가지고 있는 clip의 총 개수를 반환
     int clipCnt (int coupleId) throws SQLException;
 
-
     int changePin(int clipId, boolean mode);
-
     List<ClipVo> getPinnedClip(int coupleId);
+    void deleteClip(int id) throws SQLException;
 }
