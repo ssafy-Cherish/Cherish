@@ -47,9 +47,9 @@
 |    JAVA    | 17.0.9 |    node.js    | 20.10.0 |AWS EC2 |         |
 | SpringBoot | 3.2.1  |     React     | 18.2.0 |Docker  | 24.0.7  |
 |   MySQL    | 8.0.35 | farmer-motion | 11.0.3 |Jenkins | 2.426.2 |
-|  MyBatis   | 3.0.3  |  React Query  |        |
-|            |        |    Zustand    |        |
-|            |        | Tailwind css  |        |
+|  MyBatis   | 3.0.3  |  React Query  | 5.18.1 |
+|            |        |    Zustand    | 4.5.0  |
+|            |        | Tailwind css  | 3.4.1  |
 
 [//]: # (|   Front-end   | 버전     | )
 
@@ -61,11 +61,11 @@
 
 [//]: # (| farmer-motion | 11.0.3 |)
 
-[//]: # (|  React Query  |        |)
+[//]: # (|  React Query  | 5.18.1 |)
 
-[//]: # (|    Zustand    |        |)
+[//]: # (|    Zustand    | 4.5.0  |)
 
-[//]: # (| Tailwind css  |        |)
+[//]: # (| Tailwind css  | 3.4.1  |)
 
 [//]: # ()
 [//]: # (|  Infra  | 버전      | )
