@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 function LeftWindow({
   meetingInfo,
-  createOffer,
+  send,
   updateLocalVideo,
   readyCam,
   setConnection,
@@ -137,7 +137,9 @@ function LeftWindow({
                   className=" m-2 w-14 rounded-2xl btn bg-green-400 hover:bg-green-600"
                   onClick={(event) => {
                     event.preventDefault();
-                    createOffer();
+                    send({
+                      event: "request loading"
+                    })
 
                     // 이승준이 수정한 코드
                     // 음성인식을 한국어로 설정하고 결과를 말하는게 끝나면 한 꺼번에 받아오는 방식으로 변경
