@@ -17,10 +17,10 @@
     </insert>
 
     <select id="getVideoList" parameterType="map" resultMap="video">
-        SELECT filepath, keyword
+        SELECT id, filepath, keyword
         FROM monthlyvideo
         WHERE yearmonth LIKE CONCAT('%', #{yearMonth}, '%') AND couple_id = #{coupleId}
-        ORDER BY keyword
+        ORDER BY id DESC LIMIT 8;
     </select>
 
     <select id="getYearMonth" parameterType="int" resultType="String">
