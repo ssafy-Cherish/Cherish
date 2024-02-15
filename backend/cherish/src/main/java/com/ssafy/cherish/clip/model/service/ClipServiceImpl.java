@@ -139,6 +139,11 @@ public class ClipServiceImpl implements ClipService {
     public List<ClipVo> getPinnedClip(int coupleId) {
         return clipMapper.getPinnedClip(coupleId);
     }
+
+    @Override
+    public void deleteClip(int id) throws Exception {
+        clipMapper.deleteClip(id);
+    }
 }
 
 
