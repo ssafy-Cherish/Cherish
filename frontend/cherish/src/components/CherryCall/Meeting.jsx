@@ -111,7 +111,7 @@ function Meeting() {
       result.includes("최고") ||
       result.includes("대박") ||
       result.includes("잘생겼") ||
-      result.includes("귀엽") ||
+      result.includes("귀엽")
     )
       return "칭찬";
     else if (
