@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.memo.model.mapper.MemoMapper">
+    <select id="getMemoByDate" parameterType="map" resultType="memoDto">
+        SELECT * FROM MEMO
+        WHERE COUPLE_ID=#{coupleId}
+        AND date =
+        <choose>
+            <when test="date!=null">
+                #{date}
+            </when>
+            <otherwise>
+                CURDATE()
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="writeMemo" parameterType="memoDto">
+        INSERT INTO memo (couple_id, content, date)
+        VALUES (#{coupleId}, #{content}, #{date})
+    </insert>
+
+    <select id="getMemo" parameterType="map" resultType="memoDto">
+        SELECT *
+        FROM memo
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </select>
+
+    <update id="modifyMemo" parameterType="memoDto">
+        UPDATE memo
+        SET content = #{content}
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </update>
+
+    <delete id="deleteMemo" parameterType="memoDto">
+        DELETE FROM memo
+        WHERE couple_id = #{coupleId} AND date = #{date}
+    </delete>
+</mapper>

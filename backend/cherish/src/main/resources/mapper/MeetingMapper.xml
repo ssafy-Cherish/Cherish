@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.meeting.model.mapper.MeetingMapper">
+
+    <resultMap id="meeting" type="meetingDto">
+        <id property="id" column="id"/>
+        <result property="coupleId" column="coupleId"/>
+        <result property="length" column="length"/>
+        <result property="createdAt" column="createdAt"/>
+        <collection property="chats" javaType="List" ofType="chatDto" notNullColumn="content">
+            <id property="id" column="chatId"/>
+            <result property="kakaoId" column="kakaoId"/>
+            <result property="nickname" column="nickname"/>
+            <result property="meetingId" column="id"/>
+            <result property="content" column="content"/>
+            <result property="createdAt" column="chatCreatedAt"/>
+        </collection>
+        <collection property="clips" javaType="List" ofType="clipDto"  notNullColumn="filepath">
+            <id property="id" column="clipId"/>
+            <result property="meetingId" column="id"/>
+            <result property="keyword" column="keyword"/>
+            <result property="filepath" column="filepath"/>
+            <result property="isSelected" column="isSelected"/>
+            <result property="isPinned" column="isPinned"/>
+            <result property="createdAt" column="clipCreatedAt"/>
+        </collection>
+    </resultMap>
+
+    <select id="getMeetingsByDate" resultMap="meeting">
+        SELECT m.id AS id, m.couple_id AS coupleId, m.length AS length, m.created_at AS createdAt,
+        chat.id AS chatId, chat.kakao_id AS kakaoId, chat.nickname AS nickname, chat.content AS content, chat.created_at
+        AS chatCreatedAt,
+        clip.id AS clipId, clip.keyword AS keyword, clip.filepath AS filepath, clip.is_selected AS isSelected,
+        clip.is_pinned AS isPinned,clip.created_at AS clipCreatedAt
+        FROM MEETING m
+        LEFT JOIN CHAT
+        ON (m.id = chat.meeting_id)
+        LEFT JOIN CLIP
+        ON (m.id = clip.meeting_id)
+        WHERE m.couple_id = #{coupleId}
+        AND DATE (m.created_at)= #{date}
+        ORDER BY m.created_at,chat.created_at,clip.created_at;
+    </select>
+
+    <insert id="createMeeting" parameterType="int">
+        INSERT INTO MEETING (COUPLE_ID)
+        VALUES (#{coupleId})
+    </insert>
+    <select id="getLastMeeting" resultType="int">
+        SELECT LAST_INSERT_ID() AS meetingId
+    </select>
+    <update id="setMeetingLength" parameterType="int">
+        UPDATE MEETING
+        SET LENGTH = SEC_TO_TIME(TIMESTAMPDIFF(second,created_at,now()))
+        WHERE ID = #{meetingId}
+    </update>
+
+    <select id="getMeetingsByMonth" parameterType="map" resultType="String">
+        SELECT DISTINCT(DATE_FORMAT(CREATED_AT, '%Y-%m-%d'))
+        FROM MEETING
+        WHERE COUPLE_ID = #{coupleId}
+        AND DATE_FORMAT(CREATED_AT, '%Y-%m') = #{yearMonth}
+        ORDER BY 1;
+    </select>
+
+    <select id="getMeetingsById" parameterType="int" resultType="meetingDto">
+        SELECT id,couple_id,length,created_at
+        FROM MEETING
+        WHERE id=#{id};
+    </select>
+
+    <select id="getSumOfMeetingTime" parameterType="int" resultType="String">
+        SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(length)))
+        FROM MEETING
+        WHERE COUPLE_ID = #{coupleId};
+    </select>
+
+</mapper>
