@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.user.model.mapper.UserMapper">
+
+    <resultMap id="user" type="userDto">
+        <result column="id" property="id" />
+        <result column="kakao_id" property="kakaoId" />
+        <result column="couple_id" property="coupleId" />
+        <result column="nickname" property="nickname" />
+        <result column="email" property="email" />
+        <result column="birthday" property="birthday" />
+        <result column="created_at" property="createdAt" />
+        <result column="access_token" property="accessToken" />
+        <result column="refresh_token" property="refreshToken" />
+    </resultMap>
+
+    <resultMap id="couple" type="coupleDto">
+        <result column="id" property="id" />
+        <result column="user1" property="user1" />
+        <result column="user2" property="user2" />
+        <result column="code" property="code" />
+        <result column="coupled" property="coupled" />
+        <result column="anniversary" property="anniversary" />
+        <result column="created_at" property="createdAt" />
+        <result column="exp" property="exp" />
+        <result column="questionCnt" property="question_cnt" />
+    </resultMap>
+
+    <insert id="createCouple" parameterType="coupleDto" >
+        INSERT INTO couple (code, anniversary)
+        VALUES (#{code}, #{anniversary})
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <select id="findByCode" resultMap="couple">
+        SELECT *
+        FROM couple
+        where code = #{code}
+    </select>
+
+    <insert id="join" parameterType = "userDto">
+        INSERT INTO user
+        (kakao_id, nickname, email, birthday, couple_id)
+        VALUES
+        (#{kakaoId}, #{nickname}, #{email}, #{birthday}, #{coupleId})
+        <selectKey keyProperty="id" order="AFTER" resultType="Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <delete id="deleteUser" parameterType="userDto">
+        DELETE FROM user
+        WHERE id = #{id} and kakao_id = #{kakaoId}
+    </delete>
+
+    <update id="coupleFirstJoin" parameterType="userDto">
+        UPDATE couple
+        SET user1 = #{id}
+        where id = #{coupleId}
+        and user1 is null
+    </update>
+
+    <update id="coupleSecondJoin" parameterType="userDto">
+        UPDATE couple
+        SET user2 = #{id}, coupled = true
+        where id = #{coupleId}
+        and user2 is null
+    </update>
+
+    <select id="getUserInfos" parameterType="int" resultType="map">
+        SELECT u.id, u.nickname nickname ,DATE_FORMAT(u.birthday,"%Y-%m-%d") birthday
+        FROM couple c
+        join user u on c.id = u.couple_id
+        where c.id = #{coupleId}
+    </select>
+
+    <select id="userInfo" parameterType="long" resultMap="user">
+        SELECT *
+        FROM user
+        WHERE kakao_id = #{kakaoId}
+    </select>
+
+    <select id="coupleInfo" parameterType="int" resultMap="couple">
+        SELECT *
+        FROM couple
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByKakaoId" parameterType="long" resultMap="user">
+        SELECT *
+        FROM user
+        WHERE kakao_id = #{kakaoId}
+    </select>
+
+    <update id="modifyUser" parameterType="userDto">
+        UPDATE user
+        SET nickname = #{nickname}, email = #{email}, birthday = #{birthday}
+        WHERE id = #{id}
+    </update>
+
+    <update id="modifyCouple" parameterType="coupleDto">
+        UPDATE couple
+        SET nickname = #{nickname}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getCode" parameterType="String" resultMap="couple">
+        SELECT *
+        FROM couple
+        WHERE code = #{code}
+    </select>
+
+    <update id="initCoupleDeletedAt">
+        UPDATE couple
+        SET deleted_at = null
+        where id = #{id}
+    </update>
+
+    <update id="setCoupleDeletedAt">
+        UPDATE couple
+        SET deleted_at = now()
+        where id = #{id}
+    </update>
+
+    <update id="updateQuestionCnt">
+        UPDATE couple SET question_cnt = question_cnt + 1
+        WHERE id IN
+        (SELECT DISTINCT id FROM
+        (SELECT c.id AS id FROM couple c JOIN answer a ON c.id=a.couple_id
+        WHERE a.question_id=c.question_cnt GROUP BY c.id HAVING COUNT(a.kakao_id)=2) AS tmp);
+    </update>
+<!--    이 밑에 있는 친구들은 jwt 적용을 할 때 필요한 친구입니다.-->
+<!--    <select id="login" parameterType="long" resultMap="user">-->
+<!--        SELECT *-->
+<!--        FROM user-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </select>-->
+
+<!--    <update id="saveToken" parameterType="map">-->
+<!--        UPDATE user-->
+<!--        SET access_token = #{accessToken}-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </update>-->
+
+<!--    <select id="getToken" parameterType="long" resultMap="string">-->
+<!--        SELECT access_token-->
+<!--        FROM user-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </select>-->
+
+<!--    <update id="deleteToken" parameterType="map">-->
+<!--        UPDATE user-->
+<!--        SET access_token = #{accessToken}-->
+<!--        WHERE kakao_id = #{kakaoId}-->
+<!--    </update>-->
+
+</mapper>

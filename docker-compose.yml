@@ -1,0 +1,34 @@
+version: "3"
+services:
+  cherish-backend:
+    container_name: cherish-backend
+    build: ./backend/cherish
+    image: cherish_back_image:0.0
+    environment:
+      MYSQL_HOST: host.docker.internal
+    ports:
+      - "8080:8080"
+    volumes:
+      - /home/ubuntu/ffmpeg/monthly-video:/home/ubuntu/ffmpeg/monthly-video
+      - /home/ubuntu/ffmpeg/clip:/home/ubuntu/ffmpeg/clip
+    networks:
+      - backend_frontend
+
+  cherish-frontend:
+    container_name: cherish-frontend
+    build: ./frontend/cherish
+    image: cherish_front_image:0.0
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
+      - /home/ubuntu/nginx/sites:/etc/nginx/conf.d
+      - /home/ubuntu/nginx/sites/sites-enabled:/etc/nginx/sites-enabled
+    networks:
+      - backend_frontend
+
+networks:
+  backend_frontend:
+    driver: bridge

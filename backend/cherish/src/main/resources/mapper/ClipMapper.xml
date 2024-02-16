@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.cherish.clip.model.mapper.ClipMapper">
+
+    <insert id="createClip" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
+        INSERT INTO CLIP (meeting_id,keyword)
+        VALUES (#{meetingId},#{keyword});
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+    <update id="updateClipPath" parameterType="com.ssafy.cherish.clip.model.dto.ClipDto">
+        UPDATE CLIP
+        SET FILEPATH=#{filepath}
+        WHERE ID = #{id};
+    </update>
+
+    <select id="gatherClipsForMonth" parameterType="String" resultType="clipVo">
+        SELECT C.ID,C.KEYWORD,M.COUPLE_ID,C.FILEPATH
+        FROM CLIP C
+        JOIN MEETING M ON C.MEETING_ID=M.ID
+        WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(#{yearMonth},"%Y-%m")
+        AND FILEPATH IS NOT NULL
+        AND (C.KEYWORD,M.COUPLE_ID) IN
+            (select C.KEYWORD,M.COUPLE_ID from CLIP C JOIN MEETING M
+            ON C.MEETING_ID=M.ID
+            WHERE DATE_FORMAT(C.CREATED_AT,"%Y-%m")=DATE_FORMAT(#{yearMonth},"%Y-%m")
+            AND FILEPATH IS NOT NULL
+            GROUP BY C.KEYWORD,M.COUPLE_ID
+            HAVING COUNT(C.ID)>=5)
+        ORDER BY M.COUPLE_ID,C.KEYWORD,C.CREATED_AT;
+    </select>
+
+    <select id="clipCnt" parameterType="int" resultType="int">
+        SELECT COUNT(c.id)
+        FROM clip as c
+        JOIN meeting as m
+        ON c.meeting_id = m.id
+        JOIN couple as cou
+        ON m.couple_id = cou.id
+        WHERE cou.id = #{coupleId}
+    </select>
+
+    <update id="changePin" parameterType="map">
+        UPDATE clip
+        set is_pinned = #{mode}
+        where id = #{clipId};
+    </update>
+
+    <select id="getPinnedClip" parameterType="int" resultType="clipVo">
+        SELECT C.ID,C.KEYWORD,M.COUPLE_ID,C.FILEPATH
+        FROM CLIP C
+        JOIN MEETING M ON C.MEETING_ID=M.ID
+        WHERE C.is_pinned = true and
+              M.couple_id = #{coupleId}
+        ORDER BY C.created_at desc
+        LIMIT 6
+    </select>
+
+    <delete id="deleteClip" parameterType="int">
+        delete from clip where id=#{id};
+    </delete>
+</mapper>

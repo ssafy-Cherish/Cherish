@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "GmarketSansTTFMedium";
+  src: url("./fonts/GmarketSansTTFMedium.ttf");
+}
+
+@font-face {
+  font-family: "GmarketSansTTFLight";
+  src: url("./fonts/GmarketSansTTFLight.ttf");
+}
+
+@font-face {
+  font-family: "GmarketSansTTFBold";
+  src: url("./fonts/GmarketSansTTFBold.ttf");
+}
+
+@font-face {
+  font-family: "GamjaFlower-Regular";
+  src: url("./fonts/GamjaFlower-Regular.ttf");
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "GmarketSansTTFMedium";
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+}
+
+#cherrybox::-webkit-scrollbar {
+  display: none;
+}
+
+#PotExp::-webkit-progress-bar {
+  background: whitesmoke;
+  border-radius: 10px;
+  border: 1rem black;
+  box-shadow: inset 3px 3px 10px #ccc;
+}
+
+#PotExp::-webkit-progress-value {
+  border-radius: 10px;
+  border: 1rem black;
+  background: linear-gradient(to right, #ffedeb, #fd8680);
+}
+
+#PotTimeLine::-webkit-scrollbar {
+  display: none;
+}
+
+#TodayQuestionBox::-webkit-scrollbar {
+  display: none;
+}
+
+#keyword::-webkit-scrollbar {
+  display: none;
+}
+
+#userInfo::-webkit-scrollbar {
+  display: none;
+}
+
+#question::-webkit-scrollbar {
+  display: none;
+}
